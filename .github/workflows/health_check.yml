@@ -1,9 +1,12 @@
 # Health check: proves the cloud can run V4 code and reach Maaz's phone.
-# Runs when this file or the alert code changes, and on demand (Actions tab → Run workflow).
+# Runs every Monday, when this file or the alert code changes, and on demand.
+# Also counts this month's Actions minutes and warns past 1,500 of the free 2,000.
 name: Health check
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"   # Monday 08:47 IST
   push:
     branches: [main]
     paths:
@@ -12,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   ping:
@@ -25,7 +29,14 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run checks
         run: python -m pytest -q
+      - name: Check Actions minutes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.jobs.actions_minutes
       - name: Send test alert
+        if: ${{ github.event_name != 'schedule' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

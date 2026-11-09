@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe, universe, or fundprobe"
+        description: "probe, universe, fundprobe, fundamentals, shortlist, prices, rank"
         default: probe
       tickers:
         description: "probe: comma-separated tickers"
@@ -53,6 +53,22 @@ jobs:
           git config user.email "v4-bot@users.noreply.github.com"
           git add data/us_universe.csv
           git diff --cached --quiet || git commit -m "US universe $(date +%F)"
+          git pull --rebase -q && git push
+      - name: US monthly stage
+        if: ${{ contains(fromJSON('["fundamentals","shortlist","prices","rank"]'), inputs.mode) }}
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.jobs.us_monthly "${{ inputs.mode }}"
+      - name: Save US results to the repo
+        if: ${{ contains(fromJSON('["fundamentals","shortlist","prices","rank"]'), inputs.mode) }}
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/us
+          git diff --cached --quiet || git commit -m "US ${{ inputs.mode }} $(date +%F)"
           git pull --rebase -q && git push
       - name: Alert on any failure
         if: failure()
