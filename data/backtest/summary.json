@@ -1,0 +1,14 @@
+{
+ "period": "Nov 2022\u2013Nov 2026",
+ "trades": 214,
+ "avg_r": -0.0788,
+ "median_r": -0.2772,
+ "win_rate": 0.4159,
+ "total_return": -0.1135,
+ "cagr": -0.0297,
+ "max_drawdown": -0.4013,
+ "avg_days": 14.7523,
+ "weak_trades": 45,
+ "weak_avg_r": -0.1186,
+ "gate_d048": false
+}
