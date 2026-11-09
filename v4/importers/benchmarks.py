@@ -102,7 +102,10 @@ HISTORY_URL = "https://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx"
 def _col(idx: dict, *names: str) -> int:
     """Find a column by name, ignoring case and extra spaces."""
     norm = {re.sub(r"\s+", " ", k).strip().lower(): v for k, v in idx.items()}
-    for n in names:
+    for n in names:                       # exact name first...
+        if n in norm:
+            return norm[n]
+    for n in names:                       # ...then a looser match
         for k, v in norm.items():
             if n in k:
                 return v
