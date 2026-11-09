@@ -56,3 +56,9 @@ us:                        # US Investment Engine. ALL values PROVISIONAL — aw
   max_peg: 2.0                        # D-101 US guardrail threshold — proposed = India's D-125
   fallback_months: 3                  # D-102: 3 blocked months -> Nasdaq-100 fund
   target_holdings: 6                  # D-028 says 5–8
+  compliance:              # D-132 safeguards (warnings only)
+    tcs_threshold_inr: 1000000        # PLACEHOLDER: LRS TCS threshold per financial year; RE-VERIFY under Income-tax Act 2025 before first transfer
+    tcs_warn_fraction: 0.8            # warn at 80% of the threshold
+    estate_warn_usd: 45000            # D-132: warn at ~$45k (US estate tax applies above $60k)
+    w8ben_remind_days: 60
+    w8ben_signed: null                # set to the signing date (YYYY-MM-DD) once Maaz submits W-8BEN (T-058)
