@@ -1,0 +1,55 @@
+# Monthly India brief (D-026, D-063, D-126): runs automatically after a successful
+# Monthly import. To change this month's amount: Actions → Monthly brief → Run workflow.
+name: Monthly brief
+
+on:
+  workflow_run:
+    workflows: ["Monthly import"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      amount:
+        description: "This month's amount in ₹ (blank = standing default)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Build and send brief
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MONTHLY_AMOUNT: ${{ inputs.amount }}
+        run: python -m v4.jobs.monthly_brief
+      - name: Save frozen list to the repo
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/v4.sqlite
+          git diff --cached --quiet || git commit -m "Monthly brief $(date +%F): list frozen"
+          git pull --rebase -q && git push
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

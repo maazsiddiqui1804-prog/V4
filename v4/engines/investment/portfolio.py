@@ -112,11 +112,22 @@ def plan_buys(ranked: pd.DataFrame, holdings: pd.DataFrame, amount: float, rules
         plan.notes.append("No qualifying name this month — the whole amount waits in the liquid fund (D-029)")
         return plan
 
-    slice_ = amount / len(chosen) if amount / len(chosen) >= min_buy else slice_
+    # Every order must cost at least the minimum AFTER rounding to whole shares (D-105).
+    # Each name gets the larger of: its equal slice rounded down, or just enough shares
+    # to clear the minimum. If that overspends, drop the lowest-ranked name and retry.
+    while chosen:
+        slice_ = amount / len(chosen)
+        sized = []
+        for r in chosen:
+            shares = max(int(math.floor(slice_ / r.current_price)),
+                         int(math.ceil(min_buy / r.current_price)))
+            sized.append((r, shares, shares * r.current_price))
+        if sum(c for _, _, c in sized) <= amount:
+            break
+        dropped = chosen.pop()
+        plan.notes.append(f"{dropped.symbol} dropped: not enough money for every buy to clear ₹{min_buy:,.0f}")
     spent = 0.0
-    for r in chosen:
-        shares = int(math.floor(slice_ / r.current_price))
-        cost = shares * r.current_price
+    for r, shares, cost in (sized if chosen else []):
         spent += cost
         plan.orders.append(Order(r.symbol, round(cost, 2), shares, float(r.buy_below), int(r.rank), kind))
     plan.leftover = round(amount - spent, 2)

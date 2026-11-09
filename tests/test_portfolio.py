@@ -68,3 +68,11 @@ def test_blocked_names_never_bought():
     r = ranked([("FLAG", "IT", 400, True), ("B", "Auto", 400, True), ("C", "FMCG", 300, True)])
     plan = pf.plan_buys(r, EMPTY, 25000, RULES, blocked_ids={1})
     assert [o.symbol for o in plan.orders] == ["B", "C"]
+
+
+def test_every_order_clears_minimum_after_rounding():
+    # Rs 50k over five Rs 3,545-ish shares would round below Rs 10k; must not happen
+    r = ranked([(f"P{i}", f"Sec{i}", p, True) for i, p in enumerate([3545, 427, 2181, 162, 3883, 255])])
+    plan = pf.plan_buys(r, EMPTY, 50000, RULES)
+    assert plan.orders and all(o.amount >= 10000 for o in plan.orders)
+    assert sum(o.amount for o in plan.orders) <= 50000
