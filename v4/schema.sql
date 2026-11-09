@@ -56,6 +56,16 @@ CREATE TABLE IF NOT EXISTS benchmark_levels (
     PRIMARY KEY (benchmark, date)
 );
 
+-- Benchmark index-fund NAVs from AMFI (D-121). Loaded monthly from data/benchmarks/navs.csv.
+CREATE TABLE IF NOT EXISTS fund_navs (
+    scheme_code TEXT NOT NULL,
+    benchmark   TEXT NOT NULL,   -- 'nifty500', 'quality30', 'momentum30', 'nasdaq100'
+    date        TEXT NOT NULL,
+    nav         REAL NOT NULL,
+    scheme_name TEXT,
+    PRIMARY KEY (scheme_code, date)
+);
+
 CREATE TABLE IF NOT EXISTS fx_rates (
     pair  TEXT NOT NULL,         -- 'USDINR'
     date  TEXT NOT NULL,

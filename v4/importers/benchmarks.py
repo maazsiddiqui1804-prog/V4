@@ -1,0 +1,128 @@
+"""Benchmark fund prices (D-121): index-fund NAVs from AMFI's official daily file.
+
+Plain English:
+- AMFI publishes every mutual fund's latest NAV each day in one text file.
+- V4 tracks the index funds named in config/benchmarks.yaml (Direct, Growth).
+- `record` appends today's NAVs to data/benchmarks/navs.csv (a small text file,
+  so the repo doesn't bloat the way a daily database commit would).
+- `discover` lists every Direct-Growth fund whose name matches each benchmark,
+  so Maaz can approve which funds to track.
+- `load` copies navs.csv into the database (run by the monthly job).
+"""
+from __future__ import annotations
+
+import csv
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import requests
+import yaml
+
+from v4.db import ROOT, connect, init_db, DB_PATH
+
+AMFI_URL = "https://portal.amfiindia.com/spages/NAVAll.txt"
+CONFIG = ROOT / "config" / "benchmarks.yaml"
+NAV_CSV = ROOT / "data" / "benchmarks" / "navs.csv"
+FIELDS = ["date", "scheme_code", "benchmark", "nav", "scheme_name"]
+
+
+def fetch_amfi(timeout: int = 60) -> str:
+    r = requests.get(AMFI_URL, timeout=timeout, headers={"User-Agent": "V4 personal research"})
+    r.raise_for_status()
+    return r.text
+
+
+def parse_amfi(text: str) -> list[dict]:
+    """Rows are 'code;isin;isin;name;...;nav;date'. Section headings and blanks are skipped."""
+    out = []
+    for line in text.splitlines():
+        parts = [p.strip() for p in line.split(";")]
+        if len(parts) < 6 or not parts[0].isdigit():
+            continue
+        try:
+            nav = float(parts[-2])
+            date = datetime.strptime(parts[-1], "%d-%b-%Y").date().isoformat()
+        except ValueError:
+            continue
+        out.append({"scheme_code": parts[0], "scheme_name": parts[3], "nav": nav, "date": date})
+    return out
+
+
+def is_direct_growth(name: str) -> bool:
+    n = name.lower()
+    return "direct" in n and "growth" in n and not re.search(r"idcw|dividend|\betf\b", n)
+
+
+def load_config() -> dict:
+    return yaml.safe_load(CONFIG.read_text())["benchmarks"]
+
+
+def discover(rows: list[dict], cfg: dict) -> dict[str, list[dict]]:
+    found = {}
+    for key, b in cfg.items():
+        pat = re.compile(b["match"], re.I)
+        excl = re.compile(b["exclude"], re.I) if b.get("exclude") else None
+        found[key] = [r for r in rows if pat.search(r["scheme_name"])
+                      and is_direct_growth(r["scheme_name"])
+                      and not (excl and excl.search(r["scheme_name"]))]
+    return found
+
+
+def record(rows: list[dict], cfg: dict, path: Path = NAV_CSV) -> int:
+    wanted = {str(code): key for key, b in cfg.items() for code in (b.get("scheme_codes") or [])}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    seen = set()
+    if path.exists():
+        with path.open() as f:
+            seen = {(r["date"], r["scheme_code"]) for r in csv.DictReader(f)}
+    new = [r for r in rows if r["scheme_code"] in wanted and (r["date"], r["scheme_code"]) not in seen]
+    write_header = not path.exists()
+    with path.open("a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=FIELDS)
+        if write_header:
+            w.writeheader()
+        for r in sorted(new, key=lambda r: (r["date"], r["scheme_code"])):
+            w.writerow({"date": r["date"], "scheme_code": r["scheme_code"],
+                        "benchmark": wanted[r["scheme_code"]], "nav": r["nav"],
+                        "scheme_name": r["scheme_name"]})
+    missing = set(wanted) - {r["scheme_code"] for r in rows}
+    if missing:
+        raise RuntimeError(f"Benchmark funds missing from AMFI file: {sorted(missing)}")
+    return len(new)
+
+
+def load_into_db(path: Path = NAV_CSV, db_path: Path = DB_PATH) -> int:
+    init_db(db_path)
+    if not path.exists():
+        return 0
+    with path.open() as f, connect(db_path) as c:
+        rows = [(r["scheme_code"], r["benchmark"], r["date"], float(r["nav"]), r["scheme_name"])
+                for r in csv.DictReader(f)]
+        c.executemany("INSERT OR REPLACE INTO fund_navs VALUES (?,?,?,?,?)", rows)
+    return len(rows)
+
+
+def main(mode: str) -> int:
+    from v4 import alerts
+    cfg = load_config()
+    try:
+        rows = parse_amfi(fetch_amfi())
+        if mode == "discover":
+            for key, funds in discover(rows, cfg).items():
+                print(f"\n== {key} ({cfg[key]['label']}): {len(funds)} Direct-Growth funds")
+                for r in funds:
+                    print(f"  {r['scheme_code']} | {r['scheme_name']} | NAV {r['nav']} on {r['date']}")
+            return 0
+        n = record(rows, cfg)
+        print(f"Recorded {n} new benchmark NAVs")
+        return 0
+    except Exception as e:
+        alerts.send(f"❌ V4 benchmark NAV job FAILED ({mode}): {e}")
+        print(f"FAILED: {e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "record"))

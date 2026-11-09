@@ -1,0 +1,50 @@
+# Benchmark fund NAVs (D-121): records AMFI NAVs every weekday evening.
+# Run by hand with mode "discover" to list candidate funds.
+name: Benchmark NAVs
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "record or discover"
+        default: record
+  schedule:
+    - cron: "17 17 * * 1-5"   # 22:47 IST weekdays, after AMFI publishes the day's NAVs
+
+permissions:
+  contents: write
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
+
+jobs:
+  navs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Fetch NAVs
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.importers.benchmarks "${{ inputs.mode || 'record' }}"
+      - name: Save results to the repo
+        if: ${{ (inputs.mode || 'record') == 'record' }}
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/benchmarks
+          git diff --cached --quiet || git commit -m "Benchmark NAVs $(date +%F)"
+          git pull --rebase -q && git push
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."
