@@ -1,0 +1,27 @@
+# Every untested number in V4. Each is a PLACEHOLDER until testing backs it and Maaz re-approves.
+# null = no starting value approved yet; set during the build and approved by Maaz (tasks T-029, T-047).
+# No secrets here.
+
+investment:
+  kill_filters:            # D-023
+    years_without_loss: 3
+    min_cash_conversion: null
+    max_debt_equity: null
+    min_interest_cover: null
+    max_promoter_pledge_pct: null
+  score_weights:           # D-099, D-103
+    normal: {quality: 40, growth: 30, momentum: 30}
+    weak_market: {quality: 55, growth: 30, momentum: 15}
+  momentum_lookback: null  # D-099
+  valuation:
+    india_pe_margin: null  # D-025
+    us_peg_threshold: null # D-101
+  min_buy_inr: 10000       # D-105 (approved, not a placeholder; kept here for one place to look)
+
+trading:
+  liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr)
+  volume_multiple: 1.5             # D-042
+  max_stretch_above_20dma: null    # D-042
+  trail_method: null               # D-045
+  drawdown_brake_pct: 15           # D-104
+  stepdown_rule: null              # D-100

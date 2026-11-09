@@ -1,0 +1,12 @@
+# Secrets never live in the repo
+.env
+*.env
+secrets*
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+# Raw broker/Screener downloads stay local unless deliberately imported
+data/raw/*
+!data/raw/.gitkeep
