@@ -1,0 +1,36 @@
+# US data (D-096): SEC EDGAR. Manual runs for now; scheduled once the US module is built.
+name: US data
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "probe"
+        default: probe
+      tickers:
+        description: "probe: comma-separated tickers"
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  us:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Probe SEC industry codes
+        if: ${{ inputs.mode == 'probe' }}
+        run: python -m v4.importers.sec probe "${{ inputs.tickers }}"
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."
