@@ -15,6 +15,9 @@ def sandbox(tmp_path, monkeypatch):
     db = tmp_path / "t.sqlite"
     real = job.import_month
     monkeypatch.setattr(job, "import_month", lambda n, s, d: real(n, s, d, db))
+    # Never touch the real database or NAV file from tests.
+    from v4.importers import benchmarks as bm
+    monkeypatch.setattr(job, "load_benchmark_navs", lambda: bm.load_into_db(tmp_path / "navs.csv", db))
     return inbox, archive
 
 
