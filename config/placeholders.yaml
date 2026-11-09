@@ -14,7 +14,7 @@ investment:
   score_weights:           # D-099, D-103
     normal: {quality: 40, growth: 30, momentum: 30}
     weak_market: {quality: 55, growth: 30, momentum: 15}
-  momentum_lookback: null  # D-099
+  momentum_lookback: "blend 6m + 12m"  # D-099 PLACEHOLDER; chosen 2026-11-09 (D-124)
   valuation:
     india_pe_margin: null  # D-025
     us_peg_threshold: null # D-101
