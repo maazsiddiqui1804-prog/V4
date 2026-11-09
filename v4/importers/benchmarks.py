@@ -135,3 +135,30 @@ def main(mode: str) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "record"))
+
+
+def composite(benchmark: str, db_path: Path = DB_PATH, base: float = 100.0) -> list[tuple[str, float]]:
+    """D-122: one benchmark line = chained MEDIAN daily return of all its tracked funds.
+
+    Plain English: each day, look at every fund that has a price today and on its
+    previous recorded day, take the middle (median) of their returns, and grow the
+    line by that. A fund joining, closing or missing a day doesn't break the line.
+    """
+    from statistics import median
+    with connect(db_path) as c:
+        rows = c.execute("SELECT scheme_code, date, nav FROM fund_navs WHERE benchmark=? ORDER BY date",
+                         (benchmark,)).fetchall()
+    last: dict[str, float] = {}
+    by_date: dict[str, list[float]] = {}
+    for code, date, nav in rows:
+        if code in last and last[code] > 0:
+            by_date.setdefault(date, []).append(nav / last[code] - 1)
+        last[code] = nav
+    level, line = base, []
+    first = rows[0][1] if rows else None
+    if first:
+        line.append((first, base))
+    for date in sorted(by_date):
+        level *= 1 + median(by_date[date])
+        line.append((date, level))
+    return line

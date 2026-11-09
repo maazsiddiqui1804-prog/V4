@@ -22,6 +22,7 @@ import requests
 from v4 import alerts
 from v4.db import ROOT
 from v4.importers.screener import import_month
+from v4.importers.benchmarks import load_into_db as load_benchmark_navs
 
 INBOX = ROOT / "data" / "inbox"
 ARCHIVE = ROOT / "data" / "archive"
@@ -89,9 +90,11 @@ def run(today: dt.date | None = None) -> str:
 
     for p in nse_in_inbox:
         p.unlink()
+    nav_rows = load_benchmark_navs()
 
     status = "✅" if not rep.missing_required and not rep.unmatched else "⚠️"
-    lines = [f"{status} V4 monthly India import — {as_of}", rep.text(), nse_note]
+    lines = [f"{status} V4 monthly India import — {as_of}", rep.text(), nse_note,
+             f"Benchmark fund NAVs in database: {nav_rows} rows"]
     if unknown:
         lines.append("Ignored files (not recognised, left in inbox): " + ", ".join(unknown))
     return "\n".join(lines)

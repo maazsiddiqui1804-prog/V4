@@ -1,23 +1,23 @@
 # Benchmarks (D-095 targets, D-121 source: index-fund NAVs from AMFI).
-# scheme_codes are filled in only after Maaz approves which funds to track.
+# scheme_codes: all qualifying Direct-Growth funds, approved 2026-11-09. Benchmark = median daily return (D-122).
 # match/exclude are used by `discover` to list candidate funds.
 benchmarks:
   nifty500:
     label: "Nifty 500 (India benchmark, kill test D-064)"
     match: "nifty\\s*500\\s*index"
     exclude: "momentum|value|quality|multicap|equal|low vol|shariah|largemidsmall|healthcare|flexicap"
-    scheme_codes: []
+    scheme_codes: ["152731", "154798", "154088", "153161", "147625", "152908"]  # approved 2026-11-09 (D-122)
   quality30:
     label: "Nifty200 Quality 30 (quality bar, kill test D-064)"
     match: "nifty\\s*200\\s*quality\\s*30"
-    scheme_codes: []
+    scheme_codes: ["152859", "153114", "153546", "153660", "153555"]  # approved 2026-11-09 (D-122)
   momentum30:
     label: "Nifty200 Momentum 30 (diagnostic only, D-107)"
     match: "nifty\\s*200\\s*momentum\\s*30"
     exclude: "g-?sec|plus"
-    scheme_codes: []
+    scheme_codes: ["148703", "150591", "152931", "152430", "150452", "151781", "149800", "153662"]  # approved 2026-11-09 (D-122)
   nasdaq100:
     label: "Nasdaq-100 in INR (US benchmark)"
     match: "nasdaq[\\s-]*100"
     exclude: "equal|top\\s*15|q50"
-    scheme_codes: []
+    scheme_codes: ["149219", "150751"]  # approved 2026-11-09 (D-122)

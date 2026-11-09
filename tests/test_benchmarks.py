@@ -59,3 +59,20 @@ def test_direct_growth_from_separate_columns():
     text = "1;I;-;Delta Nifty 500 Index Fund;Direct Plan;Growth Option;10.0;06-Nov-2026\n"
     found = bm.discover(bm.parse_amfi(text), {"n": {"label": "x", "match": r"nifty\s*500\s*index"}})
     assert [r["scheme_code"] for r in found["n"]] == ["1"]
+
+
+def test_composite_uses_median_and_survives_gaps(tmp_path):
+    from v4.db import connect, init_db
+    db = tmp_path / "t.sqlite"
+    init_db(db)
+    rows = [  # three funds; 'c' misses day 2; 'b' is an outlier on day 2
+        ("a", "nifty500", "2026-11-02", 100.0, ""), ("b", "nifty500", "2026-11-02", 50.0, ""), ("c", "nifty500", "2026-11-02", 10.0, ""),
+        ("a", "nifty500", "2026-11-03", 101.0, ""), ("b", "nifty500", "2026-11-03", 60.0, ""),
+        ("a", "nifty500", "2026-11-04", 102.01, ""), ("b", "nifty500", "2026-11-04", 60.6, ""), ("c", "nifty500", "2026-11-04", 10.2, ""),
+    ]
+    with connect(db) as c:
+        c.executemany("INSERT INTO fund_navs VALUES (?,?,?,?,?)", rows)
+    line = dict(bm.composite("nifty500", db))
+    assert line["2026-11-02"] == 100
+    assert line["2026-11-03"] == pytest.approx(100 * 1.105)          # median of +1% and +20%
+    assert line["2026-11-04"] == pytest.approx(100 * 1.105 * 1.01)   # median of +1%, +1%, +2% (c over 2 days)
