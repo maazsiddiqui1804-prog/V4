@@ -3,12 +3,14 @@
 # No secrets here.
 
 investment:
-  kill_filters:            # D-023
-    years_without_loss: 3
-    min_cash_conversion: null
-    max_debt_equity: null
-    min_interest_cover: null
-    max_promoter_pledge_pct: null
+  kill_filters:            # D-023; starting values approved 2026-11-09 ("Balanced", D-123)
+    # Loss check is fixed by D-116: no loss in last year, year before, or trailing 12 months.
+    max_debt_equity: 1.5             # PLACEHOLDER
+    min_interest_cover: 3.0          # PLACEHOLDER; skipped when debt_equity < near_zero_debt
+    near_zero_debt: 0.1              # PLACEHOLDER; below this D/E, interest cover isn't checked
+    max_promoter_pledge_pct: 10      # PLACEHOLDER
+    min_cash_conversion: 0.7         # PLACEHOLDER; 2-year: (CFO last + preceding) / (net profit last + preceding)
+    blank_means_fail: true           # approved: never buy what can't be checked
   score_weights:           # D-099, D-103
     normal: {quality: 40, growth: 30, momentum: 30}
     weak_market: {quality: 55, growth: 30, momentum: 15}

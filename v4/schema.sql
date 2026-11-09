@@ -97,6 +97,15 @@ CREATE TABLE IF NOT EXISTS investment_lists (
     PRIMARY KEY (list_month, security_id)
 );
 
+-- Investment Engine step 1: kill-filter result per stock per month, with reasons (D-023).
+CREATE TABLE IF NOT EXISTS kill_filter_results (
+    as_of       TEXT NOT NULL,
+    security_id INTEGER NOT NULL REFERENCES securities(security_id),
+    passed      INTEGER NOT NULL,
+    reasons     TEXT,            -- '' when passed
+    PRIMARY KEY (as_of, security_id)
+);
+
 -- Trading Engine: signals and the paper/live ledger (D-042..D-048).
 CREATE TABLE IF NOT EXISTS trade_signals (
     signal_id    INTEGER PRIMARY KEY,
