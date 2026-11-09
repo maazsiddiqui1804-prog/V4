@@ -1,16 +1,24 @@
-# Red-flag filing checks (D-061, D-109): ~3× a day in market hours.
-# Manual run with mode "probe" prints raw feed items (no writes).
+# Red-flag filing checks (D-061, D-109): 3× a day on weekdays, in market hours.
+# Manual run: mode "check" (default) or "probe" (prints raw feed items, no writes).
 name: Red flags
 
 on:
+  schedule:
+    - cron: "17 5 * * 1-5"    # 10:47 IST
+    - cron: "47 7 * * 1-5"    # 13:17 IST
+    - cron: "53 9 * * 1-5"    # 15:23 IST
   workflow_dispatch:
     inputs:
       mode:
         description: "check or probe"
-        default: probe
+        default: check
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
 
 jobs:
   flags:
@@ -23,7 +31,22 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - name: Probe feeds
+        if: ${{ inputs.mode == 'probe' }}
         run: python -m v4.importers.filings probe
+      - name: Check for red flags
+        if: ${{ inputs.mode != 'probe' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.engines.investment.redflags
+      - name: Save new flags to the repo
+        if: ${{ inputs.mode != 'probe' }}
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/red_flags.csv 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Red flags $(date +%F)"
+          git pull --rebase -q && git push
       - name: Alert on any failure
         if: failure()
         env:

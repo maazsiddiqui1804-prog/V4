@@ -23,6 +23,7 @@ investment:
   min_buy_inr: 10000       # D-105 (approved, not a placeholder; kept here for one place to look)
   portfolio:               # D-028, D-060, D-092, D-105, D-126 (approved 2026-11-09)
     monthly_amount_inr: 25000          # D-126 standing default; override per month via Run workflow
+    first_brief_month: "2026-12"       # Maaz 2026-11-09: no real brief/freeze before December (after GMAT)
     target_holdings: 15                # D-028 India
     max_names_per_month: 5             # D-105
     max_rank: 100                      # never buy below rank 100 (would be sold next month, D-027)

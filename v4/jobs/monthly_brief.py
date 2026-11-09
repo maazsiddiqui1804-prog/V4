@@ -21,9 +21,13 @@ import yaml
 
 from v4 import alerts
 from v4.db import ROOT, connect, init_db, DB_PATH
-from v4.engines.investment import filters as kf, score as sc, guardrail, portfolio as pf, sells as sl
+from v4.engines.investment import filters as kf, score as sc, guardrail, portfolio as pf, sells as sl, redflags as rf
 
 CONFIG = ROOT / "config" / "placeholders.yaml"
+
+
+class SkipBrief(Exception):
+    """Not an error: a month before the first real brief."""
 
 
 def latest_as_of(db_path: Path) -> str:
@@ -78,6 +82,11 @@ def build(db_path: Path = DB_PATH, amount: float | None = None) -> str:
     cfg = yaml.safe_load(CONFIG.read_text())["investment"]
     as_of = latest_as_of(db_path)
     month = as_of[:7]
+    first = str(cfg["portfolio"].get("first_brief_month", ""))
+    if first and month < first:
+        raise SkipBrief(f"No brief for {month}: the first real brief is {first} (Maaz's decision, 2026-11-09). "
+                        "Data was imported; nothing was scored or frozen.")
+    rf.load_into_db(db_path=db_path)
     note = ""
     if not month_frozen(month, db_path):
         _, note = sc.run(as_of, db_path)
@@ -141,6 +150,10 @@ def main() -> int:
     try:
         amount = float(raw) if raw else None
         msg = build(amount=amount)
+    except SkipBrief as s:
+        print(s)
+        alerts.send(f"ℹ️ {s}")
+        return 0
     except Exception as e:
         alerts.send(f"❌ V4 monthly brief FAILED: {e}")
         print(f"FAILED: {e}", file=sys.stderr)
