@@ -1,21 +1,37 @@
 # V4 Status
 
-**Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine code complete; building phases 3–5 before December (D-130)
+**Last updated:** 2026-11-10 · **Phase:** Build — India Investment Engine complete; US module code complete (waiting on Kite check); Trading Engine first version + backtest built; dashboard (phase 5) next (D-130)
 
 ## Next session
-1. ✅ US tax check done, go-ahead given (D-132; Project doc V4_US_Tax_Check.md).
-2. **Phase 3: US AI module** (D-130): ✅ tradable rule (D-133) and universe rule (D-134) set; SEC access working (contact email in Secret SEC_CONTACT_EMAIL). Universe builder done (SEC-only, D-135; float read for all quarters after a fix); first full build blocked by a GitHub Actions outage (2026-11-09 18:12 UTC) — rerun when resolved. Next: SEC financials (extractor built, probe pending), US score on quality+growth → top ~40 shortlist (D-136) → Kite check via Chrome → Tiingo for confirmed names only, Tiingo prices (Stooq backup; Tiingo key → Maaz adds to GitHub Secrets), AI value-chain universe rule, US guardrail (P/E vs growth, D-101), Nasdaq-100 fallback (D-102), combined caps (D-060, D-089).
-3. Then Phase 4: Trading Engine + backtest (no daily login, no Kite Connect until after GMAT), then Phase 5: dashboard.
-4. After GMAT: December brief + sign-off (T-029) + first buys (T-030); subscribe Kite Connect; start paper trading.
-5. Known gaps for first quarterly review: short histories for recent listings; red-flag name matching.
+1. **Waiting on Maaz (dashboard "Waiting on you"):**
+   - T-059 **Trading backtest has no edge with starting numbers** — choose a path (options below).
+   - T-057 US Kite check: needs the "International" search in Kite (regular Kite didn't show it on 2026-11-10; US stocks are in beta at kite-beta.zerodha.com, accounts enabled in batches). Maaz expects it to appear soon.
+   - T-054 approve US numbers · T-055 US weak-market rule · T-056 monthly vs quarterly US transfers · T-058 W-8BEN before first US buy · T-047 trading numbers.
+2. **US module (phase 3):** code complete. Cloud runs: universe (334 names) ✅, financials probe ✅ after 3 fixes; fundamentals + shortlist runs in progress at session end. Then: Kite check of the ~40 shortlist → Tiingo prices (Kite-confirmed only) → US ranking in the monthly brief.
+3. **Trading Engine (phase 4):** signals, costs, backtest, evening plan, watchlist built. Still to build: paper ledger (DB) + missed-check tripwire, daily job wiring to Kite Connect (after GMAT), midday checks (D-109).
+4. **Phase 5:** dashboard (D-108 Action + Analysis views), quarterly report, 12-month warning/kill-test checks, failure-alert audit. Hosting choice needed (will be raised as a Waiting-on-you item).
+5. After GMAT: December brief + sign-off (T-029) + first buys (T-030); Kite Connect; paper trading.
+
+### T-059 — Trading backtest result (simulation, NOT live)
+Nov 2022–Nov 2026, today's Nifty 500, Yahoo prices (7 missed splits/bonuses corrected), full Zerodha delivery costs + 0.1% slippage, ₹1L notional:
+232 trades · avg **−0.11R** net · median −0.38R · win rate 39% · −17% total (−4.6%/yr) · worst drawdown −36% · D-048 bar (≥30 trades, ≥0.3R) **not met**.
+Exits: stops avg −1.06R (incl. 5 overnight gaps avg −2.7R); time stop (20 days) avg +0.69R; only 7 trades reached 2R and trailed.
+8 nearby variants (time stop 20/40, stop lookback 10/20, stretch 10%/5%): −0.11R to +0.06R overall; 2023–24 slightly positive, **2025–26 negative in every variant**. Results flatter reality (survivorship: today's index list).
+Options (Claude's ranking):
+- **A (recommended): keep rules, proceed to paper trading after GMAT as planned.** Paper is the real test; D-048 gate means no money at risk until ≥0.3R is proven. Cost: ~3 months of paper effort that may end in "no go".
+- **B: before paper, Claude runs a pre-declared robustness study** (few variants fixed in advance, judged on 2025–26 as hold-out) and brings starting numbers for approval (T-047). Risk: curve-fitting if done loosely.
+- **C: pause the Trading Engine** and put the 10% sleeve into the Investment Engine until the January strategy review (D-066) rethinks the setup.
 
 ## Where we are
-- Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 100 automated checks pass.
+- Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 151 automated checks pass.
 - **Running automatically:** benchmark fund NAVs weekdays 22:47 IST; red-flag checks weekdays 10:47 / 13:17 / 15:23 IST (watchlist empty until the first list or holdings); monthly import whenever a file lands in data/inbox; monthly brief right after a successful import (guarded: none before 2026-12). Every job alerts Telegram on failure.
 - **India data:** 500/500 Nifty 500 matched; 78 banks/NBFCs/insurers and 3 REITs excluded → 419 investable (D-113–D-115). Screener column list updated by Claude in Maaz's Chrome (profit years, cash-flow preceding year; 5 unused columns removed).
 - **Benchmarks:** median of 21 AMFI index funds (D-121/D-122), history from 2025-09-15.
 - **Holdings:** Console XLSX via inbox (D-119); account is V4-only (D-120) and empty.
 - **Investment Engine (all 8 steps built, D-123–D-128):** kill filters → score (regime-aware) → India guardrail → buy plan → holding verdicts → red flags → monthly brief → frozen list. Dry run on 2026-11-09 data at ₹25k: BUY MCX 3 shares, IGIL 29 shares (preview only — nothing frozen, nothing sent).
+- **US module (D-131–D-136):** SEC universe (334: 131 sized by float, 203 genuine foreign filers sized after Kite check); SEC financials (US-GAAP + IFRS, one reporting currency, renamed labels merged); kill filters + quality/growth shortlist; momentum + P/E-vs-growth guardrail; Nasdaq-100 fallback; combined caps (D-060/D-089); D-132 safeguards (LRS/TCS tracker, Schedule FA log, $45k estate warning, W-8BEN reminder); US section in the monthly brief (no US orders until approved). Monthly stages: fundamentals → shortlist → prices → rank (workflow "US data").
+- **Trading Engine (D-040–D-049):** signals, Zerodha delivery costs (zerodha.com/charges, 2026-11-10), backtest (gap fills, half at 2R, trail, 20-day time stop, drawdown brake), evening plan + near-breakout watchlist. Workflow "Trading backtest" (manual). Starting numbers in config/placeholders.yaml → trading.
+- **Cost guard:** health check runs Mondays and warns past 1,500 of 2,000 free Actions minutes (59 used by 2026-11-10).
 - No numbers proven; all cut-offs are placeholders.
 
 ## Open items
@@ -27,7 +43,8 @@
 | Professional review of first ITR with US shares (Schedule FA) | ~mid-2027 |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Phase 3 |
 | Kite login page (Kite Connect) | Phase 4 |
-| Trading placeholder numbers (liquidity floor, volume multiple, stretch limit, trail method) | Phase 4 (T-047) |
+| Trading placeholder numbers (now in config; backtest shows no edge — T-059) | Before paper trading (T-047) |
+| US Kite check (International search not yet visible) | When Kite shows US stocks (T-057) |
 
 ## Build plan
 - **Until GMAT (~28 Nov), D-130:** build phases 3–5 (US module, Trading Engine + backtest, dashboard); nothing goes live.
@@ -47,3 +64,4 @@
 - **2026-11-09 (late):** D-085 beta condition dropped (US investing enabled on Maaz's account); US buys start after the tax check (D-131).
 - **2026-11-09 (late, cont.):** US tax check done, go-ahead (D-132); US tradable rule (D-133) and AI universe rule by SEC industry codes (D-134) set after probing 30 names in the cloud.
 - **2026-11-09/10 (late):** US universe builder (SEC float + industry codes, no Tiingo before Kite check, D-135); shortlist-first US ranking (D-136); SEC financials extractor; GitHub Actions outage blocked the final build run.
+- **2026-11-10 (unattended build, Maaz away):** US monthly pipeline + Actions-minutes guard; US universe built in the cloud (378 → 334 after excluding subsidiaries/preferreds); SEC financials fixed (label renames, currency mixing, missing debt); D-132 safeguards + combined caps + US brief section; Trading Engine signals, costs, backtest, evening plan; India price history for backtest (Yahoo, split fixes). First backtest: no edge (T-059). Kite "International" search not visible yet (T-057). No new decisions approved this session.
