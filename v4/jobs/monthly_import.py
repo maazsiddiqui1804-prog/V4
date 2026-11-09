@@ -23,6 +23,7 @@ from v4 import alerts
 from v4.db import ROOT
 from v4.importers.screener import import_month
 from v4.importers.benchmarks import load_into_db as load_benchmark_navs
+from v4.importers.holdings import import_holdings, is_holdings_file
 
 INBOX = ROOT / "data" / "inbox"
 ARCHIVE = ROOT / "data" / "archive"
@@ -66,9 +67,25 @@ def run(today: dt.date | None = None) -> str:
     screener = [p for p, k in kinds.items() if k == "screener"]
     nse_in_inbox = [p for p, k in kinds.items() if k == "nse"]
     unknown = [p.name for p, k in kinds.items() if k is None]
+    holdings_files = [p for p in INBOX.glob("*.xlsx") if is_holdings_file(p)]
+    unknown += [p.name for p in INBOX.glob("*.xlsx") if p not in holdings_files]
 
-    if len(screener) != 1:
-        raise RuntimeError(f"Expected exactly 1 Screener export in data/inbox, found {len(screener)}")
+    if len(screener) > 1 or len(holdings_files) > 1:
+        raise RuntimeError(f"Expected at most 1 Screener export and 1 holdings file in data/inbox, "
+                           f"found {len(screener)} and {len(holdings_files)}")
+    if not screener and not holdings_files:
+        raise RuntimeError("No Screener export or Console holdings file found in data/inbox")
+
+    lines = []
+    if holdings_files:
+        # D-119: holdings come from the Console XLSX. The raw file holds the client ID,
+        # so it is deleted after import, never archived.
+        hrep = import_holdings(holdings_files[0], as_of)
+        holdings_files[0].unlink()
+        lines.append(hrep.text())
+    if not screener:
+        status = "⚠️" if any(l.startswith("⚠️") or "⚠️" in l for l in lines) else "✅"
+        return "\n".join([f"{status} V4 holdings update — {as_of}"] + lines)
 
     day_dir = ARCHIVE / as_of
     day_dir.mkdir(parents=True, exist_ok=True)
@@ -92,9 +109,9 @@ def run(today: dt.date | None = None) -> str:
         p.unlink()
     nav_rows = load_benchmark_navs()
 
-    status = "✅" if not rep.missing_required and not rep.unmatched else "⚠️"
+    status = "✅" if not rep.missing_required and not rep.unmatched and "⚠️" not in "".join(lines) else "⚠️"
     lines = [f"{status} V4 monthly India import — {as_of}", rep.text(), nse_note,
-             f"Benchmark fund NAVs in database: {nav_rows} rows"]
+             f"Benchmark fund NAVs in database: {nav_rows} rows"] + lines
     if unknown:
         lines.append("Ignored files (not recognised, left in inbox): " + ", ".join(unknown))
     return "\n".join(lines)

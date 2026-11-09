@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - "data/inbox/*.csv"
+      - "data/inbox/*.xlsx"
 
 permissions:
   contents: write   # to commit the updated database and archive

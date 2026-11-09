@@ -18,7 +18,20 @@ def sandbox(tmp_path, monkeypatch):
     # Never touch the real database or NAV file from tests.
     from v4.importers import benchmarks as bm
     monkeypatch.setattr(job, "load_benchmark_navs", lambda: bm.load_into_db(tmp_path / "navs.csv", db))
+    from v4.importers import holdings as h
+    monkeypatch.setattr(job, "import_holdings", lambda p, d: h.import_holdings(p, d, db))
     return inbox, archive
+
+
+def test_holdings_only_drop(sandbox):
+    from tests.test_holdings import make_file, EQ
+    inbox, archive = sandbox
+    make_file(inbox / "holdings-XX0000.xlsx", EQ)
+    msg = job.run(dt.date(2026, 12, 1))
+    assert "holdings update" in msg and "2 positions" in msg
+    assert "FUNDX" in msg and "pledged" in msg                  # warning surfaces in the report
+    assert not list(inbox.glob("*.xlsx"))                       # raw file deleted (client ID)
+    assert not list(archive.rglob("*.xlsx"))                    # and never archived
 
 
 def test_classify(tmp_path):
