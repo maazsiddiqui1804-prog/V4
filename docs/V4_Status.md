@@ -4,7 +4,7 @@
 
 ## Next session — sprint week 1, part 2
 Pace until GMAT: 3–4 hrs/week (D-087).
-1. Maaz: add 3 missing column groups to the `V4 monthly` Screener screen and re-export — net profit for last 3 years, average ROCE 5/10 yrs, historical P/E 5/10 yrs. Without them the loss filter (D-023), quality consistency (D-024) and India buy-below price (D-025) can't run.
+1. Maaz: add 2 more net-profit columns to the `V4 monthly` Screener screen (year before last, and 2 years back) and re-export. ROCE 5/10 yrs, historical P/E 5/10 yrs and net profit last year are already in (re-export 2026-11-09). Until then the loss filter (D-023) can't run.
 2. Re-import with the new export; confirm the importer report shows no missing columns.
 3. Holdings sync via Kite Personal API (T-018): design the login handoff (redirect URL is a placeholder).
 4. Benchmark index data (T-019) and job-failure alerts (rest of T-020).
@@ -21,7 +21,7 @@ Pace until GMAT: 3–4 hrs/week (D-087).
 
 | Item | When |
 |---|---|
-| Screener export missing 3 column groups (see next session #1) | Next session |
+| Screener export missing 2 net-profit years (see next session #1) | Next session |
 | Kite login handoff for holdings sync: redirect URL is a placeholder (127.0.0.1); likely the Streamlit dashboard later | Build: holdings sync (T-018) |
 | US tax / estate tax / disclosure on GIFT City route (blocks US *buying* only, D-085) | Before first US buy |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Build: US module |
@@ -45,4 +45,4 @@ Pace until GMAT: 3–4 hrs/week (D-087).
 - **2026-10-24:** Brief absorbed. Build order, data, outputs, news-as-risk-filter decided.
 - **2026-10-25:** Philosophy rethink, US/AI added, Kite Connect chosen, strategy for both engines, all flaw fixes, review calendar, build plan B. Docs created.
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
-- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). All accounts and secrets set up; repo skeleton, Telegram alert sender and cloud health check pushed (phone alert confirmed). Screener Premium confirmed as source (D-113). Monthly India importer built; first import 500/500 matched. Financial exclusion narrowed to banks/NBFCs/insurers (D-114, 419 investable) and REITs excluded (D-115). Screener export needs 3 more column groups.
+- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). All accounts and secrets set up; repo skeleton, Telegram alert sender and cloud health check pushed (phone alert confirmed). Screener Premium confirmed as source (D-113). Monthly India importer built; first import 500/500 matched. Financial exclusion narrowed to banks/NBFCs/insurers (D-114, 419 investable) and REITs excluded (D-115). Re-export added ROCE 5/10y, historical P/E 5/10y; importer check tightened after it let one year of profit pass; 2 net-profit years still missing.
