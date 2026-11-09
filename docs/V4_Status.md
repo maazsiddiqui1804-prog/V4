@@ -24,7 +24,6 @@ Pace until GMAT: 3–4 hrs/week (D-087).
 | US tax / estate tax / disclosure on GIFT City route (blocks US *buying* only, D-085) | Before first US buy |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Build: US module |
 | Placeholder numbers (filter cut-offs, valuation margins, liquidity floor, volume multiple, stretch limit, trail method) | Set during build as starting values; tested after |
-| Repo docs/ vs Project docs: Project stays the authority; docs/ in repo is a copy refreshed at session end (assumed; Maaz to confirm) | Next session |
 
 ## Build plan
 - **Until GMAT (~28 Nov), 3–4 hrs/week:** setup + data layer.
@@ -43,4 +42,4 @@ Pace until GMAT: 3–4 hrs/week (D-087).
 - **2026-10-24:** Brief absorbed. Build order, data, outputs, news-as-risk-filter decided.
 - **2026-10-25:** Philosophy rethink, US/AI added, Kite Connect chosen, strategy for both engines, all flaw fixes, review calendar, build plan B. Docs created.
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
-- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). All accounts and secrets set up; repo skeleton, Telegram alert sender and cloud health check pushed (phone alert confirmed). Screener Premium confirmed as source (D-113). Monthly India importer built; first import 500/500 matched. Financial exclusion narrowed to banks/NBFCs/insurers (D-114, 419 investable) and REITs excluded (D-115). Screener has no 2-years-back profit → loss filter defined as last year + year before + trailing 12 months (D-116). Claude added the columns in Maaz's Screener via Chrome. Complete import: all required columns present; 37 of 419 investable show a loss in at least one of the three figures.
+- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). All accounts and secrets set up; repo skeleton, Telegram alert sender and cloud health check pushed (phone alert confirmed). Screener Premium confirmed as source (D-113). Monthly India importer built; first import 500/500 matched. Financial exclusion narrowed to banks/NBFCs/insurers (D-114, 419 investable) and REITs excluded (D-115). Screener has no 2-years-back profit → loss filter defined as last year + year before + trailing 12 months (D-116). Claude added the columns in Maaz's Screener via Chrome. Complete import: all required columns present; 37 of 419 investable show a loss in at least one of the three figures. Project docs confirmed as master copy (D-117).

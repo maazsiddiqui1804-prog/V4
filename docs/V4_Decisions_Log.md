@@ -157,3 +157,9 @@ Status key: **APPROVED** = rule. **PLACEHOLDER** = approved structure, number to
 | D-114 | **Clarifies D-006/D-021.** Investment exclusion = banks, NBFCs and insurers only, identified by Screener industry group Banks / Finance / Insurance (78 of NSE's 98 "Financial Services" names on 2026-11-09). Exchanges, AMCs, depositories, brokers and fintech stay investable. An NSE financial that can't be matched to Screener is excluded cautiously | APPROVED |
 | D-115 | REITs (NSE series RR) excluded from the Investment Engine; filters are built for operating companies | APPROVED |
 | D-116 | **Defines D-023 "losses in last 3 years" for India.** Screener has no "net profit 2 years back" (checked 2026-11-09, incl. custom ratios), so the loss filter rejects a company with a loss in the last full year, the year before, or the trailing 12 months. A loss 3 years ago is not caught directly; the 5–10 yr ROCE quality score still penalises erratic histories | APPROVED |
+
+## 2026-11-09 — Docs
+
+| ID | Decision | Status |
+|---|---|---|
+| D-117 | Project docs (claude.ai) are the master copy of the decisions log and status note. The repo's docs/ folder is a copy Claude refreshes at the end of each session | APPROVED |
