@@ -50,7 +50,10 @@ def _quarter_start(d) -> tuple:
     return (d.year, (d.month - 1) // 3)
 
 
-def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict) -> dict:
+def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict, trade_from=None) -> dict:
+    """trade_from: first date new entries may be signalled (earlier data only warms up the averages).
+    The paper ledger replays this same engine from the paper start date, so paper and backtest
+    can never disagree on the rules."""
     ind = sg.indicators(px, cfg)
     sig = sg.signals(ind, cfg)
     sig_by_day = {d: g for d, g in sig.groupby("date")}
@@ -140,7 +143,7 @@ def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict) -> d
             paused_q = _quarter_start(day)
         if paused_q is not None and _quarter_start(day) != paused_q:
             paused_q, peak = None, equity          # resume at the next quarter (D-104)
-        if paused_q is not None or day not in sig_by_day:
+        if paused_q is not None or day not in sig_by_day or (trade_from is not None and day < pd.Timestamp(trade_from)):
             continue
         held = {p.symbol for p in open_pos}
         per_sector: dict = {}
@@ -158,7 +161,8 @@ def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict) -> d
             slots -= 1
 
     return {"trades": pd.DataFrame(trades), "curve": pd.Series(dict(curve)).sort_index(),
-            "open_at_end": len(open_pos)}
+            "open_at_end": len(open_pos), "open": open_pos, "pending": pending,
+            "paused": paused_q is not None}
 
 
 def summary(res: dict, capital: float) -> dict:

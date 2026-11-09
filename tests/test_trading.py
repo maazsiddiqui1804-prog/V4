@@ -136,3 +136,24 @@ def test_fix_unadjusted_split():
     assert fixes == [("SPLT", str(DAYS[2].date()), -0.75)]
     assert fixed.close.tolist() == pytest.approx([100.0, 101.0, 101.0, 102.0])
     assert fixed.volume.iloc[0] == pytest.approx(3e6 / 0.25)
+
+
+def test_paper_replay_only_trades_after_start_and_reports_gate():
+    from v4.engines.trading import paper
+    c, v = leader(after=np.linspace(124, 170, 59))
+    idx = pd.Series(np.linspace(100, 200, 320), index=DAYS)
+    before = paper.replay(universe(c, v), idx, {}, CFG, start=str(DAYS[270].date()))
+    assert before["trades"].empty and before["positions"] == []
+    after = paper.replay(universe(c, v), idx, {}, CFG, start=str(DAYS[200].date()))
+    assert len(after["trades"]) == 1 and not after["gate"]["met"] and after["gate"]["trades"] == 1
+    assert "not live" in paper.gate_line(after["gate"])
+
+
+def test_paper_open_position_carries_into_evening_plan():
+    from v4.engines.trading import paper
+    c, v = leader(after=np.linspace(124, 170, 59))
+    px = universe(c, v)
+    px = px[px.date <= DAYS[266]]                                          # 5 days after entry
+    idx = pd.Series(np.linspace(100, 200, 267), index=DAYS[:267])
+    r = paper.replay(px, idx, {"LEAD": "Tech"}, CFG, start=str(DAYS[200].date()))
+    assert [p.symbol for p in r["positions"]] == ["LEAD"] and r["positions"][0].held == 6
