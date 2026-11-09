@@ -9,7 +9,7 @@ def fake(monkeypatch):
         1: dict(name="Chip Co", sic="3674", exchanges="Nasdaq"),
         2: dict(name="Retail Giant", sic="5961", exchanges="Nasdaq"),     # wrong industry
         3: dict(name="Small Soft", sic="7372", exchanges="NYSE"),         # too small
-        4: dict(name="Foreign Fab", sic="3674", exchanges="NYSE,OTC"),    # 20-F: no float reported
+        4: dict(name="Foreign Fab", sic="3674", exchanges="NYSE,OTC", forms=["20-F", "6-K"]),    # 20-F: no float reported
         5: dict(name="OTC Only", sic="7372", exchanges="OTC"),            # wrong exchange
         6: dict(name="Big Utility", sic="4911", exchanges="NYSE"),
     }
@@ -58,3 +58,11 @@ def test_blank_tickers_ignored(fake, monkeypatch):
     monkeypatch.setattr(u.sec, "ticker_map", lambda: {"CHIP": 1, "": 6, "UTIL": 6})
     rows, _ = u.build(["CY2026Q2I"])
     assert "" not in [r["ticker"] for r in rows]
+
+
+def test_foreign_issuer_needs_20f_or_40f():
+    from v4.engines.us.universe import is_foreign_issuer
+    assert is_foreign_issuer({"forms": ["20-F", "6-K"]})
+    assert is_foreign_issuer({"forms": ["40-F"]})
+    assert not is_foreign_issuer({"forms": ["10-K", "8-K"]})      # e.g. a utility subsidiary with listed debt only
+    assert not is_foreign_issuer({})

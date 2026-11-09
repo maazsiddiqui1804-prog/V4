@@ -44,7 +44,8 @@ def profile(cik: int) -> dict:
     s = get(SUBMISSIONS_URL.format(cik=cik))
     return {"cik": cik, "name": s.get("name"), "sic": s.get("sic"), "sic_desc": s.get("sicDescription"),
             "exchanges": ",".join(e for e in (s.get("exchanges") or []) if e),
-            "state_of_inc": s.get("stateOfIncorporation"), "entity_type": s.get("entityType")}
+            "state_of_inc": s.get("stateOfIncorporation"), "entity_type": s.get("entityType"),
+            "forms": sorted(set((s.get("filings", {}).get("recent", {}) or {}).get("form", [])))}
 
 
 if __name__ == "__main__":

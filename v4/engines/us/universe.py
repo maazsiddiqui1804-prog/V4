@@ -91,6 +91,14 @@ def passes_industry(profile: dict, rule: dict) -> bool:
     return sic in rule["sic_all"] and bool(ex & set(rule["exchanges"]))
 
 
+FOREIGN_FORMS = {"20-F", "40-F", "20-F/A", "40-F/A"}
+
+
+def is_foreign_issuer(profile: dict) -> bool:
+    """True foreign private issuers (TSMC, ASML, ARM) file 20-F/40-F annual reports and report no US float."""
+    return bool(FOREIGN_FORMS & set(profile.get("forms") or []))
+
+
 def build(periods: list[str]) -> tuple[list[dict], dict]:
     rule = load_rule()
     floor = float(rule["min_market_cap_usd"])
@@ -98,7 +106,7 @@ def build(periods: list[str]) -> tuple[list[dict], dict]:
     tmap = sec.ticker_map()                       # ticker -> CIK
     by_cik: dict[int, list[str]] = {}
     for t, c in tmap.items():
-        if t and t.strip():                        # SEC's file has a few blank tickers
+        if t and t.strip() and "-" not in t:       # skip blanks and preferred/unit lines (e.g. SCE-PM)
             by_cik.setdefault(c, []).append(t.strip())
     floats = public_floats(periods)
 
@@ -113,6 +121,8 @@ def build(periods: list[str]) -> tuple[list[dict], dict]:
         prof = sec.profile(cik)
         if not passes_industry(prof, rule):
             continue
+        if f is None and not is_foreign_issuer(prof):
+            continue                               # no float and not a 20-F/40-F filer: subsidiary/debt-only, not common stock
         stats["after_industry"] += 1
         ticker = sorted(tickers, key=len)[0]      # primary ticker (shortest)
         if f is not None:
