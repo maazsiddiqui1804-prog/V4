@@ -1,11 +1,12 @@
 # V4 Status
 
-**Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine code complete; first real brief December 2026 (D-129)
+**Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine code complete; building phases 3–5 before December (D-130)
 
 ## Next session
-1. **Before the first brief (December, after GMAT):** quick review together of a fresh dry run on December data; formal sign-off of starting numbers D-123–D-127 (T-029). Then Maaz drops the December Screener export in the GitHub inbox → brief arrives on Telegram → first buys (T-030).
-2. Then Phase 3: US AI module (Zerodha-tradable list, SEC EDGAR, Tiingo, universe rule, US guardrail, Nasdaq-100 fallback, combined caps; US tax check before any US buy).
-3. Known gaps for the first quarterly review: (a) Screener's 5/10-yr averages cover fewer years for recent listings; (b) red-flag name matching depends on NSE's company names lining up with the Nifty 500 list.
+1. **Phase 3: US AI module** (D-130): confirm Zerodha-tradable US list (live), SEC EDGAR fundamentals, Tiingo prices (Stooq backup; Tiingo key → Maaz adds to GitHub Secrets), AI value-chain universe rule, US guardrail (P/E vs growth, D-101), Nasdaq-100 fallback (D-102), combined caps (D-060, D-089).
+2. Then Phase 4: Trading Engine + backtest (no daily login, no Kite Connect until after GMAT), then Phase 5: dashboard.
+3. After GMAT: December brief + sign-off (T-029) + first buys (T-030); subscribe Kite Connect; start paper trading.
+4. Known gaps for first quarterly review: short histories for recent listings; red-flag name matching.
 
 ## Where we are
 - Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 100 automated checks pass.
@@ -27,12 +28,8 @@
 | Trading placeholder numbers (liquidity floor, volume multiple, stretch limit, trail method) | Phase 4 (T-047) |
 
 ## Build plan
-- **Until GMAT (~28 Nov):** no build work needed; jobs run on their own.
-- **After GMAT, 8–10 hrs/week:**
-  1. December: first real brief + buys (Phase 2 close).
-  2. US AI module (SEC EDGAR + Tiingo) + combined caps.
-  3. Trading Engine backtest → daily paper signals (₹1L notional); Kite Connect + login page.
-  4. Dashboard (Streamlit, D-112), quarterly report, warning checks, fix buffer.
+- **Until GMAT (~28 Nov), D-130:** build phases 3–5 (US module, Trading Engine + backtest, dashboard); nothing goes live.
+- **After GMAT (go-live):** December India brief + first buys; Kite Connect + daily login; paper trading starts (gate ≥3 months, D-048); US buying when D-085 clears.
 
 ## Fixed clocks after build
 - Trading paper gate: ≥3 months + ≥30 trades + ≥0.3R avg net.
@@ -44,3 +41,4 @@
 - **2026-10-25:** Philosophy rethink, US/AI added, Kite Connect chosen, strategy for both engines, all flaw fixes, review calendar, build plan B. Docs created.
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
 - **2026-11-09 (long session, ~6 hrs by Maaz's choice, above D-087 pace):** Accounts, repo, Telegram alerts, cloud jobs. India data layer: Screener import (D-113–D-116), Project docs master (D-117), monthly inbox routine (D-118), holdings from Console XLSX (D-119/D-120), benchmarks from AMFI index funds (D-121/D-122). India Investment Engine fully built: kill filters (D-123), score (D-124), guardrail (D-125), buy plan (D-126), sell rules (D-127), red flags from NSE RSS (D-128), monthly brief + freeze; first real brief December (D-129). Bugs found and fixed along the way: workflow YAML, AMFI history columns, top-ups never triggering, rounding below ₹10k minimum, NSE feed cut off/malformed, duplicate feed items.
+- **2026-11-09 (late):** Maaz chose to build all remaining phases before December and go live after the GMAT (D-130, option A: no daily logins or Kite Connect until then).

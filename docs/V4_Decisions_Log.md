@@ -185,3 +185,9 @@ Status key: **APPROVED** = rule. **PLACEHOLDER** = approved structure, number to
 | D-127 | **Sell-rule details (D-027/D-028/D-061).** Quality degradation = quality score in the bottom quarter of the month's survivors → sell. Trim when above 2× target weight, back down to 2× (trims only the excess). Red-flag filing → REVIEW + buying frozen, no automatic sell (D-061 is the more specific rule). Monthly brief freezes the ranked list once per month (D-063); a re-run with another amount reuses it | APPROVED / quality cut-off PLACEHOLDER |
 | D-128 | **Red-flag alerts (implements D-061/D-109).** Source: NSE's official RSS feeds (announcements + promoter encumbrance), checked weekdays 10:47, 13:17, 15:23 IST. Watches holdings + the month's top 20. Flags: auditor exit, CEO/CFO/MD exit, credit-rating downgrade, regulatory order/penalty, promoter pledge/encumbrance, and director/KMP resignation marked "check role". New flags go to Telegram and data/red_flags.csv; a flag freezes buying of that stock until Maaz marks it reviewed (tell Claude, or set reviewed = yes). Paid real-time feeds (~₹2.5L+/yr) rejected as out of budget | APPROVED |
 | D-129 | **First real monthly brief = December 2026** (after the GMAT). No list is scored or frozen before then; an inbox drop in November imports data only. Starting numbers (D-123–D-127) get formal sign-off (T-029) with that first brief | APPROVED |
+
+## 2026-11-09 — Build pace to December
+
+| ID | Decision | Status |
+|---|---|---|
+| D-130 | **Supersedes D-087 pace (and D-129 timing for the rest of the build).** Build all remaining phases before the GMAT/December: US AI module, Trading Engine with backtest, dashboard. No daily Kite logins, no paper trading and no Kite Connect subscription until after the GMAT; then first India brief + buys, Kite Connect, and the 3-month paper clock (D-048) start. US buying still waits for D-085. Maaz accepted the trade-off with GMAT prep time | APPROVED |
