@@ -45,7 +45,10 @@ REQUIRED = {
 }
 # Needed but matched loosely, because Screener's exact names vary.
 REQUIRED_PATTERNS = {
-    r"^(net_profit|profit_after_tax).*(preceding|2years|2_years|3years_back|last_year)": "losses in last 3 years (D-023)",
+    # D-023 needs three separate annual profit figures, so each year is checked on its own.
+    r"^(net_profit|profit_after_tax)_last_year$": "losses in last 3 years (D-023): latest year",
+    r"^(net_profit|profit_after_tax)_preceding_year$": "losses in last 3 years (D-023): year before",
+    r"^(net_profit|profit_after_tax)_(2|3)_?years?_back$": "losses in last 3 years (D-023): 2 years back",
     r"^average_return_on_capital_employed_(5|10)years$": "5–10 year quality consistency (D-024)",
     r"^historical_pe_(5|10)years$": "own long-run P/E for India guardrail (D-025)",
 }

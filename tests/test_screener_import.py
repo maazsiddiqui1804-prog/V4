@@ -86,3 +86,15 @@ def test_old_database_gets_new_column(tmp_path):
     init_db(db)
     with sqlite3.connect(db) as c:
         assert "is_reit" in {r[1] for r in c.execute("PRAGMA table_info(securities)")}
+
+
+def test_one_year_of_profit_is_not_enough(tmp_path):
+    # Regression: a single "Net Profit last year" column must not satisfy the 3-year loss check.
+    scr = SCREENER.replace("Debt to equity\n", "Debt to equity,Net Profit last year\n", 1)
+    scr = "\n".join(l + ",1" if i else l for i, l in enumerate(scr.strip().split("\n"))) + "\n"
+    (tmp_path / "n.csv").write_text(NIFTY)
+    (tmp_path / "s.csv").write_text(scr)
+    rep = import_month(tmp_path / "n.csv", tmp_path / "s.csv", "2026-11-09", tmp_path / "t.sqlite")
+    reasons = " ".join(rep.missing_required.values())
+    assert "year before" in reasons and "2 years back" in reasons
+    assert "latest year" not in reasons
