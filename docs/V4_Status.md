@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine code complete; building phases 3–5 before December (D-130)
 
 ## Next session
-1. **Start with the US tax check (D-131):** read Zerodha's portal explanation of US-investing tax (LRS TCS, Schedule FA, US estate tax), cross-check with official sources, one-page summary → Maaz's go-ahead.
+1. ✅ US tax check done, go-ahead given (D-132; Project doc V4_US_Tax_Check.md).
 2. **Phase 3: US AI module** (D-130): confirm Zerodha-tradable US list (live), SEC EDGAR fundamentals, Tiingo prices (Stooq backup; Tiingo key → Maaz adds to GitHub Secrets), AI value-chain universe rule, US guardrail (P/E vs growth, D-101), Nasdaq-100 fallback (D-102), combined caps (D-060, D-089).
 3. Then Phase 4: Trading Engine + backtest (no daily login, no Kite Connect until after GMAT), then Phase 5: dashboard.
 4. After GMAT: December brief + sign-off (T-029) + first buys (T-030); subscribe Kite Connect; start paper trading.
@@ -23,7 +23,8 @@
 | Item | When |
 |---|---|
 | Formal sign-off of starting numbers (T-029) and first buys (T-030) | December brief |
-| US tax check from Zerodha's portal + official sources, one-page summary, Maaz's go-ahead (D-131); CA review only before first ITR with US shares | Next session |
+| Re-verify TCS ₹10L threshold under Income-tax Act 2025 (D-132) | Before first US transfer |
+| Professional review of first ITR with US shares (Schedule FA) | ~mid-2027 |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Phase 3 |
 | Kite login page (Kite Connect) | Phase 4 |
 | Trading placeholder numbers (liquidity floor, volume multiple, stretch limit, trail method) | Phase 4 (T-047) |
