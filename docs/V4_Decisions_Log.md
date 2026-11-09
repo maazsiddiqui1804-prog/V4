@@ -148,3 +148,11 @@ Status key: **APPROVED** = rule. **PLACEHOLDER** = approved structure, number to
 |---|---|---|
 | D-111 | **Resolves database choice (D-001, D-083).** Database = one SQLite file inside the private GitHub repo; every scheduled run commits it (built-in history/audit trail). Revisit if repo size grows once Trading Engine adds daily prices (fix: move prices to compressed files) | APPROVED |
 | D-112 | **Resolves hosting OPEN in D-083.** Private dashboard hosted on Streamlit Community Cloud (one private app, Google/email login, phone-accessible, free; checked live 2026-11-09). Built in phase 5 | APPROVED |
+
+## 2026-11-09 — India data source and universe
+
+| ID | Decision | Status |
+|---|---|---|
+| D-113 | **Confirms D-082 source.** Monthly India fundamentals come from Maaz's existing Screener Premium subscription (export is Premium-only, checked live 2026-11-09). No new cost to V4. Universe membership comes from NSE's official Nifty 500 CSV; Screener rows are matched to it by ISIN | APPROVED |
+| D-114 | **Clarifies D-006/D-021.** Investment exclusion = banks, NBFCs and insurers only, identified by Screener industry group Banks / Finance / Insurance (78 of NSE's 98 "Financial Services" names on 2026-11-09). Exchanges, AMCs, depositories, brokers and fintech stay investable. An NSE financial that can't be matched to Screener is excluded cautiously | APPROVED |
+| D-115 | REITs (NSE series RR) excluded from the Investment Engine; filters are built for operating companies | APPROVED |

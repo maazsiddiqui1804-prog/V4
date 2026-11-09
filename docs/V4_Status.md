@@ -4,26 +4,29 @@
 
 ## Next session — sprint week 1, part 2
 Pace until GMAT: 3–4 hrs/week (D-087).
-1. Finish whatever account steps are still open (dashboard "Waiting on you" shows which).
-2. Push repo skeleton to `v4` (drafted and tested 2026-11-09, waiting on GitHub username).
-3. Telegram chat-ID helper + first health alert ("V4 is alive").
-4. Screener importer, built on Maaz's first Nifty 500 export.
+1. Maaz: add 3 missing column groups to the `V4 monthly` Screener screen and re-export — net profit for last 3 years, average ROCE 5/10 yrs, historical P/E 5/10 yrs. Without them the loss filter (D-023), quality consistency (D-024) and India buy-below price (D-025) can't run.
+2. Re-import with the new export; confirm the importer report shows no missing columns.
+3. Holdings sync via Kite Personal API (T-018): design the login handoff (redirect URL is a placeholder).
+4. Benchmark index data (T-019) and job-failure alerts (rest of T-020).
+5. Housekeeping: update GitHub workflow building blocks off Node 20 (versions to be checked live).
 
 ## Where we are
-- Philosophy, strategy, asset mix, benchmarks, data sources, database, hosting: **finalised** (D-001 to D-112).
-- Repo skeleton drafted and tested locally: rulebook (CLAUDE.md), shared database schema for both engines (13 tables), placeholder-numbers file, 4 passing checks. **Not pushed yet.**
-- Accounts (GitHub, Kite Personal API app, Telegram bot, Secrets): Maaz walked through steps 2026-11-09; status per dashboard ticks.
-- Nothing tested on real data. No numbers proven.
+- Repo live and private: github.com/maazsiddiqui1804-prog/v4. Claude GitHub App installed on this repo only.
+- Accounts done: GitHub, Kite Personal API app (free), Telegram bot "V4 Alerts", all 4 GitHub Secrets.
+- Cloud → phone proven: Health check job runs the checks in GitHub Actions and sends Telegram "V4 is alive" (confirmed received 2026-11-09).
+- India data: first import 2026-11-09. NSE Nifty 500 list (500 real members) matched 500/500 to the Screener export by ISIN. 78 banks/NBFCs/insurers and 3 REITs excluded → **419 investable**. 15 automated checks pass.
+- Nothing scored yet. No numbers proven.
 
 ## Open items
 
 | Item | When |
 |---|---|
+| Screener export missing 3 column groups (see next session #1) | Next session |
+| Kite login handoff for holdings sync: redirect URL is a placeholder (127.0.0.1); likely the Streamlit dashboard later | Build: holdings sync (T-018) |
 | US tax / estate tax / disclosure on GIFT City route (blocks US *buying* only, D-085) | Before first US buy |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Build: US module |
 | Placeholder numbers (filter cut-offs, valuation margins, liquidity floor, volume multiple, stretch limit, trail method) | Set during build as starting values; tested after |
-| Kite login handoff for holdings sync: redirect URL is a placeholder (127.0.0.1); real handoff point to be designed (likely the Streamlit dashboard) | Build: holdings sync (T-018) |
-| Repo docs/ vs Project docs: Project stays the authority; docs/ in repo is a copy refreshed at session end | Confirm with Maaz |
+| Repo docs/ vs Project docs: Project stays the authority; docs/ in repo is a copy refreshed at session end (assumed; Maaz to confirm) | Next session |
 
 ## Build plan
 - **Until GMAT (~28 Nov), 3–4 hrs/week:** setup + data layer.
@@ -42,4 +45,4 @@ Pace until GMAT: 3–4 hrs/week (D-087).
 - **2026-10-24:** Brief absorbed. Build order, data, outputs, news-as-risk-filter decided.
 - **2026-10-25:** Philosophy rethink, US/AI added, Kite Connect chosen, strategy for both engines, all flaw fixes, review calendar, build plan B. Docs created.
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
-- **2026-11-09:** Build started. Database = SQLite in repo (D-111); dashboard hosting = Streamlit Community Cloud (D-112), both checked live. Account setup steps given (GitHub, Kite Personal API app, Telegram bot, Secrets). Repo skeleton + shared schema drafted and tested locally, waiting on GitHub username to push.
+- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). All accounts and secrets set up; repo skeleton, Telegram alert sender and cloud health check pushed (phone alert confirmed). Screener Premium confirmed as source (D-113). Monthly India importer built; first import 500/500 matched. Financial exclusion narrowed to banks/NBFCs/insurers (D-114, 419 investable) and REITs excluded (D-115). Screener export needs 3 more column groups.
