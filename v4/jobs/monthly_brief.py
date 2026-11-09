@@ -22,6 +22,7 @@ import yaml
 from v4 import alerts
 from v4.db import ROOT, connect, init_db, DB_PATH
 from v4.engines.investment import filters as kf, score as sc, guardrail, portfolio as pf, sells as sl, redflags as rf
+from v4.engines.us import brief as us_brief
 
 CONFIG = ROOT / "config" / "placeholders.yaml"
 
@@ -109,7 +110,9 @@ def build(db_path: Path = DB_PATH, amount: float | None = None) -> str:
 
     amount = float(amount if amount is not None else cfg["portfolio"]["monthly_amount_inr"])
     plan = pf.plan_buys(ranked, holdings, amount, rules, blocked_ids=blocked)
-    return render(month, amount, regime, note, list_note, plan, v, ranked)
+    msg = render(month, amount, regime, note, list_note, plan, v, ranked)
+    us_cfg = yaml.safe_load(CONFIG.read_text()).get("us", {})
+    return msg + "\n" + "\n".join(us_brief.section(us_cfg))
 
 
 def render(month, amount, regime, note, list_note, plan, verdicts, ranked) -> str:

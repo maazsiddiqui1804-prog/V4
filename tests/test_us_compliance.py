@@ -42,3 +42,18 @@ def test_w8ben():
     assert "not recorded" in c.w8ben_reminder(None, dt.date(2026, 12, 1), R)[0]
     assert c.w8ben_reminder("2026-12-01", dt.date(2029, 10, 1), R) == []
     assert "expires 31 Dec 2029" in c.w8ben_reminder("2026-12-01", dt.date(2029, 11, 15), R)[0]
+
+
+def test_us_brief_section_without_data(tmp_path, monkeypatch):
+    from v4.engines.us import brief
+    monkeypatch.setattr(brief, "US_DIR", tmp_path)
+    L = brief.section({"approved": False, "compliance": R}, dt.date(2026, 12, 1))
+    text = "\n".join(L)
+    assert "no US ranking yet" in text and "W-8BEN not recorded" in text and "No US orders" in text
+
+
+def test_us_brief_never_raises(tmp_path, monkeypatch):
+    from v4.engines.us import brief
+    monkeypatch.setattr(brief, "US_DIR", tmp_path)
+    (tmp_path / "ranking.csv").write_text("rank,ticker\n1,NVDA\n")   # missing columns
+    assert "unavailable" in "\n".join(brief.section({"compliance": R}))
