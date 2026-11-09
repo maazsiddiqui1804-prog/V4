@@ -36,13 +36,32 @@ investment:
     trim_above_x_target: 2.0           # D-028
     trim_to_x_target: 2.0              # D-127: trim only the excess above 2× target
 
-trading:
-  liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr)
-  volume_multiple: 1.5             # D-042
-  max_stretch_above_20dma: null    # D-042
-  trail_method: null               # D-045
+trading:                   # Trading Engine (D-040–D-049, D-060, D-098, D-104). Numbers marked PLACEHOLDER are
+                           # starting values for the backtest; Maaz approves them before paper trading (dashboard).
+  capital_inr: 100000              # D-098 paper notional
+  liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr) — 20-day average traded value
+  trend_fast_dma: 50               # D-042: 50-day average above 200-day, price above 50-day
+  trend_slow_dma: 200
+  rs_top_fraction: 0.20            # D-042 top 20% relative strength
+  rs_lookback_days: 126            # PLACEHOLDER: relative strength = 6-month return rank
+  breakout_days: 20                # D-042 close at a new 20-day closing high
+  volume_multiple: 1.5             # D-042 ≥1.5× 20-day average volume
+  max_stretch_above_20dma: 0.10    # D-042 PLACEHOLDER: skip if close >10% above its 20-day average
+  stop_lookback_days: 10           # D-045 PLACEHOLDER: stop just below the lowest low of the last 10 days
+  stop_buffer: 0.005               # PLACEHOLDER: 0.5% below that low
+  max_initial_risk: 0.10           # PLACEHOLDER: skip if the stop is >10% below entry (too wide)
+  partial_at_r: 2.0                # D-045 half off at 2R
+  partial_fraction: 0.5
+  trail_method: "close below 20-day average"   # D-045 PLACEHOLDER
+  time_stop_days: 20               # D-045 ~20 trading days
+  risk_per_trade: 0.01             # D-044 1% of trading capital
+  weak_market_risk: 0.005          # D-041/D-044 half size when Nifty 500 < its 200-day average
+  max_open: 6                      # D-046
+  max_per_sector: 3                # D-046
+  results_blackout_days: 5         # D-046 (needs results calendar; not applied in backtest)
+  slippage: 0.001                  # D-047 PLACEHOLDER 0.1% each side
   drawdown_brake_pct: 15           # D-104
-  stepdown_rule: null              # D-100
+  stepdown_rule: null              # D-100 (set after live trades exist)
 
 us:                        # US Investment Engine. ALL values PROVISIONAL — awaiting Maaz's approval (Waiting on you).
   approved: false          # while false, the US brief shows rankings but no US buy orders
