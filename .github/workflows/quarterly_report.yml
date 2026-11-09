@@ -1,0 +1,44 @@
+# Quarterly report (D-066): first weekday-ish morning of Jan/Apr/Jul/Oct. Read-only facts for the review.
+name: Quarterly report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 3 1 1,4,7,10 *"   # 1st of Jan/Apr/Jul/Oct, 09:11 IST
+
+permissions:
+  contents: write
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Build and send the report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.jobs.quarterly_report
+      - name: Save the report to the repo
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/reports
+          git diff --cached --quiet || git commit -m "Quarterly report $(date +%F)"
+          git pull --rebase -q && git push
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

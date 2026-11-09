@@ -49,7 +49,7 @@ def month_minutes(repo: str, today: dt.date) -> int:
 
 
 # Scheduled jobs and the longest normal gap between successful runs (weekends included).
-EXPECTED = {"benchmark_navs.yml": 4, "red_flags.yml": 4}
+EXPECTED = {"benchmark_navs.yml": 4, "red_flags.yml": 4}   # quarterly report: once a quarter, failures alert
 
 
 def stale_jobs(repo: str, now: dt.datetime) -> list[str]:

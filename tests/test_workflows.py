@@ -27,7 +27,7 @@ def test_every_scheduled_job_is_watched_for_silence():
     wf_dir = Path(__file__).resolve().parents[1] / ".github" / "workflows"
     scheduled = {p.name for p in wf_dir.glob("*.yml")
                  if "schedule" in (yaml.safe_load(p.read_text()).get(True) or yaml.safe_load(p.read_text()).get("on") or {})}
-    assert scheduled - {"health_check.yml"} == set(EXPECTED)
+    assert scheduled - {"health_check.yml", "quarterly_report.yml"} == set(EXPECTED)
 
 
 def test_stale_job_detection(monkeypatch):

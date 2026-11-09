@@ -29,3 +29,13 @@ def test_kill_test_needs_to_beat_both():
     v = rv.verdict("2027-01-01", "2030-01-02", 1450, 0, c, lines)
     assert v["stage"].startswith("kill") and v["action"].startswith("FAIL") and "nifty500" in v["action"]
     assert rv.verdict("2027-01-01", "2030-01-02", 1600, 0, c, lines)["action"].startswith("PASS")
+
+
+def test_quarterly_report_builds_on_real_repo_data(tmp_path, monkeypatch):
+    import datetime as dt, shutil
+    from v4.db import ROOT
+    from v4.jobs import quarterly_report as qr
+    db = tmp_path / "v4.sqlite"
+    shutil.copy(ROOT / "data" / "v4.sqlite", db)
+    msg = qr.build(dt.date(2027, 1, 1), db_path=db)
+    assert "2027-Q1" in msg and "No holdings yet" in msg and "SIMULATION" in msg
