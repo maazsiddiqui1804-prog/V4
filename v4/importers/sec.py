@@ -13,17 +13,25 @@ from __future__ import annotations
 import sys
 import time
 
+import os
+
 import requests
 
-HEADERS = {"User-Agent": "V4 personal research (github.com/maazsiddiqui1804-prog)",
-           "Accept-Encoding": "gzip, deflate"}
+
+def headers() -> dict:
+    """SEC's fair-access policy requires a contact email in the User-Agent.
+    It comes from the SEC_CONTACT_EMAIL GitHub Secret, never from the code."""
+    email = os.environ.get("SEC_CONTACT_EMAIL", "").strip()
+    if not email:
+        raise RuntimeError("SEC_CONTACT_EMAIL is not set (add it as a GitHub Secret)")
+    return {"User-Agent": f"V4 personal research {email}", "Accept-Encoding": "gzip, deflate"}
 TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
 
 
 def get(url: str, timeout: int = 30) -> dict:
     time.sleep(0.15)   # stay well under SEC's ~10 requests/second
-    r = requests.get(url, headers=HEADERS, timeout=timeout)
+    r = requests.get(url, headers=headers(), timeout=timeout)
     r.raise_for_status()
     return r.json()
 

@@ -26,6 +26,8 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Probe SEC industry codes
         if: ${{ inputs.mode == 'probe' }}
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: python -m v4.importers.sec probe "${{ inputs.tickers }}"
       - name: Alert on any failure
         if: failure()
