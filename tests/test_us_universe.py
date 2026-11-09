@@ -22,8 +22,8 @@ def fake(monkeypatch):
 
 def test_rule_keeps_only_ai_codes_large_and_listed(fake):
     rows, stats = u.build(["CY2026Q2I"])
-    assert [r["ticker"] for r in rows] == ["CHIP", "FAB", "UTIL"]   # by size: $300B float, $250B priced, $40B float
-    assert stats["after_industry"] == 3 and stats["priced"] == 1    # only the foreign filer (no float) is priced
+    assert [r["ticker"] for r in rows] == ["CHIP", "UTIL", "FAB"]   # floats $300B, $40B; foreign filer size unknown
+    assert stats["after_industry"] == 3 and stats["size_to_confirm"] == 1
 
 
 def test_small_float_is_out(fake):
@@ -46,9 +46,9 @@ def test_save_keeps_kite_check_marks(tmp_path):
     assert "A,yes" in p.read_text()
 
 
-def test_rate_limit_skips_instead_of_failing(fake, monkeypatch):
-    def limited(t):
-        raise u.RateLimited(t)
-    monkeypatch.setattr(u, "tiingo_close", limited)
-    rows, stats = u.build(["CY2026Q2I"])
-    assert stats["unpriced"] == ["FAB"] and "CHIP" in [r["ticker"] for r in rows]
+def test_no_tiingo_calls_in_universe_build(fake, monkeypatch):
+    def boom(t):
+        raise AssertionError("Tiingo must not be called before the Kite check (D-135)")
+    monkeypatch.setattr(u, "tiingo_close", boom)
+    rows, _ = u.build(["CY2026Q2I"])
+    assert len(rows) == 3

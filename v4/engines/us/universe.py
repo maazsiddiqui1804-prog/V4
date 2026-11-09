@@ -5,10 +5,10 @@ Plain English (all official/free data):
    shares held by outside investors, from the latest annual report). Float ≥ the
    $10B floor = large enough. No price needed, so Tiingo's free limits don't bite.
 2. Industry + exchange: SEC industry code in the approved list, listed on NYSE/Nasdaq.
-3. Foreign filers (20-F, e.g. TSMC, ASML) don't report float: for those only,
-   market value = SEC shares outstanding × latest Tiingo price, capped at
-   45 price requests per run (Tiingo free plan: 50 an hour). Any beyond the cap are
-   listed in the report and picked up next run.
+3. Foreign filers (20-F, e.g. TSMC, ASML) don't report float: kept as
+   "size to confirm". Their size is checked only AFTER they pass the Kite check.
+NO Tiingo here (D-135): Tiingo is used only for names already confirmed buyable
+on Zerodha, so free-plan credits are never spent on names Zerodha doesn't offer.
 Output: data/us_universe.csv. Price performance never decides membership.
 """
 from __future__ import annotations
@@ -102,9 +102,8 @@ def build(periods: list[str]) -> tuple[list[dict], dict]:
     floats = public_floats(periods)
 
     stats = {"sec_tickers": len(tmap), "companies": len(by_cik), "after_float": 0,
-             "after_industry": 0, "priced": 0, "in_universe": 0, "blocked": 0, "unpriced": []}
+             "after_industry": 0, "size_to_confirm": 0, "in_universe": 0, "blocked": 0}
     rows = []
-    price_budget = 45
     for cik, tickers in by_cik.items():
         f = floats.get(cik)
         if f is not None and f < floor:
@@ -115,37 +114,20 @@ def build(periods: list[str]) -> tuple[list[dict], dict]:
             continue
         stats["after_industry"] += 1
         ticker = sorted(tickers, key=len)[0]      # primary ticker (shortest)
-        if f is not None:                         # float reported and ≥ floor
+        if f is not None:
             size, basis = f, "public float"
-        else:                                     # foreign filer: shares × price
-            if price_budget <= 0:
-                stats["unpriced"].append(ticker)
-                continue
-            shares = shares_outstanding(cik)
-            if not shares:
-                continue
-            price_budget -= 1
-            try:
-                price = tiingo_close(ticker)
-            except RateLimited:
-                stats["unpriced"].append(ticker)
-                price_budget = 0
-                continue
-            if not price:
-                continue
-            stats["priced"] += 1
-            size, basis = shares * price, "shares x price"
-            if size < floor:
-                continue
+        else:
+            size, basis = None, "to confirm after Kite check (foreign filer)"
+            stats["size_to_confirm"] += 1
         mcap = size
         if ticker in blocked:
             stats["blocked"] += 1
             continue
         layer = next(k for k, codes in rule["sic_codes"].items() if int(prof["sic"]) in codes)
         rows.append({"ticker": ticker, "cik": cik, "name": prof["name"], "sic": prof["sic"],
-                     "layer": layer, "exchange": prof["exchanges"], "size_usd": round(mcap),
+                     "layer": layer, "exchange": prof["exchanges"], "size_usd": round(mcap) if mcap else "",
                      "size_basis": basis, "zerodha_checked": ""})
-    rows.sort(key=lambda r: -r["size_usd"])
+    rows.sort(key=lambda r: -(r["size_usd"] or 0))
     stats["in_universe"] = len(rows)
     return rows, stats
 
@@ -179,11 +161,12 @@ def main() -> int:
         msg = (f"🇺🇸 V4 US universe built: {stats['in_universe']} companies ≥ $10B "
                f"({', '.join(f'{k} {v}' for k, v in sorted(layers.items()))}). "
                f"Screened {stats['companies']} SEC companies → {stats['after_float']} after size pre-filter → "
-               f"{stats['after_industry']} in AI industry codes ({stats['priced']} foreign filers priced). Not yet Kite-checked."
-               + (f" Not priced this run (cap): {', '.join(stats['unpriced'])}" if stats['unpriced'] else ""))
+               f"{stats['after_industry']} in AI industry codes ({stats['size_to_confirm']} foreign filers: size confirmed after Kite check). "
+               "Next: Kite check, then Tiingo prices only for confirmed names (D-135).")
         print(msg)
         for r in rows:
-            print(f"  {r['ticker']:6} {r['layer']:20} ${r['size_usd'] / 1e9:,.0f}B ({r['size_basis']})  {r['name']}")
+            sz = f"${r['size_usd'] / 1e9:,.0f}B" if r['size_usd'] else "size ?"
+            print(f"  {r['ticker']:6} {r['layer']:20} {sz:>7} ({r['size_basis']})  {r['name']}")
         alerts.send(msg)
         return 0
     except Exception as e:
