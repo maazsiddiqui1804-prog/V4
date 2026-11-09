@@ -22,14 +22,14 @@
 | Item | When |
 |---|---|
 | Formal sign-off of starting numbers (T-029) and first buys (T-030) | December brief |
-| US tax / estate tax / disclosure on GIFT City route (blocks US *buying* only, D-085) | Before first US buy |
+| US tax check: LRS TCS, Schedule FA, US estate tax (verified live, confirmed with CA) — only gate left for US buying (D-131) | Phase 3 session, before first US buy |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Phase 3 |
 | Kite login page (Kite Connect) | Phase 4 |
 | Trading placeholder numbers (liquidity floor, volume multiple, stretch limit, trail method) | Phase 4 (T-047) |
 
 ## Build plan
 - **Until GMAT (~28 Nov), D-130:** build phases 3–5 (US module, Trading Engine + backtest, dashboard); nothing goes live.
-- **After GMAT (go-live):** December India brief + first buys; Kite Connect + daily login; paper trading starts (gate ≥3 months, D-048); US buying when D-085 clears.
+- **After GMAT (go-live):** December India brief + first buys; Kite Connect + daily login; paper trading starts (gate ≥3 months, D-048); US buying once the tax check is done (D-131).
 
 ## Fixed clocks after build
 - Trading paper gate: ≥3 months + ≥30 trades + ≥0.3R avg net.
@@ -42,3 +42,4 @@
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
 - **2026-11-09 (long session, ~6 hrs by Maaz's choice, above D-087 pace):** Accounts, repo, Telegram alerts, cloud jobs. India data layer: Screener import (D-113–D-116), Project docs master (D-117), monthly inbox routine (D-118), holdings from Console XLSX (D-119/D-120), benchmarks from AMFI index funds (D-121/D-122). India Investment Engine fully built: kill filters (D-123), score (D-124), guardrail (D-125), buy plan (D-126), sell rules (D-127), red flags from NSE RSS (D-128), monthly brief + freeze; first real brief December (D-129). Bugs found and fixed along the way: workflow YAML, AMFI history columns, top-ups never triggering, rounding below ₹10k minimum, NSE feed cut off/malformed, duplicate feed items.
 - **2026-11-09 (late):** Maaz chose to build all remaining phases before December and go live after the GMAT (D-130, option A: no daily logins or Kite Connect until then).
+- **2026-11-09 (late):** D-085 beta condition dropped (US investing enabled on Maaz's account); US buys start after the tax check (D-131).
