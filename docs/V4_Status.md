@@ -1,10 +1,10 @@
 # V4 Status
 
-**Last updated:** 2026-11-09 · **Phase:** Build — data layer done (India); next: India Investment Engine
+**Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine (steps 1–3 of 8 done)
 
 ## Next session
-1. India Investment Engine (T-021 onward): kill filters, score (quality/growth/momentum + regime switch), India guardrail, portfolio builder, sell rules, monthly brief. Starting placeholder numbers need Maaz's approval (T-029).
-2. Check the daily benchmark NAV job keeps recording (it alerts Telegram on failure).
+1. India Investment Engine, remaining: portfolio builder (T-024; needs the monthly-amount design), sell rules (T-025), red-flag filing alerts (T-026), monthly Telegram brief (T-027), freeze each month's list (T-028). Then Maaz approves starting numbers (T-029) and makes first real buys (T-030).
+2. Known gap for first quarterly review: Screener's 5/10-yr averages cover fewer years for recent listings, so their "consistency" rests on a short record.
 
 ## Where we are
 - Repo live and private: github.com/maazsiddiqui1804-prog/v4. Claude GitHub App installed on this repo only.
@@ -15,13 +15,14 @@
 - Benchmarks live (D-121/D-122): 21 index funds from AMFI recorded every weekday 22:47 IST; first record 2026-11-09 (NAV date 2026-11-06). Benchmark history starts here (forward-tracking, D-063).
 - All 3 cloud jobs alert Telegram on failure; workflow building blocks on v6 (Node 24). 
 - Holdings importer built (D-119) from a sample Console file Maaz supplied: drop the holdings XLSX in data/inbox (alone or with the Screener export). Raw file is deleted after import, never archived (contains client ID). Account is V4-only (D-120), currently empty. 39 automated checks pass.
-- Nothing scored yet. No numbers proven.
+- Investment Engine steps 1–3 built and tested on real data (preview only, nothing frozen): kill filters (D-123: 254 of 419 pass), score (D-124; regime = normal on 2026-11-09, Nifty 500 line 101.8 vs 200-day 98.3), India guardrail (D-125: 8 of top 20 buyable). Benchmark history backfilled from AMFI to 2025-09-15 (5,592 NAVs). 65 automated checks pass.
+- No numbers proven; all cut-offs are placeholders.
 
 ## Open items
 
 | Item | When |
 |---|---|
-| Starting placeholder numbers (filter cut-offs, valuation margins, momentum lookback) | Investment Engine build (T-029) |
+| Starting placeholder numbers set (D-123–D-125); formal sign-off before first buys | T-029 |
 | Kite login page: needed only for the Trading Engine (Kite Connect); redirect URL still a placeholder | Trading Engine build |
 | US tax / estate tax / disclosure on GIFT City route (blocks US *buying* only, D-085) | Before first US buy |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Build: US module |
@@ -44,4 +45,4 @@
 - **2026-10-24:** Brief absorbed. Build order, data, outputs, news-as-risk-filter decided.
 - **2026-10-25:** Philosophy rethink, US/AI added, Kite Connect chosen, strategy for both engines, all flaw fixes, review calendar, build plan B. Docs created.
 - **2026-11-08:** Build start moved to 2026-11-09 (D-086). Final open items closed (D-087–D-098). Amendments D-099–D-102, optimisation D-103–D-107, dashboard D-108, midday alerts D-109, GTT stops D-110. V4 Dashboard created and pinned (https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S).
-- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). Accounts, secrets, repo skeleton, Telegram alerts, cloud health check. Screener Premium as source (D-113); importer built, 500/500 matched; exclusions narrowed to banks/NBFCs/insurers (D-114) and REITs (D-115); loss filter defined (D-116); Project docs master (D-117). Extra evening block (~5–6 hrs total, above D-087 pace by Maaz's choice): monthly inbox routine (D-118), holdings from Console XLSX (D-119), account V4-only (D-120), benchmarks from AMFI index-fund NAVs as median of funds (D-121, D-122); holdings importer built from a sample Console file. Workflow YAML bug found and fixed; checks now require every workflow to parse and alert on failure.
+- **2026-11-09:** Build started. SQLite in repo (D-111), Streamlit hosting (D-112). Accounts, secrets, repo skeleton, Telegram alerts, cloud health check. Screener Premium as source (D-113); importer built, 500/500 matched; exclusions narrowed to banks/NBFCs/insurers (D-114) and REITs (D-115); loss filter defined (D-116); Project docs master (D-117). Extra evening block (~5–6 hrs total, above D-087 pace by Maaz's choice): monthly inbox routine (D-118), holdings from Console XLSX (D-119), account V4-only (D-120), benchmarks from AMFI index-fund NAVs as median of funds (D-121, D-122); holdings importer built from a sample Console file. Investment Engine steps 1–3: kill filters (D-123), score (D-124, with AMFI history backfill for the regime signal), India guardrail (D-125). Bugs caught by checks and fixed: AMFI history column names. Workflow YAML bug found and fixed; checks now require every workflow to parse and alert on failure.

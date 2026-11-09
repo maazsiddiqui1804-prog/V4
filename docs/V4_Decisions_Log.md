@@ -173,3 +173,11 @@ Status key: **APPROVED** = rule. **PLACEHOLDER** = approved structure, number to
 | D-120 | Maaz's Zerodha account holds only V4 positions; his other portfolio sits in a separate family account outside V4 (consistent with D-091). Investment vs trading positions in the same account are told apart by V4's own trade records (Trading Engine build) | APPROVED |
 | D-121 | **Supersedes data source in D-095 (benchmark targets unchanged).** Benchmarks come from index-fund NAVs in AMFI's official daily NAV file (investable, after fund costs, in INR), not raw TRIs. Exact TRIs are only reachable via an undocumented feed behind bot detection (checked 2026-11-09). Recorded every weekday ~22:47 IST to data/benchmarks/navs.csv | APPROVED |
 | D-122 | Each benchmark = chained median daily return of all qualifying Direct-Growth index funds: Nifty 500 (6 funds), Nifty200 Quality 30 (5), Nifty200 Momentum 30 (8, pure index funds only), Nasdaq-100 INR (2 clearly labelled Direct-Growth funds; others unlabelled in AMFI file). Scheme codes in config/benchmarks.yaml | APPROVED |
+
+## 2026-11-09 — India Investment Engine: filters, score, guardrail
+
+| ID | Decision | Status |
+|---|---|---|
+| D-123 | **Sets D-023 starting cut-offs ("Balanced").** Debt-to-equity ≤ 1.5; interest cover ≥ 3× (not checked when D/E < 0.1); promoter pledge ≤ 10%; cash conversion ≥ 0.7 measured over 2 years ((CFO last + preceding) ÷ (net profit last + preceding)). A blank number = fail. On 2026-11-09 data: 254 of 419 pass | APPROVED / numbers PLACEHOLDER |
+| D-124 | **Score method under D-099/D-103.** Each input ranked 0–100 among filter survivors (missing = bottom). Quality = lowest of 3/5/10-yr average ROCE (needs ≥2 periods) + 2-yr cash conversion, equal parts. Growth = lower of 3/5-yr sales growth and lower of 3/5-yr profit growth, equal parts. Momentum = average rank of 6- and 12-month returns. Weak-market signal = Nifty 500 benchmark line (D-122) vs its 200-day average, history backfilled from AMFI; if unavailable, the cautious 55/30/15 weights are used | APPROVED / momentum lookback PLACEHOLDER |
+| D-125 | **Sets D-025 India starting values ("Balanced").** Buy-below = price × (10-yr P/E × 1.2) ÷ current P/E (5-yr P/E if 10-yr blank); second check PEG ≤ 2.0; blank or negative PEG fails. On 2026-11-09 data: 8 of top 20 buyable | APPROVED / numbers PLACEHOLDER |
