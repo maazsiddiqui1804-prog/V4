@@ -91,7 +91,11 @@ def save_new(flags: list[dict], path: Path = FLAGS_CSV) -> list[dict]:
     if path.exists():
         with path.open() as f:
             seen = {r["key"] for r in csv.DictReader(f)}
-    new = [f for f in flags if f["key"] not in seen]
+    new = []
+    for f in flags:                     # the feed repeats identical items: keep one of each
+        if f["key"] not in seen:
+            seen.add(f["key"])
+            new.append(f)
     write_header = not path.exists()
     with path.open("a", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=FIELDS)

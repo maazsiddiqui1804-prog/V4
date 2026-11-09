@@ -87,3 +87,9 @@ def test_cut_off_feed_keeps_complete_items():
     items = filings.parse(body)
     assert [i["title"] for i in items] == ["A Ltd", "B Ltd"]
     assert items[0]["description"] == "x & y"
+
+
+def test_identical_feed_items_flag_once(tmp_path):
+    same = item("Vedanta Limited", "NAME OF THE PROMOTER(S) ... ENCUMBERED : X", "", "")
+    out = rf.match([same] * 7, WATCH, "encumbrance")
+    assert len(rf.save_new(out, tmp_path / "f.csv")) == 1
