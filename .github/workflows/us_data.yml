@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe or universe"
+        description: "probe, universe, or fundprobe"
         default: probe
       tickers:
         description: "probe: comma-separated tickers"
@@ -33,6 +33,11 @@ jobs:
         env:
           SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: python -m v4.importers.sec probe "${{ inputs.tickers }}"
+      - name: Probe SEC financials
+        if: ${{ inputs.mode == 'fundprobe' }}
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+        run: python -m v4.engines.us.fundamentals probe "${{ inputs.tickers }}"
       - name: Build US universe
         if: ${{ inputs.mode == 'universe' }}
         env:
