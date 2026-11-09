@@ -87,3 +87,15 @@ def test_weak_market_halves_risk():
     strong = bt.run(universe(c, v), pd.Series(np.linspace(100, 200, 320), index=DAYS), {}, CFG)["trades"]
     weak = bt.run(universe(c, v), pd.Series(np.linspace(200, 100, 320), index=DAYS), {}, CFG)["trades"]
     assert weak.weak_market.iloc[0] and weak.qty.iloc[0] == pytest.approx(strong.qty.iloc[0] / 2, abs=1)
+
+
+def test_tidy_yahoo_frame():
+    from v4.importers.india_prices import tidy
+    cols = pd.MultiIndex.from_product([["Close", "High", "Low", "Open", "Volume"], ["TCS.NS", "INFY.NS"]],
+                                      names=["Price", "Ticker"])
+    raw = pd.DataFrame(np.arange(20.0).reshape(2, 10), index=pd.DatetimeIndex(DAYS[:2], name="Date"), columns=cols)
+    raw.loc[DAYS[1], ("Close", "INFY.NS")] = np.nan                 # missing day is dropped
+    out = tidy(raw, {"TCS.NS": "TCS", "INFY.NS": "INFY"})
+    assert list(out.columns) == ["date", "symbol", "open", "high", "low", "close", "volume"]
+    assert len(out) == 3 and set(out.symbol) == {"TCS", "INFY"}
+    assert out[(out.symbol == "TCS") & (out.date == DAYS[0])].close.iloc[0] == 0.0

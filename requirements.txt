@@ -3,3 +3,4 @@ pyyaml
 requests
 pytest
 openpyxl
+yfinance==1.8.0
