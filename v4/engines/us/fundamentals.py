@@ -28,10 +28,12 @@ CONCEPTS = {
     "current_liabilities": [("us-gaap", "LiabilitiesCurrent"), ("ifrs-full", "CurrentLiabilities")],
     "equity": [("us-gaap", "StockholdersEquity"), ("ifrs-full", "EquityAttributableToOwnersOfParent"),
                ("ifrs-full", "Equity")],
-    "debt_noncurrent": [("us-gaap", "LongTermDebtNoncurrent"), ("ifrs-full", "NoncurrentPortionOfNoncurrentBorrowings"),
-                        ("ifrs-full", "LongtermBorrowings")],
-    "debt_current": [("us-gaap", "LongTermDebtCurrent"), ("ifrs-full", "CurrentPortionOfNoncurrentBorrowings"),
-                     ("ifrs-full", "ShorttermBorrowings")],
+    "debt_noncurrent": [("us-gaap", "LongTermDebtNoncurrent"), ("us-gaap", "LongTermDebtAndCapitalLeaseObligations"),
+                        ("us-gaap", "LongTermDebt"),
+                        ("ifrs-full", "NoncurrentPortionOfNoncurrentBorrowings"), ("ifrs-full", "LongtermBorrowings")],
+    "debt_current": [("us-gaap", "LongTermDebtCurrent"), ("us-gaap", "LongTermDebtAndCapitalLeaseObligationsCurrent"),
+                     ("us-gaap", "DebtCurrent"), ("us-gaap", "ShortTermBorrowings"),
+                     ("ifrs-full", "CurrentPortionOfNoncurrentBorrowings"), ("ifrs-full", "ShorttermBorrowings")],
     "interest_expense": [("us-gaap", "InterestExpense"), ("us-gaap", "InterestExpenseNonoperating"),
                          ("ifrs-full", "FinanceCosts")],
     "eps_diluted": [("us-gaap", "EarningsPerShareDiluted"), ("ifrs-full", "DilutedEarningsLossPerShare")],
@@ -39,17 +41,36 @@ CONCEPTS = {
 ANNUAL_FORMS = {"10-K", "10-K/A", "20-F", "20-F/A", "40-F"}
 
 
-def annual_series(facts: dict, item: str) -> dict[str, float]:
-    """{fiscal-year-end date: value} from annual reports; the latest filing wins.
-    Flow items (revenue, profit, cash flow) must cover ~a full year."""
+def reporting_currency(facts: dict) -> str | None:
+    """The currency the company reports in: the unit with the most annual revenue/profit rows
+    in the last 5 years. Some foreign filers also tag USD 'convenience' figures (TSMC), which
+    must not be mixed with their home-currency history."""
+    from collections import Counter
+    count: Counter = Counter()
+    for item in ("revenue", "net_income"):
+        for tax, concept in CONCEPTS[item]:
+            node = facts.get("facts", {}).get(tax, {}).get(concept) or {}
+            for unit, rows in node.get("units", {}).items():
+                count[unit] += sum(1 for r in rows if r.get("form") in ANNUAL_FORMS and r.get("end", "") >= "2020")
+    return count.most_common(1)[0][0] if count else None
+
+
+def annual_series(facts: dict, item: str, currency: str | None = None) -> dict[str, float]:
+    """{fiscal-year-end date: value} from annual reports.
+    All label alternatives are merged (companies switch labels over time, e.g. Microsoft's revenue);
+    for the same year an earlier-listed label wins, and within a label the latest filing wins.
+    Only the reporting currency is used. Flow items (revenue, profit, cash flow) must cover ~a full year."""
     from datetime import date
-    for tax, concept in CONCEPTS[item]:
+    out: dict[str, tuple[int, str, float]] = {}
+    for rank, (tax, concept) in enumerate(CONCEPTS[item]):
         node = facts.get("facts", {}).get(tax, {}).get(concept)
         if not node:
             continue
-        out: dict[str, tuple[str, float]] = {}
         for unit, rows in node.get("units", {}).items():
-            if item != "eps_diluted" and not unit.isalpha():      # currency units only (USD, TWD, EUR…)
+            if item == "eps_diluted":
+                if currency and not unit.startswith(currency):
+                    continue
+            elif not unit.isalpha() or (currency and unit != currency):
                 continue
             for r in rows:
                 if r.get("form") not in ANNUAL_FORMS:
@@ -58,21 +79,21 @@ def annual_series(facts: dict, item: str) -> dict[str, float]:
                     days = (date.fromisoformat(r["end"]) - date.fromisoformat(r["start"])).days
                     if not 350 <= days <= 380:
                         continue
+                key = (-rank, r.get("filed", ""))
                 prev = out.get(r["end"])
-                if prev is None or r.get("filed", "") >= prev[0]:
-                    out[r["end"]] = (r.get("filed", ""), float(r["val"]))
-        if out:
-            return {k: v for k, (_, v) in sorted(out.items())}
-    return {}
+                if prev is None or key >= (prev[0], prev[1]):
+                    out[r["end"]] = (key[0], key[1], float(r["val"]))
+    return {k: v for k, (_, _, v) in sorted(out.items())}
 
 
 def company(cik: int, years: int = 6) -> dict[str, dict[str, float]]:
     facts = sec.get(FACTS.format(cik=cik))
+    cur = reporting_currency(facts)
     result = {}
     for item in CONCEPTS:
-        s = annual_series(facts, item)
+        s = annual_series(facts, item, cur)
         result[item] = dict(list(s.items())[-years:])
-    result["_currency"] = next(iter(facts.get("facts", {}).get("ifrs-full", {}) and ["non-USD (IFRS)"] or ["USD"]))
+    result["_currency"] = cur or "unknown"
     return result
 
 

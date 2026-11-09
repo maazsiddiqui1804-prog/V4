@@ -36,14 +36,20 @@ def metrics(f: dict) -> dict:
     assets3 = _last(f.get("assets", {}), 3)
     cl3 = _last(f.get("current_liabilities", {}), 3)
     eq = _last(f.get("equity", {}), 1)
-    debt = (_last(f.get("debt_noncurrent", {}), 1) or [0.0])[0] + (_last(f.get("debt_current", {}), 1) or [0.0])[0]
-    interest = _last(f.get("interest_expense", {}), 1)
+    last_year = max(f.get("net_income", {}) or [""])
+    def latest(item):                      # a figure only counts if it is for the latest year
+        s = f.get(item, {})
+        return [s[last_year]] if last_year in s else []
+    dn, dc = latest("debt_noncurrent"), latest("debt_current")
+    debt = (dn or [0.0])[0] + (dc or [0.0])[0]
+    interest = latest("interest_expense")
+    debt_unknown = not dn and not dc and bool(interest) and interest[0] > 0   # pays interest but debt not found
 
     m = {"losses_3y": None, "debt_equity": None, "interest_cover": None, "cash_conversion_3y": None,
          "roce_floor_3y": None, "rev_growth": None, "profit_growth": None}
     if len(ni3) == 3:
         m["losses_3y"] = any(v < 0 for v in ni3)
-    if eq and eq[0] > 0:
+    if eq and eq[0] > 0 and not debt_unknown:
         m["debt_equity"] = debt / eq[0]
     if interest and op3:
         m["interest_cover"] = op3[-1] / interest[0] if interest[0] > 0 else math.inf

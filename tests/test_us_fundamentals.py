@@ -29,3 +29,28 @@ def test_eps_unit_is_per_share():
 
 def test_missing_item_is_empty():
     assert fu.annual_series(FACTS, "cfo") == {}
+
+
+def _row(end, val, filed="2026-02-01", form="10-K", start=None):
+    r = {"end": end, "val": val, "filed": filed, "form": form}
+    if start:
+        r["start"] = start
+    return r
+
+
+def test_label_switch_is_merged():
+    from v4.engines.us import fundamentals as fu
+    facts = {"facts": {"us-gaap": {
+        "Revenues": {"units": {"USD": [_row("2010-06-30", 60, start="2009-07-01")]}},
+        "RevenueFromContractWithCustomerExcludingAssessedTax": {"units": {"USD": [
+            _row("2025-06-30", 280, start="2024-07-01"), _row("2026-06-30", 320, start="2025-07-01")]}}}}}
+    assert list(fu.annual_series(facts, "revenue", "USD")) == ["2010-06-30", "2025-06-30", "2026-06-30"]
+
+
+def test_convenience_usd_not_mixed_with_home_currency():
+    from v4.engines.us import fundamentals as fu
+    rows_twd = [_row(f"{y}-12-31", 2e12, form="20-F", start=f"{y}-01-01") for y in (2021, 2022, 2023, 2024)]
+    facts = {"facts": {"ifrs-full": {"Revenue": {"units": {
+        "TWD": rows_twd, "USD": [_row("2024-12-31", 8.8e10, filed="2026-04-01", form="20-F", start="2024-01-01")]}}}}}
+    cur = fu.reporting_currency(facts)
+    assert cur == "TWD" and fu.annual_series(facts, "revenue", cur)["2024-12-31"] == 2e12

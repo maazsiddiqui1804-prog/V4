@@ -52,3 +52,17 @@ def test_shortlist_ranks_and_cuts():
     s = us.shortlist(rows, RULES, W, size=4)
     assert "LOSS" not in s.ticker.tolist()
     assert s.shortlisted.sum() == 4 and s.ticker.iloc[0] == "T9"
+
+
+def test_interest_paid_but_debt_not_found_fails():
+    f = fin()
+    f["debt_noncurrent"] = {}
+    m = us.metrics(f)
+    assert m["debt_equity"] is None and "debt-to-equity missing" in us.kill(m, RULES)
+
+
+def test_stale_interest_figure_is_ignored():
+    f = fin(debt=0)
+    f["interest_expense"] = {"2021-12-31": 5}
+    m = us.metrics(f)
+    assert m["debt_equity"] == 0 and m["interest_cover"] is None and not us.kill(m, RULES)
