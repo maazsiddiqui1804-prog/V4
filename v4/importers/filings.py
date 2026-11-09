@@ -18,10 +18,19 @@ FEEDS = {
 HEADERS = {"User-Agent": "Mozilla/5.0 (V4 personal research)", "Accept": "application/rss+xml, text/xml"}
 
 
-def fetch(feed: str, timeout: int = 30) -> list[dict]:
-    r = requests.get(FEEDS[feed], timeout=timeout, headers=HEADERS)
-    r.raise_for_status()
-    return parse(r.content)
+def fetch(feed: str, timeout: int = 30, attempts: int = 3) -> list[dict]:
+    """NSE sometimes sends a cut-off file; retry before giving up (and alerting)."""
+    import time
+    last = None
+    for i in range(attempts):
+        try:
+            r = requests.get(FEEDS[feed], timeout=timeout, headers=HEADERS)
+            r.raise_for_status()
+            return parse(r.content)
+        except (requests.RequestException, ET.ParseError) as e:
+            last = e
+            time.sleep(5 * (i + 1))
+    raise RuntimeError(f"NSE {feed} feed unreadable after {attempts} tries: {type(last).__name__}: {last}")
 
 
 def parse(xml: bytes) -> list[dict]:

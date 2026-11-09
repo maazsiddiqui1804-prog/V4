@@ -60,3 +60,21 @@ def test_reviewed_flags_stop_freezing(tmp_path):
     rf.load_into_db(p, db)
     with connect(db) as c:
         assert c.execute("SELECT COUNT(*) FROM red_flags WHERE reviewed=0").fetchone()[0] == 0
+
+
+def test_feed_retries_on_cut_off_file(monkeypatch):
+    from v4.importers import filings
+    good = b"<rss><channel><item><title>A</title><description>d</description><link>l</link><pubDate>p</pubDate></item></channel></rss>"
+    calls = []
+
+    class R:
+        def __init__(self, body): self.content = body
+        def raise_for_status(self): pass
+
+    def fake_get(*a, **k):
+        calls.append(1)
+        return R(good[:40] if len(calls) == 1 else good)    # first response cut off
+
+    monkeypatch.setattr(filings.requests, "get", fake_get)
+    monkeypatch.setattr("time.sleep", lambda s: None)
+    assert filings.fetch("announcements")[0]["title"] == "A" and len(calls) == 2
