@@ -1,0 +1,33 @@
+# Red-flag filing checks (D-061, D-109): ~3× a day in market hours.
+# Manual run with mode "probe" prints raw feed items (no writes).
+name: Red flags
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "check or probe"
+        default: probe
+
+permissions:
+  contents: read
+
+jobs:
+  flags:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Probe feeds
+        run: python -m v4.importers.filings probe
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."
