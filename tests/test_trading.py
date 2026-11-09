@@ -99,3 +99,30 @@ def test_tidy_yahoo_frame():
     assert list(out.columns) == ["date", "symbol", "open", "high", "low", "close", "volume"]
     assert len(out) == 3 and set(out.symbol) == {"TCS", "INFY"}
     assert out[(out.symbol == "TCS") & (out.date == DAYS[0])].close.iloc[0] == 0.0
+
+
+def test_evening_plan_new_signal_watch_and_exits():
+    from v4.engines.trading import daily
+    c, v = leader()
+    px = universe(c, v)
+    px = px[px.date <= DAYS[260]]                                       # evening of the breakout day
+    idx = pd.Series(np.linspace(100, 200, 261), index=DAYS[:261])
+    held = [daily.Open("FLAT0", "Misc", 98.0, 90.0, 10, 10, False, 19)]  # 20th day → time stop
+    plan = daily.evening_plan(px, idx, {"LEAD": "Tech"}, held, 100_000, CFG)
+    assert [n["symbol"] for n in plan["new"]] == ["LEAD"]
+    n = plan["new"][0]
+    assert n["risk_inr"] <= 1_000 and n["target_2r"] > n["ref_close"]
+    assert ("FLAT0", "EXIT") == plan["actions"][0][:2] and "time stop" in plan["actions"][0][2]
+    assert "LEAD" in daily.render(plan)
+
+
+def test_evening_plan_watchlist_day_before_breakout():
+    from v4.engines.trading import daily
+    c, v = leader()
+    c[255:260] = 118.6                                                   # sits 0.3% under its 20-day high
+    px = universe(c, v)
+    px = px[px.date <= DAYS[259]]
+    idx = pd.Series(np.linspace(100, 200, 260), index=DAYS[:260])
+    plan = daily.evening_plan(px, idx, {}, [], 100_000, CFG)
+    assert plan["new"] == [] and plan["watchlist"][0]["symbol"] == "LEAD"
+    assert plan["watchlist"][0]["trigger"] == 119.0
