@@ -1,0 +1,15 @@
+# US AI value-chain universe — the written rule (D-022, D-133, D-134; approved 2026-11-09).
+# Changes only by changing this rule, logged as a decision. Price performance never counts.
+min_market_cap_usd: 10_000_000_000      # D-133 PLACEHOLDER: large caps (Zerodha's US list focuses on large companies)
+exchanges: [NYSE, Nasdaq]
+sic_codes:                              # SEC industry codes (D-134)
+  chips: [3674, 3559, 3827]             # semiconductors; chip-making equipment; optical inspection (KLA)
+  hardware_networking: [3571, 3572, 3576, 3577, 3661, 3663, 3669, 3679]
+  software_cloud: [7370, 7371, 7372, 7373, 7374]
+  power: [4911, 4931, 4991, 3600, 3612, 3613, 3621]   # utilities and power producers; electrical equipment
+zerodha_check: one-time Kite search per name; misses go on the blocklist below (D-133)
+zerodha_blocklist: []
+known_exclusions:                       # recorded so the gap is visible, not hand-picked back in
+  AMZN: "SEC code 5961 (retail)"
+  EQIX: "SEC code 6798 (REIT)"
+  DLR: "SEC code 6798 (REIT)"
