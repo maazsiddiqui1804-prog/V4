@@ -22,13 +22,13 @@ def fake(monkeypatch):
 
 def test_rule_keeps_only_ai_codes_large_and_listed(fake):
     rows, stats = u.build(["CY2026Q2I"])
-    assert [r["ticker"] for r in rows] == ["CHIP", "FAB"]       # $300B, then $250B (20-F filer kept)
-    assert stats["after_industry"] == 3                         # CHIP, FAB, UTIL
+    assert [r["ticker"] for r in rows] == ["CHIP", "FAB", "UTIL"]   # by size: $300B float, $250B priced, $40B float
+    assert stats["after_industry"] == 3 and stats["priced"] == 1    # only the foreign filer (no float) is priced
 
 
-def test_utility_below_floor_is_out(fake):
+def test_small_float_is_out(fake):
     rows, _ = u.build(["CY2026Q2I"])
-    assert "UTIL" not in [r["ticker"] for r in rows]           # 1e9 shares x $8 = $8B < $10B
+    assert "SMOL" not in [r["ticker"] for r in rows]           # float $1B < $10B
 
 
 def test_blocklist_removes_name(fake, monkeypatch):
@@ -44,3 +44,11 @@ def test_save_keeps_kite_check_marks(tmp_path):
     p.write_text(p.read_text().replace("A,\n", "A,yes\n").replace("A,\r\n", "A,yes\r\n"))
     u.save([{"ticker": "A", "zerodha_checked": ""}, {"ticker": "B", "zerodha_checked": ""}], p)
     assert "A,yes" in p.read_text()
+
+
+def test_rate_limit_skips_instead_of_failing(fake, monkeypatch):
+    def limited(t):
+        raise u.RateLimited(t)
+    monkeypatch.setattr(u, "tiingo_close", limited)
+    rows, stats = u.build(["CY2026Q2I"])
+    assert stats["unpriced"] == ["FAB"] and "CHIP" in [r["ticker"] for r in rows]
