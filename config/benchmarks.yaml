@@ -14,9 +14,10 @@ benchmarks:
   momentum30:
     label: "Nifty200 Momentum 30 (diagnostic only, D-107)"
     match: "nifty\\s*200\\s*momentum\\s*30"
+    exclude: "g-?sec|plus"
     scheme_codes: []
   nasdaq100:
     label: "Nasdaq-100 in INR (US benchmark)"
-    match: "nasdaq\\s*100"
+    match: "nasdaq[\\s-]*100"
     exclude: "equal|top\\s*15|q50"
     scheme_codes: []
