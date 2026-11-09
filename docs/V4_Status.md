@@ -1,15 +1,16 @@
 # V4 Status
 
-**Last updated:** 2026-11-10 · **Phase:** Build — India Investment Engine complete; US module code complete (waiting on Kite check); Trading Engine first version + backtest built; dashboard (phase 5) next (D-130)
+**Last updated:** 2026-11-10 · **Phase:** Build — all five phases have working code; waiting on Maaz items (Kite check, approvals, dashboard deploy) before go-live after the GMAT (D-130)
 
 ## Next session
 1. **Waiting on Maaz (dashboard "Waiting on you"):**
    - T-059 **Trading backtest has no edge with starting numbers** — choose a path (options below).
    - T-057 US Kite check: needs the "International" search in Kite (regular Kite didn't show it on 2026-11-10; US stocks are in beta at kite-beta.zerodha.com, accounts enabled in batches). Maaz expects it to appear soon.
+   - T-060 put the dashboard online on Streamlit (5 min, D-112).
    - T-054 approve US numbers · T-055 US weak-market rule · T-056 monthly vs quarterly US transfers · T-058 W-8BEN before first US buy · T-047 trading numbers.
-2. **US module (phase 3):** code complete. Cloud runs: universe (334 names) ✅, financials probe ✅ after 3 fixes; fundamentals + shortlist runs in progress at session end. Then: Kite check of the ~40 shortlist → Tiingo prices (Kite-confirmed only) → US ranking in the monthly brief.
-3. **Trading Engine (phase 4):** signals, costs, backtest, evening plan, watchlist built. Still to build: paper ledger (DB) + missed-check tripwire, daily job wiring to Kite Connect (after GMAT), midday checks (D-109).
-4. **Phase 5:** dashboard (D-108 Action + Analysis views), quarterly report, 12-month warning/kill-test checks, failure-alert audit. Hosting choice needed (will be raised as a Waiting-on-you item).
+2. **US module (phase 3):** code complete; cloud runs done: universe 334 → financials → shortlist of 40 (VRT, NTES, TSM, KARO, WB, NVDA, NOW, ANET, MSFT, META, GOOG, INTU, TTD, …; 7 non-USD reporters). Next: Kite check of the 40 (T-057) → Tiingo prices (confirmed only) → ranking. Foreign filers: size checked with price (drops small ones like KARO); P/E converted via FX + ADR ratio — Claude adds each confirmed name's ADR ratio to config/us_universe.yaml after checking the company's filing.
+3. **Trading Engine (phase 4):** signals, costs, backtest, evening plan, watchlist, paper ledger (replays the backtest engine from the paper start date) built. Still to build after GMAT: Kite Connect data + daily login page (D-081: no stored password), daily evening job, midday checks (D-109), missed-check tripwire (D-049: needs a way for Maaz to confirm he checked).
+4. **Phase 5:** Streamlit dashboard (dashboard/app.py, Action + Analysis) built and checked locally — deploy is T-060; quarterly report job (1 Jan/Apr/Jul/Oct); 12-month warning + 3-year kill test (shadow-portfolio vs index funds, after costs and tax); India tax estimates (rates to re-verify under Income-tax Act 2025); Monday check for silent jobs. Analysis view gains returns/risk/costs once real holdings exist.
 5. After GMAT: December brief + sign-off (T-029) + first buys (T-030); Kite Connect; paper trading.
 
 ### T-059 — Trading backtest result (simulation, NOT live)
@@ -23,7 +24,7 @@ Options (Claude's ranking):
 - **C: pause the Trading Engine** and put the 10% sleeve into the Investment Engine until the January strategy review (D-066) rethinks the setup.
 
 ## Where we are
-- Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 151 automated checks pass.
+- Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 169 automated checks pass.
 - **Running automatically:** benchmark fund NAVs weekdays 22:47 IST; red-flag checks weekdays 10:47 / 13:17 / 15:23 IST (watchlist empty until the first list or holdings); monthly import whenever a file lands in data/inbox; monthly brief right after a successful import (guarded: none before 2026-12). Every job alerts Telegram on failure.
 - **India data:** 500/500 Nifty 500 matched; 78 banks/NBFCs/insurers and 3 REITs excluded → 419 investable (D-113–D-115). Screener column list updated by Claude in Maaz's Chrome (profit years, cash-flow preceding year; 5 unused columns removed).
 - **Benchmarks:** median of 21 AMFI index funds (D-121/D-122), history from 2025-09-15.
@@ -64,4 +65,5 @@ Options (Claude's ranking):
 - **2026-11-09 (late):** D-085 beta condition dropped (US investing enabled on Maaz's account); US buys start after the tax check (D-131).
 - **2026-11-09 (late, cont.):** US tax check done, go-ahead (D-132); US tradable rule (D-133) and AI universe rule by SEC industry codes (D-134) set after probing 30 names in the cloud.
 - **2026-11-09/10 (late):** US universe builder (SEC float + industry codes, no Tiingo before Kite check, D-135); shortlist-first US ranking (D-136); SEC financials extractor; GitHub Actions outage blocked the final build run.
+- **2026-11-10 (unattended build, Maaz away, cont.):** paper ledger; Streamlit dashboard; reviews (D-064/D-065); quarterly report; tax estimates; silent-job check; US size check + currency-correct P/E; US shortlist of 40 built in the cloud.
 - **2026-11-10 (unattended build, Maaz away):** US monthly pipeline + Actions-minutes guard; US universe built in the cloud (378 → 334 after excluding subsidiaries/preferreds); SEC financials fixed (label renames, currency mixing, missing debt); D-132 safeguards + combined caps + US brief section; Trading Engine signals, costs, backtest, evening plan; India price history for backtest (Yahoo, split fixes). First backtest: no edge (T-059). Kite "International" search not visible yet (T-057). No new decisions approved this session.
