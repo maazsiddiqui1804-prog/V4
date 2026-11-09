@@ -101,3 +101,9 @@ def test_history_parser_tolerates_header_variants():
     assert bm.parse_amfi_history(text)[0]["nav"] == 10.5
     text2 = "Scheme Code;Scheme;Net Asset Value;Date\n111;X Fund;10.5;03-Nov-2026\n"
     assert bm.parse_amfi_history(text2)[0]["scheme_name"] == "X Fund"
+
+
+def test_history_parser_reads_nav_name_header():
+    text = "Scheme Code;NAV Name;Plan;Option;ISIN Div Payout/ISIN Growth;ISIN Div Reinvestment;Net Asset Value;Date\n111;X Nifty 500 Index Fund;Direct;Growth;I;;10.5;03-Nov-2026\n"
+    r = bm.parse_amfi_history(text)[0]
+    assert (r["scheme_name"], r["nav"]) == ("X Nifty 500 Index Fund", 10.5)

@@ -120,7 +120,7 @@ def parse_amfi_history(text: str) -> list[dict]:
         low = line.lower()
         if "scheme code" in low and "net asset value" in low and "date" in low:
             idx = {name: i for i, name in enumerate(parts)}
-            cols = {"code": _col(idx, "scheme code"), "name": _col(idx, "scheme name", "scheme"),
+            cols = {"code": _col(idx, "scheme code"), "name": _col(idx, "scheme name", "nav name", "fund name", "scheme"),
                     "nav": _col(idx, "net asset value"), "date": _col(idx, "date")}
             continue
         if cols is None or len(parts) <= max(cols.values()) or not parts[cols["code"]].isdigit():
