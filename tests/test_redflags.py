@@ -78,3 +78,12 @@ def test_feed_retries_on_cut_off_file(monkeypatch):
     monkeypatch.setattr(filings.requests, "get", fake_get)
     monkeypatch.setattr("time.sleep", lambda s: None)
     assert filings.fetch("announcements")[0]["title"] == "A" and len(calls) == 2
+
+
+def test_cut_off_feed_keeps_complete_items():
+    from v4.importers import filings
+    body = (b"<rss><channel><item><title>A Ltd</title><description>x &amp; y</description><link>l</link><pubDate>p</pubDate></item>"
+            b"<item><title>B Ltd</title><description>broken <</description></item><item><title>C")
+    items = filings.parse(body)
+    assert [i["title"] for i in items] == ["A Ltd", "B Ltd"]
+    assert items[0]["description"] == "x & y"

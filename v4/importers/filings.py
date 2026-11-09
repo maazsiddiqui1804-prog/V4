@@ -26,6 +26,7 @@ def fetch(feed: str, timeout: int = 30, attempts: int = 3) -> list[dict]:
         try:
             r = requests.get(FEEDS[feed], timeout=timeout, headers=HEADERS)
             r.raise_for_status()
+            print(f"[{feed}] downloaded {len(r.content):,} bytes")
             return parse(r.content)
         except (requests.RequestException, ET.ParseError) as e:
             last = e
@@ -34,10 +35,29 @@ def fetch(feed: str, timeout: int = 30, attempts: int = 3) -> list[dict]:
 
 
 def parse(xml: bytes) -> list[dict]:
-    root = ET.fromstring(xml)
+    """Strict XML first. If NSE's file is cut off or has a broken character, fall back
+    to reading each complete <item>...</item> block on its own and skipping bad ones."""
+    try:
+        root = ET.fromstring(xml)
+        return [{k: (it.findtext(k) or "").strip() for k in ("title", "link", "description", "pubDate")}
+                for it in root.iter("item")]
+    except ET.ParseError:
+        pass
+    import html
+    import re
+    text = xml.decode("utf-8", errors="replace")
     items = []
-    for it in root.iter("item"):
-        items.append({k: (it.findtext(k) or "").strip() for k in ("title", "link", "description", "pubDate")})
+    for block in re.findall(r"<item>(.*?)</item>", text, flags=re.S):
+        rec = {}
+        for k in ("title", "link", "description", "pubDate"):
+            m = re.search(rf"<{k}>(.*?)</{k}>", block, flags=re.S)
+            v = (m.group(1) if m else "").strip()
+            v = re.sub(r"^<!\[CDATA\[(.*)\]\]>$", r"\1", v, flags=re.S)
+            rec[k] = html.unescape(v).strip()
+        if rec["title"]:
+            items.append(rec)
+    if not items:
+        raise ET.ParseError("no complete <item> blocks in feed")
     return items
 
 
