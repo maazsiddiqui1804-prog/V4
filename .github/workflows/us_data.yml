@@ -5,19 +5,23 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "probe"
+        description: "probe or universe"
         default: probe
       tickers:
         description: "probe: comma-separated tickers"
         default: ""
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
 
 jobs:
   us:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -29,6 +33,22 @@ jobs:
         env:
           SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: python -m v4.importers.sec probe "${{ inputs.tickers }}"
+      - name: Build US universe
+        if: ${{ inputs.mode == 'universe' }}
+        env:
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.engines.us.universe
+      - name: Save universe to the repo
+        if: ${{ inputs.mode == 'universe' }}
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/us_universe.csv
+          git diff --cached --quiet || git commit -m "US universe $(date +%F)"
+          git pull --rebase -q && git push
       - name: Alert on any failure
         if: failure()
         env:
