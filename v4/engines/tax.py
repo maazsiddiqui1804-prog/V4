@@ -18,6 +18,12 @@ from collections import defaultdict
 DEFAULT = {"stcg_rate": 0.20, "ltcg_rate": 0.125, "ltcg_exempt_inr": 125000, "cess": 0.04, "long_term_days": 365}
 
 
+def rules_from_config() -> dict:
+    import yaml
+    from v4.db import ROOT
+    return dict(DEFAULT, **(yaml.safe_load((ROOT / "config" / "placeholders.yaml").read_text()).get("tax") or {}))
+
+
 def fy(d: dt.date) -> str:
     s = d.year if d.month >= 4 else d.year - 1
     return f"FY{s}-{str(s + 1)[-2:]}"

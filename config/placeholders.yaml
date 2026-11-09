@@ -81,3 +81,10 @@ us:                        # US Investment Engine. ALL values PROVISIONAL — aw
     estate_warn_usd: 45000            # D-132: warn at ~$45k (US estate tax applies above $60k)
     w8ben_remind_days: 60
     w8ben_signed: null                # set to the signing date (YYYY-MM-DD) once Maaz submits W-8BEN (T-058)
+
+tax:                       # India listed-share capital gains, for ESTIMATES only (v4/engines/tax.py)
+  stcg_rate: 0.20                    # checked 2026-11-10 (Finance (No. 2) Act 2024 rates); RE-VERIFY under Income-tax Act 2025
+  ltcg_rate: 0.125
+  ltcg_exempt_inr: 125000
+  cess: 0.04
+  long_term_days: 365                # held more than 12 months = long-term

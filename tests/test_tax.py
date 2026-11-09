@@ -23,3 +23,7 @@ def test_loss_set_off_rules():
              {"buy_date": "2027-05-01", "sell_date": "2027-09-01", "gain": 40_000}]     # short-term gain
     out = tax.estimate(sales)["FY2027-28"]
     assert out["taxable_short"] == 40_000                                                # not reduced
+
+
+def test_config_rates_match_defaults():
+    assert tax.rules_from_config() == tax.DEFAULT
