@@ -126,3 +126,13 @@ def test_evening_plan_watchlist_day_before_breakout():
     plan = daily.evening_plan(px, idx, {}, [], 100_000, CFG)
     assert plan["new"] == [] and plan["watchlist"][0]["symbol"] == "LEAD"
     assert plan["watchlist"][0]["trigger"] == 119.0
+
+
+def test_fix_unadjusted_split():
+    from v4.importers.india_prices import fix_unadjusted
+    px = frame("SPLT", [400.0, 404.0, 101.0, 102.0])
+    px.loc[2, "open"] = 101.0
+    fixed, fixes = fix_unadjusted(px)
+    assert fixes == [("SPLT", str(DAYS[2].date()), -0.75)]
+    assert fixed.close.tolist() == pytest.approx([100.0, 101.0, 101.0, 102.0])
+    assert fixed.volume.iloc[0] == pytest.approx(3e6 / 0.25)

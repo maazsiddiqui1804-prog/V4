@@ -60,8 +60,28 @@ def fetch(period: str = "4y", batch: int = 50) -> str:
             f"Missing: {', '.join(missing[:20])}{'…' if len(missing) > 20 else ''}")
 
 
-def load() -> tuple[pd.DataFrame, pd.Series]:
+def fix_unadjusted(px: pd.DataFrame, threshold: float = 0.30) -> tuple[pd.DataFrame, list]:
+    """Yahoo sometimes misses a split/bonus/demerger (e.g. MOTILALOFS 1:4 on 2024-01-01 shows as -75%).
+    Any overnight drop bigger than 30% is treated as a corporate action: earlier prices are scaled by
+    the open/previous-close ratio (volumes the other way). Real 30% overnight crashes in Nifty 500
+    stocks are rare; each fix is listed in the backtest report."""
+    px = px.sort_values(["symbol", "date"]).reset_index(drop=True)
+    fixes = []
+    for sym, g in px.groupby("symbol"):
+        ratio = g["open"] / g["close"].shift(1)
+        for i in g.index[ratio < 1 - threshold]:          # splits, bonuses, demergers only push prices down
+            r = ratio[i]
+            earlier = g.index[g.index < i]
+            px.loc[earlier, ["open", "high", "low", "close"]] *= r
+            px.loc[earlier, "volume"] /= r
+            fixes.append((sym, str(px.at[i, "date"])[:10], round(r - 1, 3)))
+    return px, fixes
+
+
+def load(fix: bool = True) -> tuple[pd.DataFrame, pd.Series]:
     px = pd.read_csv(OUT, parse_dates=["date"])
+    if fix:
+        px, _ = fix_unadjusted(px)
     idx = pd.read_csv(INDEX_OUT, parse_dates=["date"]).set_index("date")["close"]
     return px, idx
 
