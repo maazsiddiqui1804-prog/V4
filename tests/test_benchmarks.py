@@ -76,3 +76,21 @@ def test_composite_uses_median_and_survives_gaps(tmp_path):
     assert line["2026-11-02"] == 100
     assert line["2026-11-03"] == pytest.approx(100 * 1.105)          # median of +1% and +20%
     assert line["2026-11-04"] == pytest.approx(100 * 1.105 * 1.01)   # median of +1%, +1%, +2% (c over 2 days)
+
+
+def test_history_parser_reads_columns_by_name():
+    text = """Scheme Code;Scheme Name;ISIN Div Payout/ISIN Growth;ISIN Div Reinvestment;Net Asset Value;Repurchase Price;Sale Price;Date
+
+Open Ended Schemes ( Other Scheme - Index Funds )
+Alpha Mutual Fund
+111;Alpha Nifty 500 Index Fund - Direct Plan - Growth;INE1;;15.25;;;03-Nov-2026
+111;Alpha Nifty 500 Index Fund - Direct Plan - Growth;INE1;;15.40;;;04-Nov-2026
+"""
+    rows = bm.parse_amfi_history(text)
+    assert [(r["date"], r["nav"]) for r in rows] == [("2026-11-03", 15.25), ("2026-11-04", 15.40)]
+
+
+def test_backfill_tolerates_funds_not_yet_launched(tmp_path):
+    rows = bm.parse_amfi(SAMPLE)
+    cfg = dict(CFG, nifty500=dict(CFG["nifty500"], scheme_codes=["111", "404"]))
+    assert bm.record(rows, cfg, tmp_path / "navs.csv", strict=False) == 3

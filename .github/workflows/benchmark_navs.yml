@@ -1,12 +1,12 @@
 # Benchmark fund NAVs (D-121): records AMFI NAVs every weekday evening.
-# Run by hand with mode "discover" to list candidate funds.
+# Run by hand with mode "discover" to list candidate funds, or "backfill" to fetch ~14 months of history once.
 name: Benchmark NAVs
 
 on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "record or discover"
+        description: "record, discover or backfill"
         default: record
   schedule:
     - cron: "17 17 * * 1-5"   # 22:47 IST weekdays, after AMFI publishes the day's NAVs
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   navs:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -34,7 +34,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m v4.importers.benchmarks "${{ inputs.mode || 'record' }}"
       - name: Save results to the repo
-        if: ${{ (inputs.mode || 'record') == 'record' }}
+        if: ${{ (inputs.mode || 'record') != 'discover' }}
         run: |
           git config user.name "V4 bot"
           git config user.email "v4-bot@users.noreply.github.com"

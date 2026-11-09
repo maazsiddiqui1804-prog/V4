@@ -73,7 +73,7 @@ def discover(rows: list[dict], cfg: dict) -> dict[str, list[dict]]:
     return found
 
 
-def record(rows: list[dict], cfg: dict, path: Path = NAV_CSV) -> int:
+def record(rows: list[dict], cfg: dict, path: Path = NAV_CSV, strict: bool = True) -> int:
     wanted = {str(code): key for key, b in cfg.items() for code in (b.get("scheme_codes") or [])}
     path.parent.mkdir(parents=True, exist_ok=True)
     seen = set()
@@ -91,9 +91,54 @@ def record(rows: list[dict], cfg: dict, path: Path = NAV_CSV) -> int:
                         "benchmark": wanted[r["scheme_code"]], "nav": r["nav"],
                         "scheme_name": r["scheme_name"]})
     missing = set(wanted) - {r["scheme_code"] for r in rows}
-    if missing:
+    if missing and strict:
         raise RuntimeError(f"Benchmark funds missing from AMFI file: {sorted(missing)}")
     return len(new)
+
+
+HISTORY_URL = "https://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx"
+
+
+def parse_amfi_history(text: str) -> list[dict]:
+    """AMFI's history report puts columns in a different order; read them by header name."""
+    out, idx = [], None
+    for line in text.splitlines():
+        parts = [p.strip() for p in line.split(";")]
+        if "Scheme Code" in parts and "Net Asset Value" in parts and "Date" in parts:
+            idx = {name: i for i, name in enumerate(parts)}
+            continue
+        if idx is None or len(parts) < len(idx) or not parts[idx["Scheme Code"]].isdigit():
+            continue
+        try:
+            nav = float(parts[idx["Net Asset Value"]])
+            date = datetime.strptime(parts[idx["Date"]], "%d-%b-%Y").date().isoformat()
+        except ValueError:
+            continue
+        out.append({"scheme_code": parts[idx["Scheme Code"]], "scheme_name": parts[idx["Scheme Name"]],
+                    "nav": nav, "date": date})
+    return out
+
+
+def backfill(days: int = 420, chunk: int = 90) -> int:
+    """One-off: fetch past NAVs for the tracked funds, 90 days per request (AMFI's limit)."""
+    from datetime import date as d, timedelta
+    import time
+    cfg = load_config()
+    end = d.today()
+    start = end - timedelta(days=days)
+    total = 0
+    while start < end:
+        stop = min(start + timedelta(days=chunk - 1), end)
+        r = requests.get(HISTORY_URL, timeout=180, headers={"User-Agent": "V4 personal research"},
+                         params={"tp": "1", "frmdt": start.strftime("%d-%b-%Y"), "todt": stop.strftime("%d-%b-%Y")})
+        r.raise_for_status()
+        rows = parse_amfi_history(r.text)
+        n = record(rows, cfg, strict=False)
+        print(f"{start} → {stop}: {len(r.content)/1e6:.1f} MB, {len(rows)} rows parsed, {n} new benchmark NAVs")
+        total += n
+        start = stop + timedelta(days=1)
+        time.sleep(2)   # be polite to AMFI's server
+    return total
 
 
 def load_into_db(path: Path = NAV_CSV, db_path: Path = DB_PATH) -> int:
@@ -123,6 +168,9 @@ def main(mode: str) -> int:
                 print(f"\n== {key} ({cfg[key]['label']}): {len(funds)} Direct-Growth funds")
                 for r in funds:
                     print(f"  {r['scheme_code']} | {r['scheme_name']} | NAV {r['nav']} on {r['date']}")
+            return 0
+        if mode == "backfill":
+            print(f"Backfill done: {backfill()} NAVs added")
             return 0
         n = record(rows, cfg)
         print(f"Recorded {n} new benchmark NAVs")
