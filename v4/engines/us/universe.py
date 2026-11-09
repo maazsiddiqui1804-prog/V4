@@ -98,7 +98,8 @@ def build(periods: list[str]) -> tuple[list[dict], dict]:
     tmap = sec.ticker_map()                       # ticker -> CIK
     by_cik: dict[int, list[str]] = {}
     for t, c in tmap.items():
-        by_cik.setdefault(c, []).append(t)
+        if t and t.strip():                        # SEC's file has a few blank tickers
+            by_cik.setdefault(c, []).append(t.strip())
     floats = public_floats(periods)
 
     stats = {"sec_tickers": len(tmap), "companies": len(by_cik), "after_float": 0,
@@ -151,7 +152,9 @@ def main() -> int:
     from v4 import alerts
     import datetime as dt
     y = dt.date.today().year
-    periods = [f"CY{y - 2}Q2I", f"CY{y - 1}Q2I", f"CY{y}Q2I"]
+    # Float is reported as of each company's own 2nd fiscal quarter-end, so read
+    # every calendar quarter for the last 2+ years (oldest first; newest wins).
+    periods = [f"CY{yy}Q{q}I" for yy in (y - 2, y - 1, y) for q in (1, 2, 3, 4)]
     try:
         rows, stats = build(periods)
         save(rows)

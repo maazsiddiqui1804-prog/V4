@@ -52,3 +52,9 @@ def test_no_tiingo_calls_in_universe_build(fake, monkeypatch):
     monkeypatch.setattr(u, "tiingo_close", boom)
     rows, _ = u.build(["CY2026Q2I"])
     assert len(rows) == 3
+
+
+def test_blank_tickers_ignored(fake, monkeypatch):
+    monkeypatch.setattr(u.sec, "ticker_map", lambda: {"CHIP": 1, "": 6, "UTIL": 6})
+    rows, _ = u.build(["CY2026Q2I"])
+    assert "" not in [r["ticker"] for r in rows]
