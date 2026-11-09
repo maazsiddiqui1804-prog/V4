@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS securities (
     isin          TEXT,
     sector        TEXT,
     industry      TEXT,
-    is_financial  INTEGER NOT NULL DEFAULT 0, -- bank/NBFC/insurer → excluded from investing (D-006)
+    is_financial  INTEGER NOT NULL DEFAULT 0, -- bank/NBFC/insurer → excluded from investing (D-006, D-114)
+    is_reit       INTEGER NOT NULL DEFAULT 0, -- REIT/InvIT → excluded from investing (D-115)
     currency      TEXT NOT NULL DEFAULT 'INR',
     added_on      TEXT NOT NULL DEFAULT (date('now')),
     UNIQUE (market, symbol)

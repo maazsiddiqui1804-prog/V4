@@ -18,9 +18,20 @@ def connect(path: Path = DB_PATH) -> sqlite3.Connection:
     return conn
 
 
+# Columns added after a table was first created. CREATE TABLE IF NOT EXISTS
+# won't add them to an existing database, so they're added here, once.
+MIGRATIONS = [
+    ("securities", "is_reit", "INTEGER NOT NULL DEFAULT 0"),  # D-115
+]
+
+
 def init_db(path: Path = DB_PATH) -> None:
     with connect(path) as conn:
         conn.executescript(SCHEMA_PATH.read_text())
+        for table, col, decl in MIGRATIONS:
+            cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+            if col not in cols:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {decl}")
 
 
 if __name__ == "__main__":

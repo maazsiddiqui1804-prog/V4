@@ -2,7 +2,10 @@
 
 Plain English:
 1. The NSE file decides WHICH stocks are in the universe (D-021).
-   Financial Services companies are flagged so the Investment Engine skips them (D-006).
+   Banks, NBFCs and insurers are flagged so the Investment Engine skips them
+   (D-006, D-114): Screener industry group Banks / Finance / Insurance.
+   Exchanges, fund houses, depositories, brokers and fintech stay in.
+   REITs (NSE series RR) are flagged and skipped too (D-115).
    NSE's 'DUMMY' placeholder rows are ignored.
 2. The Screener file supplies the NUMBERS. Rows are matched by ISIN, the
    permanent ID code every listed share has.
@@ -47,6 +50,9 @@ REQUIRED_PATTERNS = {
     r"^historical_pe_(5|10)years$": "own long-run P/E for India guardrail (D-025)",
 }
 
+# D-114: which Screener industry groups count as banks / NBFCs / insurers.
+EXCLUDED_FINANCIAL_GROUPS = {"Banks", "Finance", "Insurance"}
+
 ID_COLUMNS = {"Name", "BSE Code", "NSE Code", "ISIN Code", "Industry Group", "Industry"}
 
 
@@ -60,6 +66,7 @@ class Report:
     as_of: str
     universe: int = 0
     financials: int = 0
+    financials_kept: int = 0
     reits: int = 0
     matched: int = 0
     unmatched: list = field(default_factory=list)
@@ -70,7 +77,7 @@ class Report:
         investable = self.universe - self.financials - self.reits
         lines = [
             f"Import as of {self.as_of}",
-            f"Nifty 500 members: {self.universe} (financials flagged: {self.financials}, REITs: {self.reits}, left for investing: {investable})",
+            f"Nifty 500 members: {self.universe} (banks/NBFCs/insurers excluded: {self.financials}, other financials kept: {self.financials_kept}, REITs excluded: {self.reits}, left for investing: {investable})",
             f"Matched to Screener: {self.matched}/{self.universe}",
         ]
         if self.unmatched:
@@ -100,8 +107,6 @@ def import_month(nifty_csv: Path, screener_csv: Path, as_of: str, db_path: Path 
     slugs = {c: slug(c) for c in numeric_cols}
 
     rep = Report(as_of=as_of, universe=len(nifty))
-    rep.financials = int((nifty["Industry"] == "Financial Services").sum())
-    rep.reits = int((nifty["Series"] == "RR").sum())
     have = set(slugs.values())
     rep.missing_required = {k: v for k, v in REQUIRED.items() if k not in have}
     for pat, why in REQUIRED_PATTERNS.items():
@@ -110,6 +115,14 @@ def import_month(nifty_csv: Path, screener_csv: Path, as_of: str, db_path: Path 
 
     merged = nifty.merge(scr, on="ISIN Code", how="left", suffixes=("_nse", ""), indicator=True)
     rep.unmatched = merged.loc[merged["_merge"] == "left_only", "Symbol"].tolist()
+    nse_fin = merged["Industry_nse"] == "Financial Services"
+    group = merged["Industry Group"] if "Industry Group" in merged else pd.Series(None, index=merged.index)
+    # Matched → use Screener's group. Unmatched → cautious: treat any NSE financial as excluded.
+    merged["is_fin"] = nse_fin & (group.isin(EXCLUDED_FINANCIAL_GROUPS) | (merged["_merge"] == "left_only"))
+    merged["is_reit"] = merged["Series"] == "RR"
+    rep.financials = int(merged["is_fin"].sum())
+    rep.financials_kept = int((nse_fin & ~merged["is_fin"]).sum())
+    rep.reits = int(merged["is_reit"].sum())
     ok = merged[merged["_merge"] == "both"]
     rep.matched = len(ok)
     rep.blank_values = {slugs[c]: int(ok[c].isna().sum()) for c in numeric_cols
@@ -118,14 +131,15 @@ def import_month(nifty_csv: Path, screener_csv: Path, as_of: str, db_path: Path 
     with connect(db_path) as conn:
         for _, r in merged.iterrows():
             conn.execute(
-                """INSERT INTO securities (market, symbol, name, isin, sector, industry, is_financial)
-                   VALUES ('IN', ?, ?, ?, ?, ?, ?)
+                """INSERT INTO securities (market, symbol, name, isin, sector, industry, is_financial, is_reit)
+                   VALUES ('IN', ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(market, symbol) DO UPDATE SET
                      name=excluded.name, isin=excluded.isin, sector=excluded.sector,
-                     industry=excluded.industry, is_financial=excluded.is_financial""",
+                     industry=excluded.industry, is_financial=excluded.is_financial,
+                     is_reit=excluded.is_reit""",
                 (r["Symbol"], r["Company Name"], r["ISIN Code"], r["Industry_nse"],
                  r["Industry"] if r["_merge"] == "both" else None,
-                 int(r["Industry_nse"] == "Financial Services")),
+                 int(r["is_fin"]), int(r["is_reit"])),
             )
         ids = dict(conn.execute("SELECT symbol, security_id FROM securities WHERE market='IN'").fetchall())
         conn.executemany(
