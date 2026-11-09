@@ -43,3 +43,16 @@ trading:
   trail_method: null               # D-045
   drawdown_brake_pct: 15           # D-104
   stepdown_rule: null              # D-100
+
+us:                        # US Investment Engine. ALL values PROVISIONAL — awaiting Maaz's approval (Waiting on you).
+  approved: false          # while false, the US brief shows rankings but no US buy orders
+  kill_filters:            # D-023 applied to US; proposed = India's D-123 values
+    max_debt_equity: 1.5
+    min_interest_cover: 3.0
+    near_zero_debt: 0.1
+    min_cash_conversion: 0.7          # 3-year
+  shortlist_size: 40                  # D-136
+  weights: {quality: 40, growth: 30, momentum: 30}   # D-099; US weak-market switch not defined yet
+  max_peg: 2.0                        # D-101 US guardrail threshold — proposed = India's D-125
+  fallback_months: 3                  # D-102: 3 blocked months -> Nasdaq-100 fund
+  target_holdings: 6                  # D-028 says 5–8
