@@ -16,7 +16,9 @@ investment:
     weak_market: {quality: 55, growth: 30, momentum: 15}
   momentum_lookback: "blend 6m + 12m"  # D-099 PLACEHOLDER; chosen 2026-11-09 (D-124)
   valuation:
-    india_pe_margin: null  # D-025
+    india_pe_basis: historical_pe_10years   # D-025; chosen 2026-11-09 (D-125). Falls back to 5-year if blank
+    india_pe_margin: 0.20  # D-025 PLACEHOLDER (D-125): may pay up to 10-yr P/E × 1.2
+    india_max_peg: 2.0     # D-025 second check PLACEHOLDER (D-125); blank or negative PEG = fail
     us_peg_threshold: null # D-101
   min_buy_inr: 10000       # D-105 (approved, not a placeholder; kept here for one place to look)
 

@@ -21,6 +21,7 @@ import yaml
 from v4.db import ROOT, connect, init_db, DB_PATH
 from v4.engines.investment import filters as kf
 from v4.importers.benchmarks import composite
+from v4.engines.investment import guardrail
 
 CONFIG = ROOT / "config" / "placeholders.yaml"
 SCORE_METRICS = [
@@ -86,7 +87,7 @@ def run(as_of: str, db_path: Path = DB_PATH) -> tuple[pd.DataFrame, str]:
             survivors[col] = float("nan")
     state, note = regime(db_path)
     weights = cfg["score_weights"]["normal" if state == "normal" else "weak_market"]
-    ranked = score(survivors, weights)
+    ranked = guardrail.apply(score(survivors, weights), cfg["valuation"])
     month = as_of[:7]
     with connect(db_path) as c:
         frozen = c.execute("SELECT COUNT(*) FROM investment_lists WHERE list_month=? AND frozen_at IS NOT NULL",
@@ -96,7 +97,9 @@ def run(as_of: str, db_path: Path = DB_PATH) -> tuple[pd.DataFrame, str]:
         c.execute("DELETE FROM investment_lists WHERE list_month=?", (month,))
         c.executemany(
             """INSERT INTO investment_lists (list_month, security_id, rank, score_quality, score_growth,
-                   score_momentum, score_total, regime) VALUES (?,?,?,?,?,?,?,?)""",
+                   score_momentum, score_total, buy_below, passes_guardrail, regime)
+               VALUES (?,?,?,?,?,?,?,?,?,?)""",
             [(month, int(r.security_id), int(r.rank), r.score_quality, r.score_growth,
-              r.score_momentum, r.score_total, state) for r in ranked.itertuples()])
+              r.score_momentum, r.score_total, None if pd.isna(r.buy_below) else float(r.buy_below),
+              int(r.passes_guardrail), state) for r in ranked.itertuples()])
     return ranked, f"Weights {weights['quality']}/{weights['growth']}/{weights['momentum']} — {note}"
