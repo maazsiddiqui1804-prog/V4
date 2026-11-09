@@ -94,3 +94,10 @@ def test_backfill_tolerates_funds_not_yet_launched(tmp_path):
     rows = bm.parse_amfi(SAMPLE)
     cfg = dict(CFG, nifty500=dict(CFG["nifty500"], scheme_codes=["111", "404"]))
     assert bm.record(rows, cfg, tmp_path / "navs.csv", strict=False) == 3
+
+
+def test_history_parser_tolerates_header_variants():
+    text = "Scheme Code;Scheme Name ;ISIN Div Payout/ISIN Growth;ISIN Div Reinvestment;Net Asset Value;Repurchase Price;Sale Price;Date\n111;X Nifty 500 Index Fund;I;;10.5;;;03-Nov-2026\n"
+    assert bm.parse_amfi_history(text)[0]["nav"] == 10.5
+    text2 = "Scheme Code;Scheme;Net Asset Value;Date\n111;X Fund;10.5;03-Nov-2026\n"
+    assert bm.parse_amfi_history(text2)[0]["scheme_name"] == "X Fund"

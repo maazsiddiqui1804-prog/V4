@@ -99,22 +99,35 @@ def record(rows: list[dict], cfg: dict, path: Path = NAV_CSV, strict: bool = Tru
 HISTORY_URL = "https://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx"
 
 
+def _col(idx: dict, *names: str) -> int:
+    """Find a column by name, ignoring case and extra spaces."""
+    norm = {re.sub(r"\s+", " ", k).strip().lower(): v for k, v in idx.items()}
+    for n in names:
+        for k, v in norm.items():
+            if n in k:
+                return v
+    raise KeyError(f"none of {names} in header {list(idx)}")
+
+
 def parse_amfi_history(text: str) -> list[dict]:
     """AMFI's history report puts columns in a different order; read them by header name."""
-    out, idx = [], None
+    out, cols = [], None
     for line in text.splitlines():
         parts = [p.strip() for p in line.split(";")]
-        if "Scheme Code" in parts and "Net Asset Value" in parts and "Date" in parts:
+        low = line.lower()
+        if "scheme code" in low and "net asset value" in low and "date" in low:
             idx = {name: i for i, name in enumerate(parts)}
+            cols = {"code": _col(idx, "scheme code"), "name": _col(idx, "scheme name", "scheme"),
+                    "nav": _col(idx, "net asset value"), "date": _col(idx, "date")}
             continue
-        if idx is None or len(parts) < len(idx) or not parts[idx["Scheme Code"]].isdigit():
+        if cols is None or len(parts) <= max(cols.values()) or not parts[cols["code"]].isdigit():
             continue
         try:
-            nav = float(parts[idx["Net Asset Value"]])
-            date = datetime.strptime(parts[idx["Date"]], "%d-%b-%Y").date().isoformat()
+            nav = float(parts[cols["nav"]])
+            date = datetime.strptime(parts[cols["date"]], "%d-%b-%Y").date().isoformat()
         except ValueError:
             continue
-        out.append({"scheme_code": parts[idx["Scheme Code"]], "scheme_name": parts[idx["Scheme Name"]],
+        out.append({"scheme_code": parts[cols["code"]], "scheme_name": parts[cols["name"]],
                     "nav": nav, "date": date})
     return out
 
@@ -132,6 +145,9 @@ def backfill(days: int = 420, chunk: int = 90) -> int:
         r = requests.get(HISTORY_URL, timeout=180, headers={"User-Agent": "V4 personal research"},
                          params={"tp": "1", "frmdt": start.strftime("%d-%b-%Y"), "todt": stop.strftime("%d-%b-%Y")})
         r.raise_for_status()
+        if total == 0 and start == end - timedelta(days=days):
+            head = next((l for l in r.text.splitlines() if "scheme" in l.lower()), "(no header line found)")
+            print(f"History file header: {head[:200]}")
         rows = parse_amfi_history(r.text)
         n = record(rows, cfg, strict=False)
         print(f"{start} → {stop}: {len(r.content)/1e6:.1f} MB, {len(rows)} rows parsed, {n} new benchmark NAVs")
