@@ -40,7 +40,8 @@ class Plan:
     notes: list = field(default_factory=list)
 
 
-def plan_buys(ranked: pd.DataFrame, holdings: pd.DataFrame, amount: float, rules: dict) -> Plan:
+def plan_buys(ranked: pd.DataFrame, holdings: pd.DataFrame, amount: float, rules: dict,
+              blocked_ids: set | None = None) -> Plan:
     """ranked: rank, symbol, security_id, sector, current_price, buy_below, passes_guardrail.
     holdings: security_id, symbol, quantity, current_price, sector (V4 India holdings)."""
     target_n = rules["target_holdings"]          # 15 (D-028)
@@ -63,6 +64,8 @@ def plan_buys(ranked: pd.DataFrame, holdings: pd.DataFrame, amount: float, rules
         return plan
 
     eligible = ranked[(ranked["rank"] <= pool_floor) & ranked["passes_guardrail"]].sort_values("rank")
+    if blocked_ids:   # red-flagged (D-061) or being sold this month: never buy
+        eligible = eligible[~eligible["security_id"].isin(blocked_ids)]
     sector_count = hv.groupby("sector").size().to_dict() if len(hv) else {}
     sector_value = hv.groupby("sector")["value"].sum().to_dict() if len(hv) else {}
     pct_caps_on = len(held) >= caps_from

@@ -30,6 +30,10 @@ investment:
     pct_caps_from_holdings: 10         # D-126: % caps switch on at 10+ holdings
     stock_cap: 0.10                    # D-060
     sector_cap: 0.25                   # D-060
+  sells:                   # D-027, D-028, D-061, D-127 (approved 2026-11-09)
+    quality_bottom_fraction: 0.25      # D-127: quality score in bottom quarter of survivors = sell (PLACEHOLDER)
+    trim_above_x_target: 2.0           # D-028
+    trim_to_x_target: 2.0              # D-127: trim only the excess above 2× target
 
 trading:
   liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr)

@@ -62,3 +62,9 @@ def test_full_portfolio_tops_up_most_underweight():
     r = ranked([(f"S{i}", f"Sec{i}", 100, True) for i in range(15)])
     plan = pf.plan_buys(r, holdings, 25000, RULES)
     assert plan.orders[0].symbol == "S13" and all(o.kind == "top-up" for o in plan.orders)
+
+
+def test_blocked_names_never_bought():
+    r = ranked([("FLAG", "IT", 400, True), ("B", "Auto", 400, True), ("C", "FMCG", 300, True)])
+    plan = pf.plan_buys(r, EMPTY, 25000, RULES, blocked_ids={1})
+    assert [o.symbol for o in plan.orders] == ["B", "C"]
