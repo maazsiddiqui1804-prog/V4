@@ -39,3 +39,25 @@ def test_job_minutes_round_up_like_github():
     assert job_minutes("2026-11-09T10:00:00Z", "2026-11-09T10:00:05Z") == 1
     assert job_minutes("2026-11-09T10:00:00Z", "2026-11-09T10:02:01Z") == 3
     assert job_minutes(None, None) == 0
+
+
+def test_size_check_drops_small_foreign_filers_only(sandbox):
+    import pandas as pd
+    tmp, _ = sandbox
+    job.write_csv(job.UNIVERSE, [
+        {"ticker": "BIGF", "cik": 1, "size_basis": "to confirm after Kite check (foreign filer)"},
+        {"ticker": "SMLF", "cik": 2, "size_basis": "to confirm after Kite check (foreign filer)"},
+        {"ticker": "USCO", "cik": 3, "size_basis": "public float"}])
+    short = pd.DataFrame({"ticker": ["BIGF", "SMLF", "USCO"]})
+    prices = {"BIGF": {"price": 100.0}, "SMLF": {"price": 50.0}, "USCO": {"price": 1.0}}
+    shares = {1: 1e9, 2: 3e7, 3: 10}
+    kept, dropped = job.size_check(short, prices, 10e9, shares.get)
+    assert kept.ticker.tolist() == ["BIGF", "USCO"] and dropped == ["SMLF (~$1.5B)"]
+
+
+def test_eps_converted_only_with_confirmed_adr_ratio():
+    import math
+    import pandas as pd
+    short = pd.DataFrame({"ticker": ["TSM", "SAP", "MSFT"], "currency": ["TWD", "EUR", "USD"], "eps": [45.0, 6.0, 18.0]})
+    eps = job.eps_in_listing_terms(short, {"TWD": 1 / 32, "EUR": 1.1}, {"TSM": 5})
+    assert eps.iloc[0] == 45.0 / 32 * 5 and math.isnan(eps.iloc[1]) and eps.iloc[2] == 18.0

@@ -13,3 +13,7 @@ known_exclusions:                       # recorded so the gap is visible, not ha
   AMZN: "SEC code 5961 (retail)"
   EQIX: "SEC code 6798 (REIT)"
   DLR: "SEC code 6798 (REIT)"
+
+# Shares per US-listed ADR, for non-USD reporters (P/E check needs EPS per ADR in USD).
+# Added only after checking the company's own filing/depositary notice; missing = P/E check fails.
+adr_ratio: {}

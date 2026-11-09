@@ -61,14 +61,14 @@ def stage_fundamentals() -> str:
         except requests.HTTPError:
             missing += 1
             continue
-        f.pop("_currency", None)
+        cur = f.pop("_currency", "USD")
         m = us.metrics(f)
         eps = f.get("eps_diluted", {})
         out.append({"ticker": r["ticker"], "name": r["name"], "layer": r["layer"],
                     **{k: ("" if v is None else v) for k, v in m.items()},
                     "eps": list(eps.values())[-1] if eps else "",
                     "eps_g3": fn.eps_growth_3y(eps) or "",
-                    "zerodha_checked": r.get("zerodha_checked", "")})
+                    "currency": cur, "zerodha_checked": r.get("zerodha_checked", "")})
     write_csv(US_DIR / "metrics.csv", out)
     return f"US fundamentals: {len(out)} companies read from SEC ({missing} unavailable)"
 
@@ -136,20 +136,87 @@ def stage_prices(budget: int = 45) -> str:
     return f"US prices: {done} fetched this run; {len(pending)} still pending; {skipped} not Kite-confirmed (not priced)"
 
 
+def size_check(short: pd.DataFrame, prices: dict, floor: float, shares_fn) -> tuple[pd.DataFrame, list[str]]:
+    """Foreign filers report no US float, so their size (D-133 ≥ $10B) is checked once a price exists:
+    SEC cover-page shares × price. For ADRs the share count is ordinary shares, which can only
+    overstate size (e.g. 1 TSMC ADR = 5 shares) — so this check never wrongly drops a big company."""
+    uni = pd.DataFrame(read_csv(UNIVERSE))
+    foreign = set(uni.loc[uni["size_basis"].str.startswith("to confirm"), "ticker"]) if not uni.empty else set()
+    cik = dict(zip(uni.get("ticker", []), uni.get("cik", [])))
+    dropped = []
+    keep = []
+    for t in short["ticker"]:
+        price = prices.get(t, {}).get("price")
+        if t in foreign and price:
+            sh = shares_fn(int(cik[t]))
+            if sh and sh * price < floor:
+                dropped.append(f"{t} (~${sh * price / 1e9:.1f}B)")
+                continue
+        keep.append(t)
+    return short[short["ticker"].isin(keep)], dropped
+
+
+TIINGO_FX = "https://api.tiingo.com/tiingo/fx/top"
+
+
+def usd_per(currencies: set[str]) -> dict[str, float]:
+    """US dollars per 1 unit of each currency (Tiingo FX, one request)."""
+    cur = sorted(c for c in currencies if c and c != "USD")
+    if not cur:
+        return {}
+    r = requests.get(TIINGO_FX, timeout=30, params={"tickers": ",".join(f"usd{c.lower()}" for c in cur)},
+                     headers={"Authorization": f"Token {os.environ['TIINGO_API_KEY']}"})
+    r.raise_for_status()
+    out = {}
+    for x in r.json():
+        mid = x.get("midPrice") or ((x.get("bidPrice") or 0) + (x.get("askPrice") or 0)) / 2
+        if mid:
+            out[x["ticker"][3:].upper()] = 1 / float(mid)          # usdtwd = TWD per USD
+    return out
+
+
+def eps_in_listing_terms(short: pd.DataFrame, fx: dict, adr_ratio: dict) -> pd.Series:
+    """EPS comparable with the US price. Home-currency EPS × FX × shares per ADR.
+    Non-USD reporters without a confirmed ADR ratio (config us_universe.yaml adr_ratio) get no EPS,
+    so their P/E-vs-growth check can't pass (blank means fail, like D-123)."""
+    def one(r):
+        cur = r.get("currency") or "USD"
+        if cur == "USD":
+            return r["eps"]
+        if r["ticker"] not in adr_ratio or cur not in fx:
+            return float("nan")
+        return r["eps"] * fx[cur] * float(adr_ratio[r["ticker"]])
+    return short.apply(one, axis=1)
+
+
 def stage_rank() -> str:
+    from v4.engines.us import universe as uv
     c = cfg()
     short = pd.DataFrame(read_csv(US_DIR / "shortlist.csv"))
     prices = json.loads((US_DIR / "prices.json").read_text()) if (US_DIR / "prices.json").exists() else {}
     month = dt.date.today().strftime("%Y-%m")
-    short = short[short["zerodha_checked"].str.lower() == "yes"].copy()
+    short = short[short["zerodha_checked"].fillna("").str.lower() == "yes"].copy()
+    floor = float(uv.load_rule()["min_market_cap_usd"])
+
+    short, dropped = size_check(short, prices, floor, uv.shares_outstanding)
     for k in ("price", "ret_6m", "ret_12m"):
         short[k] = short["ticker"].map(lambda t: (prices.get(t, {}) if prices.get(t, {}).get("month") == month else {}).get(k))
     short = _num(short, ["score_quality", "score_growth", "price", "ret_6m", "ret_12m", "eps", "eps_g3"])
+    rule = uv.load_rule()
+    ratios = rule.get("adr_ratio") or {}
+    if "currency" in short:
+        short["eps"] = eps_in_listing_terms(short, usd_per(set(short["currency"].dropna())), ratios)
     ranked = fn.rank(short, c["weights"], c["max_peg"])
+    need_ratio = [t for t, cur in zip(short["ticker"], short.get("currency", pd.Series(dtype=str)))
+                  if cur and cur != "USD" and t not in ratios]
     write_csv(US_DIR / "ranking.csv", ranked.to_dict("records"))
     lines = [f"🇺🇸 V4 US ranking — {month} (Kite-confirmed shortlist only)"]
     for r in ranked.head(10).itertuples():
         lines.append(f"{r.rank:>2}. {r.ticker} {r.score_total:.0f} · {'✅' if r.passes_guardrail else '❌ ' + r.guardrail_reason}")
+    if need_ratio:
+        lines.append("P/E not checkable until ADR ratio is confirmed (Claude adds to config): " + ", ".join(need_ratio))
+    if dropped:
+        lines.append("Below the $10B size floor (foreign filers, checked with price): " + ", ".join(dropped))
     if not c.get("approved"):
         lines.append("US numbers not yet approved (dashboard T-054): ranking only, no US orders.")
     return "\n".join(lines)
