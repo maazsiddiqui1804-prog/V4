@@ -163,3 +163,13 @@ Status key: **APPROVED** = rule. **PLACEHOLDER** = approved structure, number to
 | ID | Decision | Status |
 |---|---|---|
 | D-117 | Project docs (claude.ai) are the master copy of the decisions log and status note. The repo's docs/ folder is a copy Claude refreshes at the end of each session | APPROVED |
+
+## 2026-11-09 — Monthly routine, holdings, benchmarks
+
+| ID | Decision | Status |
+|---|---|---|
+| D-118 | Monthly India data routine: Maaz drops the Screener export into `data/inbox/` on github.com; a cloud job fetches NSE's Nifty 500 list itself (fallbacks: a list in the inbox, else the last archived one, with a warning), imports, archives raw files by date, and sends a Telegram report. Works with laptop off and no Claude session (D-002, D-083). Backup: Claude imports from chat | APPROVED |
+| D-119 | **Supersedes holdings source in D-106.** Until the Trading Engine (Kite Connect) is built, holdings come from the Zerodha Console holdings XLSX dropped into the inbox once a month. Importer is built when the first V4 buys produce a real file. Paid Kite Connect timing in D-106 unchanged | APPROVED |
+| D-120 | Maaz's Zerodha account holds only V4 positions; his other portfolio sits in a separate family account outside V4 (consistent with D-091). Investment vs trading positions in the same account are told apart by V4's own trade records (Trading Engine build) | APPROVED |
+| D-121 | **Supersedes data source in D-095 (benchmark targets unchanged).** Benchmarks come from index-fund NAVs in AMFI's official daily NAV file (investable, after fund costs, in INR), not raw TRIs. Exact TRIs are only reachable via an undocumented feed behind bot detection (checked 2026-11-09). Recorded every weekday ~22:47 IST to data/benchmarks/navs.csv | APPROVED |
+| D-122 | Each benchmark = chained median daily return of all qualifying Direct-Growth index funds: Nifty 500 (6 funds), Nifty200 Quality 30 (5), Nifty200 Momentum 30 (8, pure index funds only), Nasdaq-100 INR (2 clearly labelled Direct-Growth funds; others unlabelled in AMFI file). Scheme codes in config/benchmarks.yaml | APPROVED |
