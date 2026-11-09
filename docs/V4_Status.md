@@ -3,10 +3,11 @@
 **Last updated:** 2026-11-09 · **Phase:** Build — India Investment Engine code complete; building phases 3–5 before December (D-130)
 
 ## Next session
-1. **Phase 3: US AI module** (D-130): confirm Zerodha-tradable US list (live), SEC EDGAR fundamentals, Tiingo prices (Stooq backup; Tiingo key → Maaz adds to GitHub Secrets), AI value-chain universe rule, US guardrail (P/E vs growth, D-101), Nasdaq-100 fallback (D-102), combined caps (D-060, D-089).
-2. Then Phase 4: Trading Engine + backtest (no daily login, no Kite Connect until after GMAT), then Phase 5: dashboard.
-3. After GMAT: December brief + sign-off (T-029) + first buys (T-030); subscribe Kite Connect; start paper trading.
-4. Known gaps for first quarterly review: short histories for recent listings; red-flag name matching.
+1. **Start with the US tax check (D-131):** read Zerodha's portal explanation of US-investing tax (LRS TCS, Schedule FA, US estate tax), cross-check with official sources, one-page summary → Maaz's go-ahead.
+2. **Phase 3: US AI module** (D-130): confirm Zerodha-tradable US list (live), SEC EDGAR fundamentals, Tiingo prices (Stooq backup; Tiingo key → Maaz adds to GitHub Secrets), AI value-chain universe rule, US guardrail (P/E vs growth, D-101), Nasdaq-100 fallback (D-102), combined caps (D-060, D-089).
+3. Then Phase 4: Trading Engine + backtest (no daily login, no Kite Connect until after GMAT), then Phase 5: dashboard.
+4. After GMAT: December brief + sign-off (T-029) + first buys (T-030); subscribe Kite Connect; start paper trading.
+5. Known gaps for first quarterly review: short histories for recent listings; red-flag name matching.
 
 ## Where we are
 - Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 100 automated checks pass.
@@ -22,7 +23,7 @@
 | Item | When |
 |---|---|
 | Formal sign-off of starting numbers (T-029) and first buys (T-030) | December brief |
-| US tax check: LRS TCS, Schedule FA, US estate tax (verified live, confirmed with CA) — only gate left for US buying (D-131) | Phase 3 session, before first US buy |
+| US tax check from Zerodha's portal + official sources, one-page summary, Maaz's go-ahead (D-131); CA review only before first ITR with US shares | Next session |
 | Confirm US universe limited to Zerodha-tradable list (D-022) | Phase 3 |
 | Kite login page (Kite Connect) | Phase 4 |
 | Trading placeholder numbers (liquidity floor, volume multiple, stretch limit, trail method) | Phase 4 (T-047) |
