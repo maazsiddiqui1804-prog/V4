@@ -29,7 +29,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run checks
         run: python -m pytest -q
-      - name: Check Actions minutes
+      - name: Check Actions minutes and silent jobs
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
