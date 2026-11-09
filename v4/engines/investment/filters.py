@@ -106,6 +106,17 @@ def apply(df: pd.DataFrame, rules: dict) -> pd.DataFrame:
     return out
 
 
+KINDS = ["missing", "loss", "no 2-year profit", "debt-to-equity", "interest cover",
+         "promoter pledge", "cash conversion"]
+
+
+def kind(reason: str) -> str:
+    """Group a reason like 'debt-to-equity 2.25 > 1.5' under 'debt-to-equity'."""
+    if "missing" in reason:
+        return "data missing"
+    return next((k for k in KINDS if reason.startswith(k)), reason)
+
+
 def run(as_of: str, db_path: Path = DB_PATH, rules: dict | None = None) -> pd.DataFrame:
     init_db(db_path)
     res = apply(investable_metrics(as_of, db_path), rules or load_rules())
@@ -123,6 +134,7 @@ if __name__ == "__main__":
     as_of = sys.argv[1]
     res = run(as_of)
     print(f"{as_of}: {res.passed.sum()} of {len(res)} investable stocks pass the kill filters")
-    reasons = Counter(r.split(" ")[0] + " " + r.split(" ")[1] for rs in res.reasons for r in rs)
-    for k, v in reasons.most_common():
-        print(f"  {v:>4}  {k}…")
+    kinds = Counter(kind(r) for rs in res.reasons for r in set(rs))
+    print("Knock-outs by reason (a stock can fail several):")
+    for k, v in kinds.most_common():
+        print(f"  {v:>4}  {k}")
