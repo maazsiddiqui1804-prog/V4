@@ -148,6 +148,16 @@ def render(month, amount, regime, note, list_note, plan, verdicts, ranked) -> st
     return "\n".join(L)
 
 
+BRIEFS = ROOT / "data" / "briefs"
+
+
+def save_brief(msg: str) -> None:
+    """Keep each month's brief as a file so the dashboard can show it (D-108 Action view)."""
+    month = msg.split("—", 1)[1].split("·")[0].strip() if "—" in msg else "latest"
+    BRIEFS.mkdir(parents=True, exist_ok=True)
+    (BRIEFS / f"{month}.md").write_text(msg)
+
+
 def main() -> int:
     raw = os.environ.get("MONTHLY_AMOUNT", "").replace(",", "").strip()
     try:
@@ -162,6 +172,7 @@ def main() -> int:
         print(f"FAILED: {e}", file=sys.stderr)
         return 1
     print(msg)
+    save_brief(msg)
     for i in range(0, len(msg), 3900):   # Telegram's limit is 4096 characters per message
         alerts.send(msg[i:i + 3900])
     return 0

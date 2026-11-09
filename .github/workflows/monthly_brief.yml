@@ -43,7 +43,7 @@ jobs:
         run: |
           git config user.name "V4 bot"
           git config user.email "v4-bot@users.noreply.github.com"
-          git add data/v4.sqlite
+          git add data/v4.sqlite data/briefs
           git diff --cached --quiet || git commit -m "Monthly brief $(date +%F): list frozen"
           git pull --rebase -q && git push
       - name: Alert on any failure
