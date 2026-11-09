@@ -46,12 +46,15 @@ def parse_amfi(text: str) -> list[dict]:
             date = datetime.strptime(parts[-1], "%d-%b-%Y").date().isoformat()
         except ValueError:
             continue
-        out.append({"scheme_code": parts[0], "scheme_name": parts[3], "nav": nav, "date": date})
+        # Newer files have separate Plan and Option columns before NAV and Date.
+        extra = " ".join(parts[4:-2])
+        out.append({"scheme_code": parts[0], "scheme_name": parts[3], "plan_option": extra,
+                    "nav": nav, "date": date})
     return out
 
 
-def is_direct_growth(name: str) -> bool:
-    n = name.lower()
+def is_direct_growth(row: dict) -> bool:
+    n = (row["scheme_name"] + " " + row.get("plan_option", "")).lower()
     return "direct" in n and "growth" in n and not re.search(r"idcw|dividend|\betf\b", n)
 
 
@@ -65,7 +68,7 @@ def discover(rows: list[dict], cfg: dict) -> dict[str, list[dict]]:
         pat = re.compile(b["match"], re.I)
         excl = re.compile(b["exclude"], re.I) if b.get("exclude") else None
         found[key] = [r for r in rows if pat.search(r["scheme_name"])
-                      and is_direct_growth(r["scheme_name"])
+                      and is_direct_growth(r)
                       and not (excl and excl.search(r["scheme_name"]))]
     return found
 
@@ -110,6 +113,12 @@ def main(mode: str) -> int:
     try:
         rows = parse_amfi(fetch_amfi())
         if mode == "discover":
+            print(f"Parsed {len(rows)} fund rows from AMFI")
+            for key, b in cfg.items():
+                loose = [r for r in rows if re.search(b["match"], r["scheme_name"], re.I)]
+                print(f"[{key}] {len(loose)} name matches before filters, e.g.:")
+                for r in loose[:4]:
+                    print(f"    {r['scheme_code']} | {r['scheme_name']} | {r.get('plan_option','')}")
             for key, funds in discover(rows, cfg).items():
                 print(f"\n== {key} ({cfg[key]['label']}): {len(funds)} Direct-Growth funds")
                 for r in funds:

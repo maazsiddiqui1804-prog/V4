@@ -53,3 +53,9 @@ def test_load_into_db(tmp_path):
     p = tmp_path / "navs.csv"
     bm.record(bm.parse_amfi(SAMPLE), CFG, p)
     assert bm.load_into_db(p, tmp_path / "t.sqlite") == 3
+
+
+def test_direct_growth_from_separate_columns():
+    text = "1;I;-;Delta Nifty 500 Index Fund;Direct Plan;Growth Option;10.0;06-Nov-2026\n"
+    found = bm.discover(bm.parse_amfi(text), {"n": {"label": "x", "match": r"nifty\s*500\s*index"}})
+    assert [r["scheme_code"] for r in found["n"]] == ["1"]
