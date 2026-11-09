@@ -10,8 +10,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "check or probe"
+        description: "check, probe, or dryrun"
         default: check
+      symbols:
+        description: "dryrun only: comma-separated NSE symbols to watch"
+        default: ""
 
 permissions:
   contents: write
@@ -33,14 +36,17 @@ jobs:
       - name: Probe feeds
         if: ${{ inputs.mode == 'probe' }}
         run: python -m v4.importers.filings probe
+      - name: Dry run (prints only)
+        if: ${{ inputs.mode == 'dryrun' }}
+        run: python -m v4.engines.investment.redflags dryrun "${{ inputs.symbols }}"
       - name: Check for red flags
-        if: ${{ inputs.mode != 'probe' }}
+        if: ${{ inputs.mode != 'probe' && inputs.mode != 'dryrun' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m v4.engines.investment.redflags
       - name: Save new flags to the repo
-        if: ${{ inputs.mode != 'probe' }}
+        if: ${{ inputs.mode != 'probe' && inputs.mode != 'dryrun' }}
         run: |
           git config user.name "V4 bot"
           git config user.email "v4-bot@users.noreply.github.com"

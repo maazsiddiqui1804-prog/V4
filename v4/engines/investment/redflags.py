@@ -117,9 +117,28 @@ def load_into_db(path: Path = FLAGS_CSV, db_path: Path = DB_PATH) -> int:
     return len(rows)
 
 
+def dry_run(symbols: list[str]) -> int:
+    """Match live feeds against named stocks; print only — nothing saved, nothing sent."""
+    from v4.importers import filings
+    with connect(DB_PATH) as c:
+        rows = c.execute(f"SELECT security_id, symbol, name FROM securities WHERE symbol IN ({','.join('?' * len(symbols))})",
+                         symbols).fetchall()
+    watch = pd.DataFrame(rows, columns=["security_id", "symbol", "name"])
+    print(f"Dry run on {len(watch)} names: {', '.join(watch.symbol)}")
+    for feed in filings.FEEDS:
+        items = filings.fetch(feed)
+        hits = match(items, watch, feed)
+        print(f"[{feed}] {len(items)} items, {len(hits)} red flags")
+        for f in hits[:10]:
+            print(f"  {f['symbol']} — {f['flag']}: {f['subject']}")
+    return 0
+
+
 def main() -> int:
     from v4 import alerts
     from v4.importers import filings
+    if len(sys.argv) > 2 and sys.argv[1] == "dryrun":
+        return dry_run(sys.argv[2].split(","))
     try:
         watch = watchlist()
         if watch.empty:
