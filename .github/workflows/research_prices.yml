@@ -1,4 +1,4 @@
-# Research only: long price history for strategy testing. Saved as a run artifact (not committed).
+# Research only: long price history for strategy testing. Saved on branch research-data, never on main.
 name: Research prices
 
 on:
@@ -9,7 +9,7 @@ on:
         default: "15y"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   fetch:
@@ -23,11 +23,15 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Download long history
         run: python -m v4.importers.india_prices "${{ inputs.period }}" research
-      - uses: actions/upload-artifact@v4
-        with:
-          name: research-prices
-          path: research/
-          retention-days: 30
+      - name: Save to the research-data branch (kept off main)
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git checkout --orphan research-data
+          git rm -rq --cached .
+          git add research/
+          git commit -qm "Research prices ${{ inputs.period }} $(date +%F)"
+          git push -f origin research-data
       - name: Alert on any failure
         if: failure()
         env:
