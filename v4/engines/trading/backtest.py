@@ -1,15 +1,15 @@
-"""Trading Engine backtest (D-041–D-048, D-104). RESULTS ARE HISTORICAL SIMULATION, NEVER LIVE.
+"""Trading Engine backtest (D-137 rules "B2"; D-044, D-046–D-048, D-104). RESULTS ARE HISTORICAL SIMULATION, NEVER LIVE.
 
-Plain English — day by day:
+Plain English — day by day (every number comes from config/placeholders.yaml → trading):
 1. Morning: exits decided last night fill at the open; entries from last night's signals fill at
    the open (+ slippage). If the open is already below the stop, the entry is skipped.
 2. During the day: if a stock opens below its stop, it's sold at the open (gap, D-047);
-   if the low touches the stop, it's sold at the stop; if the high reaches entry + 2R,
-   half is sold there (D-045).
-3. Evening (close): after the half is off, the rest exits next morning if the close is below its
-   20-day average (trail, PLACEHOLDER); any position held 20 trading days exits next morning.
-   New signals are queued for tomorrow, best relative strength first, within
-   max 6 open and 3 per sector (D-046). Risk 1% of current equity per trade, 0.5% in a weak market.
+   if the low touches the stop, it's sold at the stop. (An optional "sell half at 2R" step exists
+   for testing older rule sets; B2 has no profit target.)
+3. Evening (close): a close below the 50-day average → sell next morning (trail, active from day one);
+   a position held ~250 trading days also exits. New signals are queued for tomorrow, strongest
+   first, within max 6 open and 3 per sector (D-046), and none while the Nifty 500 is below its
+   200-day average (D-137). Risk 1% of current equity per trade (D-044).
 4. Drawdown brake (D-104): equity >15% below its peak → no new entries until the next quarter starts.
 Every fill pays Zerodha delivery costs (costs.py) and slippage. R = net profit ÷ money at risk.
 Known biases (shown in every report): today's Nifty 500 list applied to the past (survivorship),

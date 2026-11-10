@@ -5,7 +5,13 @@ V4 is Maaz's personal rules-based system: India + US long-term investing (Invest
 ## Authority
 - `docs/V4_Decisions_Log.md` — every approved rule. If code and log disagree, the log wins; fix the code or ask.
 - `docs/V4_Status.md` — where the build is and what's next.
-- Read both before changing anything.
+- `docs/V4_Instructions_Manual.md` — how to work with Maaz, touchpoints, session-end protocol.
+- Read these before changing anything. The claude.ai Project holds the master copies (D-117); docs/ mirrors them.
+
+## Touchpoints that must agree
+Project docs · this repo (code, config, docs) · the app (https://investing-trading.streamlit.app/, `dashboard/app.py`,
+Build page = `data/app/build.json`) · the V4 Dashboard on claude.ai · Telegram (every message links the app).
+Rules shown in the app are read from `config/` — change a number there, not in page text.
 
 ## Hard limits (never break, even if asked)
 1. **No orders.** Code never places, modifies or cancels an order. Only read-only broker calls (holdings, positions, quotes, history). (D-003)
@@ -25,9 +31,12 @@ V4 is Maaz's personal rules-based system: India + US long-term investing (Invest
 ```
 v4/
   CLAUDE.md            this rulebook
-  docs/                decisions log, status (mirrors of the claude.ai Project docs)
+  docs/                decisions log, status, manual, US tax check (mirrors of the claude.ai Project docs)
+  dashboard/           the Streamlit app
+  research/            strategy-search method and results (simulation)
   config/              settings and placeholder numbers (no secrets)
   data/v4.sqlite       the one shared database (D-001, D-111)
+  data/app/            small files the app reads (prices snapshot, signals, job status, build copy)
   data/raw/            raw imports (Screener exports etc.)
   v4/                  Python package: db, importers, engines, alerts
   tests/               automated checks

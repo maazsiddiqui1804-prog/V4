@@ -1,4 +1,4 @@
-# Trading Engine backtest (D-047/D-048 groundwork). Manual. Results are SIMULATION, never live.
+# Trading Engine backtest of the current rules (B2, D-137). Manual. Uses the prices branch. Results are SIMULATION, never live.
 name: Trading backtest
 
 on:
@@ -6,7 +6,7 @@ on:
     inputs:
       refresh_prices:
         description: "Download fresh prices first (yes/no)"
-        default: "yes"
+        default: "no"
 
 permissions:
   contents: write
@@ -25,7 +25,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Download India prices
+      - name: Use the daily-updated price history (prices branch)
+        run: |
+          git fetch -q origin prices
+          mkdir -p data/prices
+          git show origin/prices:india_daily.csv.gz > data/prices/india_daily.csv.gz
+          git show origin/prices:nifty500_index.csv > data/prices/nifty500_index.csv
+      - name: Download India prices instead (only if asked)
         if: ${{ inputs.refresh_prices == 'yes' }}
         run: python -m v4.importers.india_prices
       - name: Run backtest
@@ -33,11 +39,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m v4.jobs.backtest
-      - name: Save prices and results to the repo
+      - name: Save results to the repo (prices live on the prices branch)
         run: |
           git config user.name "V4 bot"
           git config user.email "v4-bot@users.noreply.github.com"
-          git add data/prices data/backtest
+          git add data/backtest
           git diff --cached --quiet || git commit -m "Backtest $(date +%F)"
           git pull --rebase -q && git push
       - name: Alert on any failure

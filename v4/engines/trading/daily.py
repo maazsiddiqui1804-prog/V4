@@ -5,7 +5,7 @@ Plain English — run after the close (~6:30 PM) on today's end-of-day prices:
   (1% of trading capital at risk), within 6 open / 3 per sector; none while the market is weak (D-137).
 - WATCH: stocks in an uptrend and in the top 20% for strength, within 3% of breaking out →
   trigger price for a Kite price alert (D-097).
-- OPEN POSITIONS: what to do tomorrow — exit (stop hit, trail, time stop), sell half at 2R, or hold.
+- OPEN POSITIONS: what to do tomorrow — exit (stop hit, close below the 50-day average, ~1-year limit) or hold.
 Paper first (D-047). The system never places orders (D-003); Maaz acts, and places each stop as a GTT (D-110).
 """
 from __future__ import annotations
@@ -94,7 +94,7 @@ def evening_plan(px: pd.DataFrame, index_close: pd.Series, sectors: dict, positi
     t = today
     setup = ((t["value20_cr"] >= cfg["liquidity_floor_cr_per_day"]) & (t["dma_fast"] > t["dma_slow"])
              & (t["close"] > t["dma_fast"]) & (t["rs_pct"] >= 1 - cfg["rs_top_fraction"]))
-    trig = t["prior_high_close"].combine(t["close"], max)          # tomorrow must close above today's 20-day high
+    trig = t["prior_high_close"].combine(t["close"], max)          # a close above the previous 250-day high close = signal
     close_to = (trig / t["close"] - 1).between(0, near, inclusive="right")
     watch = t[setup & close_to & ~t.index.isin(held) & ~t.index.isin([n["symbol"] for n in new])]
     watchlist = [{"symbol": s, "trigger": round(float(trig[s]), 2)} for s in watch.sort_values("rs_pct", ascending=False).index]
