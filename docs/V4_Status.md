@@ -13,15 +13,18 @@
 4. **Phase 5:** Streamlit dashboard (dashboard/app.py, Action + Analysis) built and checked locally — deploy is T-060; quarterly report job (1 Jan/Apr/Jul/Oct); 12-month warning + 3-year kill test (shadow-portfolio vs index funds, after costs and tax); India tax estimates (rates to re-verify under Income-tax Act 2025); Monday check for silent jobs. Analysis view gains returns/risk/costs once real holdings exist.
 5. After GMAT: December brief + sign-off (T-029) + first buys (T-030); Kite Connect; paper trading.
 
-### T-059 — Trading backtest result (simulation, NOT live)
-Nov 2022–Nov 2026, today's Nifty 500, Yahoo prices (7 missed splits/bonuses corrected), full Zerodha delivery costs + 0.1% slippage, ₹1L notional:
-232 trades · avg **−0.11R** net · median −0.38R · win rate 39% · −17% total (−4.6%/yr) · worst drawdown −36% · D-048 bar (≥30 trades, ≥0.3R) **not met**.
-Exits: stops avg −1.06R (incl. 5 overnight gaps avg −2.7R); time stop (20 days) avg +0.69R; only 7 trades reached 2R and trailed.
-8 nearby variants (time stop 20/40, stop lookback 10/20, stretch 10%/5%): −0.11R to +0.06R overall; 2023–24 slightly positive, **2025–26 negative in every variant**. Results flatter reality (survivorship: today's index list).
-Options (Claude's ranking):
-- **A (recommended): keep rules, proceed to paper trading after GMAT as planned.** Paper is the real test; D-048 gate means no money at risk until ≥0.3R is proven. Cost: ~3 months of paper effort that may end in "no go".
-- **B: before paper, Claude runs a pre-declared robustness study** (few variants fixed in advance, judged on 2025–26 as hold-out) and brings starting numbers for approval (T-047). Risk: curve-fitting if done loosely.
-- **C: pause the Trading Engine** and put the 10% sleeve into the Investment Engine until the January strategy review (D-066) rethinks the setup.
+### T-059 — Trading strategy search (2026-11-10, SIMULATION, NOT LIVE) — details: research/2026-11-strategy-search/
+Protocol fixed in advance: 15 years of today's Nifty 500 (Yahoo, split fixes), full costs; search on 2012–19 only (2,520 variants), 7 finalists declared, confirmed on 2020–22, then one untouched test on 2023–26 with pass rules written beforehand. Control: random entries with identical exits (removes survivorship drift).
+| | 2012–19 | 2020–22 | 2023–26 (one-shot) | Edge over random entries (R) |
+|---|---|---|---|---|
+| **B2** 52-week-high breakout on 1.5× volume, top-20% 12-month strength, market above 200-day avg; stop 2×ATR; exit on close below 50-day avg (max 1 year) | 18%/yr, DD −16%, 0.51R | 22%, −15%, 0.49R | **21%, −17%, 0.51R, 566 trades** | +0.37 / +0.25 / +0.25 |
+| **B1** = B2 without the market filter | 21%, −20%, 0.51R | 31%, −15%, 0.56R | 15%, −18%, 0.55R | +0.37 / +0.26 / +0.29 |
+| **R4** top-10 by 6-month return, monthly, cash when market below 200-day | 25%, −29% | 16%, −39% | 27%, −30% | — |
+| R1–R3 momentum rotation (no market filter) | 30–37%, −25 to −30% | 42–46%, ~−40% | 30–39%, −33 to −37% (failed drawdown rule) | — |
+| C0 current V4 rules | 6%, 0.06R | 2%, 0.08R | **−3%, −0.03R (fail)** | |
+| Survivor baseline (equal-weight all) / real Nifty 500 | 15% / 13% | 27% / 16% | 21% / 11% | |
+Reading: every long strategy is flattered ~10 pts/yr by survivorship; breakout B-family holds a stable ~+0.25–0.37R edge over random entries in all three periods. What makes it work: let winners run (50-day-average trail, up to a year) — the 20-day time stop + 2R target in the current rules cut winners short. Holding ~1–2 months average, not 1–4 weeks.
+Options: A (recommended) adopt B2 as the Trading Engine rules for paper trading after the GMAT (rule change, needs Maaz's yes; D-048 gate still applies) · B adopt B1 (higher return 2012–22, weaker 2023–26) · C put the trading 10% into momentum rotation R4 (or a Momentum 30 index fund) instead of breakout trading · D keep current rules (fails every period).
 
 ## Where we are
 - Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 169 automated checks pass.
