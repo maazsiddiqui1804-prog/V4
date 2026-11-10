@@ -1,4 +1,55 @@
 {
- "updated": "2026-11-10T09:42+00:00",
- "jobs": []
+ "updated": "2026-11-10T09:43+00:00",
+ "jobs": [
+  {
+   "job": "Benchmark NAVs",
+   "last_run": "2026-11-09 18:01",
+   "result": "success"
+  },
+  {
+   "job": "Daily app refresh",
+   "last_run": "2026-11-10 09:42",
+   "result": "in_progress"
+  },
+  {
+   "job": "Health check",
+   "last_run": "2026-11-10 09:41",
+   "result": "success"
+  },
+  {
+   "job": "Monthly brief",
+   "last_run": "",
+   "result": "never run"
+  },
+  {
+   "job": "Monthly import",
+   "last_run": "2026-11-09 13:32",
+   "result": "success"
+  },
+  {
+   "job": "Quarterly report",
+   "last_run": "",
+   "result": "never run"
+  },
+  {
+   "job": "Red flags",
+   "last_run": "2026-11-10 08:36",
+   "result": "success"
+  },
+  {
+   "job": "Research prices",
+   "last_run": "2026-11-10 08:45",
+   "result": "success"
+  },
+  {
+   "job": "Trading backtest",
+   "last_run": "2026-11-10 09:30",
+   "result": "success"
+  },
+  {
+   "job": "US data",
+   "last_run": "2026-11-09 19:41",
+   "result": "success"
+  }
+ ]
 }
