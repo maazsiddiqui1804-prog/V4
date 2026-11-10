@@ -1,36 +1,42 @@
 {
  "updated": "2026-11-10",
- "note": "Copy of the claude.ai V4 Dashboard tasks; Claude refreshes it each session.",
+ "note": "Copy of the claude.ai V4 Dashboard; Claude refreshes it each session.",
  "phases": [
   {
+   "id": "P0",
+   "name": "Design and decisions",
+   "status": "Done — 24 Oct – 8 Nov 2026",
+   "pct": 100
+  },
+  {
    "id": "P1",
-   "name": "Data layer",
-   "status": "Done",
+   "name": "Setup and data layer",
+   "status": "Done — 9 Nov 2026",
    "pct": 100
   },
   {
    "id": "P2",
-   "name": "India investing",
-   "status": "Done \u2014 first real list in December",
-   "pct": 100
-  },
-  {
-   "id": "P3",
-   "name": "US investing",
-   "status": "Code done; waiting for the Kite check",
+   "name": "India Investment Engine",
+   "status": "Done — 9 Nov 2026 · first real list Dec 2026",
    "pct": 90
   },
   {
+   "id": "P3",
+   "name": "US AI module",
+   "status": "In progress — 9–10 Nov 2026 · waiting on Kite check + approvals",
+   "pct": 54
+  },
+  {
    "id": "P4",
-   "name": "India trading",
-   "status": "Rules chosen (B2); Kite Connect + daily paper run after the GMAT",
-   "pct": 75
+   "name": "Trading Engine (paper)",
+   "status": "In progress — Rules B2 (D-137) · Kite Connect + paper after the GMAT",
+   "pct": 50
   },
   {
    "id": "P5",
-   "name": "App, reviews, reports",
-   "status": "App rebuilt; analysis fills in as real trades arrive",
-   "pct": 85
+   "name": "Dashboard and reviews",
+   "status": "In progress — App live 10 Nov 2026 · analysis fills in with real trades",
+   "pct": 71
   }
  ],
  "tasks": [
@@ -224,7 +230,7 @@
    "phase": "India Investment Engine",
    "owner": "Claude",
    "status": "Done",
-   "task": "Portfolio builder: \u20b910k minimum, equal weight, trims"
+   "task": "Portfolio builder: ₹10k minimum, equal weight, trims"
   },
   {
    "task_id": "T-025",
@@ -264,7 +270,7 @@
    "phase": "India Investment Engine",
    "owner": "Maaz",
    "status": "Done",
-   "task": "Sign off starting numbers D-123\u2013D-127 (with first brief, Dec 2026)"
+   "task": "Sign off starting numbers D-123–D-127 (with first brief, Dec 2026)"
   },
   {
    "task_id": "T-030",
@@ -279,16 +285,16 @@
    "phase_id": "P3",
    "phase": "US AI module",
    "owner": "Claude",
-   "status": "In progress",
-   "task": "US universe built from SEC: 334 names (131 sized by public float, 203 genuine foreign filers sized after Kite check). Kite check of the ~40-name shortlist waits on T-057"
+   "status": "Done",
+   "task": "US universe built from SEC: 334 names (131 sized by public float, 203 genuine foreign filers sized once priced). Kite check of the shortlist is T-057"
   },
   {
    "task_id": "T-032",
    "phase_id": "P3",
    "phase": "US AI module",
    "owner": "Claude",
-   "status": "In progress",
-   "task": "SEC fundamentals pipeline: cloud probe found 3 bugs (Microsoft revenue label rename, TSMC currency mix, Vistra debt missing) \u2014 fixed and tested; re-probe running"
+   "status": "Done",
+   "task": "SEC fundamentals pipeline: 3 bugs fixed (label renames, currency mix, missing debt); re-probe passed; fundamentals + shortlist of 40 run in the cloud"
   },
   {
    "task_id": "T-033",
@@ -296,7 +302,7 @@
    "phase": "US AI module",
    "owner": "Claude",
    "status": "In progress",
-   "task": "Tiingo prices for Kite-confirmed names only (built, resumable, \u226445/run); Stooq backup not built"
+   "task": "Tiingo prices for Kite-confirmed names only (built, resumable, ≤45/run); Stooq backup not built"
   },
   {
    "task_id": "T-034",
@@ -336,7 +342,7 @@
    "phase": "US AI module",
    "owner": "Both",
    "status": "Done",
-   "task": "US tax check from Zerodha portal + official sources \u2192 one-page summary \u2192 your go-ahead (D-131)"
+   "task": "US tax check from Zerodha portal + official sources → one-page summary → your go-ahead (D-131)"
   },
   {
    "task_id": "T-039",
@@ -344,7 +350,7 @@
    "phase": "Trading Engine (paper)",
    "owner": "Maaz",
    "status": "Not started",
-   "task": "Subscribe to Kite Connect (\u20b9500/month)"
+   "task": "Subscribe to Kite Connect (₹500/month)"
   },
   {
    "task_id": "T-040",
@@ -359,8 +365,8 @@
    "phase_id": "P4",
    "phase": "Trading Engine (paper)",
    "owner": "Claude",
-   "status": "In progress",
-   "task": "Backtest built and run on 4 years of Yahoo prices (Kite history later). First result: no edge \u2014 see T-059"
+   "status": "Done",
+   "task": "Backtest + 15-year strategy search done; B2 chosen (D-137); backtest now runs on the daily-updated prices branch"
   },
   {
    "task_id": "T-042",
@@ -408,7 +414,7 @@
    "phase": "Trading Engine (paper)",
    "owner": "Maaz",
    "status": "Not started",
-   "task": "Approve trading placeholder numbers"
+   "task": "Trading numbers (B2, D-137) are placeholders: formal sign-off once paper results exist"
   },
   {
    "task_id": "T-048",
@@ -424,7 +430,7 @@
    "phase": "Dashboard and reviews",
    "owner": "Claude",
    "status": "In progress",
-   "task": "Analysis view: benchmarks, holdings, red flags, backtest (labelled simulation), US universe built; returns vs benchmarks, risk, costs to add once there are real holdings"
+   "task": "App Analysis + Strategy pages built (taken vs skipped, portfolio, trading diagnostics); fills in as real trades arrive; frozen-list tracking to add before December"
   },
   {
    "task_id": "T-050",
@@ -439,8 +445,8 @@
    "phase_id": "P5",
    "phase": "Dashboard and reviews",
    "owner": "Claude",
-   "status": "Not started",
-   "task": "Quarterly report"
+   "status": "Done",
+   "task": "Quarterly report job built (1 Jan/Apr/Jul/Oct, Telegram + app); review diagnostics on the app's Strategy & Philosophy page"
   },
   {
    "task_id": "T-052",
@@ -464,7 +470,7 @@
    "phase": "US AI module",
    "owner": "Maaz",
    "status": "Not started",
-   "task": "Approve US starting numbers: kill filters (proposed = India's D-123), PEG \u2264 2.0, shortlist 40, 6 US holdings"
+   "task": "Approve US starting numbers: kill filters (proposed = India's D-123), PEG ≤ 2.0, shortlist 40, 6 US holdings"
   },
   {
    "task_id": "T-055",
@@ -480,7 +486,7 @@
    "phase": "US AI module",
    "owner": "Maaz",
    "status": "Not started",
-   "task": "Decide US money timing: monthly vs quarterly transfers (\u20b945 flat fee + 0.4\u20131.4% markup per transfer)"
+   "task": "Decide US money timing: monthly vs quarterly transfers (₹45 flat fee + 0.4–1.4% markup per transfer)"
   },
   {
    "task_id": "T-057",
@@ -488,7 +494,7 @@
    "phase": "US AI module",
    "owner": "Maaz",
    "status": "Blocked",
-   "task": "US Kite check: regular Kite has no 'International' search on your account. Either (a) log into kite-beta.zerodha.com in Chrome (US stocks live there in beta), or (b) check Console \u2192 Account \u2192 US investing shows 'Enabled' (not waitlisted). Then Claude searches the ~40 shortlisted names. Shortlist not ready yet."
+   "task": "US Kite check of the 40 shortlisted names: waiting for Kite's US (International) search to appear on your account; then log in and Claude checks them (~10 min)"
   },
   {
    "task_id": "T-058",
@@ -504,7 +510,7 @@
    "phase": "Trading Engine (paper)",
    "owner": "Maaz",
    "status": "Done",
-   "task": "Trading strategy chosen: B2 (D-137) \u2014 52-week-high breakout, market filter, 2\u00d7ATR stop, exit below 50-day average. Engine switched."
+   "task": "Trading strategy chosen: B2 (D-137) — 52-week-high breakout, market filter, 2×ATR stop, exit below 50-day average. Engine switched."
   },
   {
    "task_id": "T-060",
@@ -512,7 +518,7 @@
    "phase": "Dashboard & reviews",
    "owner": "Maaz",
    "status": "Done",
-   "task": "Dashboard online: https://pbun4bgte5yek2vgcy7mzn.streamlit.app/ (sharing: only specific people)"
+   "task": "App online: https://investing-trading.streamlit.app/ (private: only Maaz). To-do ticks save via a GitHub key that expires 1 Nov 2027."
   }
  ]
 }
