@@ -1,0 +1,60 @@
+# Daily app refresh: prices, watch-only trading signals, job health. Weekdays after the NSE close.
+name: Daily app refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 12 * * 1-5"   # 18:13 IST weekdays
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: database-writes
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Get stored price history (prices branch)
+        run: |
+          mkdir -p history
+          if git fetch -q origin prices; then
+            git show origin/prices:india_daily.csv.gz > history/india_daily.csv.gz
+            git show origin/prices:nifty500_index.csv > history/nifty500_index.csv
+          fi
+      - name: Refresh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.jobs.daily_app history
+      - name: Save app files to main
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/app
+          git diff --cached --quiet || git commit -qm "App refresh $(date +%F)"
+          git pull --rebase -q && git push
+      - name: Save price history to the prices branch (one commit, replaced daily)
+        run: |
+          cd history
+          git init -q && git checkout -q -b prices
+          git config user.name "V4 bot" && git config user.email "v4-bot@users.noreply.github.com"
+          git add . && git commit -qm "Prices $(date +%F)"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" prices
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

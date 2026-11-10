@@ -36,8 +36,8 @@ def tidy(raw: pd.DataFrame, yahoo_to_symbol: dict) -> pd.DataFrame:
     return long[["date", "symbol", "open", "high", "low", "close", "volume"]]
 
 
-def fetch(period: str = "4y", batch: int = 50, out=None, index_out=None) -> str:
-    out, index_out = out or OUT, index_out or INDEX_OUT
+def fetch_frame(period: str = "4y", batch: int = 50) -> tuple[pd.DataFrame, pd.Series, list]:
+    """Download Nifty 500 stocks + the Nifty 500 index from Yahoo. Returns (prices, index close, missing)."""
     import yfinance as yf
     u = universe()
     ymap = {f"{s}.NS": s for s in u["symbol"]}
@@ -50,15 +50,28 @@ def fetch(period: str = "4y", batch: int = 50, out=None, index_out=None) -> str:
         parts.append(got)
         missing += [ymap[t] for t in chunk if got.empty or ymap[t] not in set(got["symbol"])]
     px = pd.concat(parts, ignore_index=True)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    px.to_csv(out, index=False, float_format="%.4f", compression="gzip")
     idx = yf.download(INDEX_TICKER, period=period, auto_adjust=True, progress=False)
     close = idx["Close"].squeeze().rename("close")
     close.index.name = "date"
+    return px, close, missing
+
+
+def fetch(period: str = "4y", batch: int = 50, out=None, index_out=None) -> str:
+    out, index_out = out or OUT, index_out or INDEX_OUT
+    px, close, missing = fetch_frame(period, batch)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    px.to_csv(out, index=False, float_format="%.4f", compression="gzip")
     close.to_csv(index_out, float_format="%.2f")
-    return (f"India prices: {px['symbol'].nunique()} of {len(u)} Nifty 500 stocks, "
-            f"{px['date'].min()}→{px['date'].max()}, index {len(close)} days. "
+    n = px["symbol"].nunique()
+    return (f"India prices: {n} Nifty 500 stocks, {px['date'].min()}→{px['date'].max()}, index {len(close)} days. "
             f"Missing: {', '.join(missing[:20])}{'…' if len(missing) > 20 else ''}")
+
+
+def merge(old: pd.DataFrame, new: pd.DataFrame) -> pd.DataFrame:
+    """Add newly downloaded days to the stored history; a re-downloaded day replaces the stored one."""
+    both = pd.concat([old, new], ignore_index=True)
+    both["date"] = pd.to_datetime(both["date"])
+    return both.drop_duplicates(["date", "symbol"], keep="last").sort_values(["symbol", "date"]).reset_index(drop=True)
 
 
 def fix_unadjusted(px: pd.DataFrame, threshold: float = 0.30) -> tuple[pd.DataFrame, list]:

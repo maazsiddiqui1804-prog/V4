@@ -1,0 +1,75 @@
+{
+ "date": "2026-11-09",
+ "weak_market": false,
+ "new": [
+  {
+   "symbol": "LAURUSLABS",
+   "sector": "Healthcare",
+   "ref_close": 2454.0,
+   "stop": 2275.34,
+   "target_2r": null,
+   "qty": 5,
+   "risk_inr": 893
+  },
+  {
+   "symbol": "SAILIFE",
+   "sector": "Healthcare",
+   "ref_close": 1836.8,
+   "stop": 1688.19,
+   "target_2r": null,
+   "qty": 6,
+   "risk_inr": 892
+  },
+  {
+   "symbol": "GLAND",
+   "sector": "Healthcare",
+   "ref_close": 3302.4,
+   "stop": 3065.6,
+   "target_2r": null,
+   "qty": 4,
+   "risk_inr": 947
+  }
+ ],
+ "skipped": [
+  [
+   "AUROPHARMA",
+   "3 already in Healthcare"
+  ],
+  [
+   "DIVISLAB",
+   "3 already in Healthcare"
+  ],
+  [
+   "ANTHEM",
+   "3 already in Healthcare"
+  ]
+ ],
+ "actions": [],
+ "watchlist": [
+  {
+   "symbol": "SANSERA",
+   "trigger": 4662.4
+  },
+  {
+   "symbol": "IPCALAB",
+   "trigger": 2009.6
+  },
+  {
+   "symbol": "EMCURE",
+   "trigger": 2245.0
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "trigger": 2373.5
+  },
+  {
+   "symbol": "KARURVYSYA",
+   "trigger": 370.05
+  },
+  {
+   "symbol": "LALPATHLAB",
+   "trigger": 2029.4
+  }
+ ],
+ "mode": "WATCH-ONLY (paper trading starts after the GMAT)"
+}
