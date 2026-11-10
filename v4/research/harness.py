@@ -104,7 +104,7 @@ def _simulate(mask, o, h, l, c, atr, ll, trail_ma, stop_kind, stop_k, max_risk, 
     for n in range(N):
         t = 0
         while t < T - 2:
-            if not mask[t, n] or not np.isfinite(o[t + 1]):
+            if not mask[t, n] or not np.isfinite(o[t + 1, n]):
                 t += 1
                 continue
             e = o[t + 1, n] * (1 + slip)
@@ -180,6 +180,20 @@ def simulate(g: Grid, mask, stop="atr", stop_k=2.0, max_risk=0.12, target_r=0.0,
                          "days": a[:, 5].astype(int), "risk_pct": a[:, 6]})
 
 
+def random_mask(g: Grid, like: np.ndarray, seed=0, liq=0.4) -> np.ndarray:
+    """Control: same number of entries per day as `like`, but on random liquid stocks.
+    Whatever this earns is the market/survivorship drift — the strategy's edge is what it earns above this."""
+    rng = np.random.default_rng(seed)
+    ok = np.nan_to_num(g.f("liq_rank") >= liq, nan=0).astype(bool) & np.isfinite(g.close)
+    out = np.zeros_like(like)
+    counts = like.sum(axis=1)
+    for d in np.nonzero(counts)[0]:
+        cand = np.nonzero(ok[d])[0]
+        if len(cand):
+            out[d, rng.choice(cand, size=min(counts[d], len(cand)), replace=False)] = True
+    return out
+
+
 def score(trades: pd.DataFrame, period: str) -> dict:
     a, b = PERIODS[period]
     t = trades[(trades["date"] >= a) & (trades["date"] <= b)]
@@ -192,31 +206,35 @@ def score(trades: pd.DataFrame, period: str) -> dict:
 
 
 def portfolio(trades: pd.DataFrame, max_open=6, risk=0.01, start=None, end=None, capital=1.0) -> dict:
-    """Fixed-fractional portfolio from a trade list: take signals in date order (strongest first is not
-    known here, so ties keep file order), skip when max_open positions are already held."""
+    """Fixed-fractional portfolio from a trade list: take signals in date order, skip when max_open
+    positions are held, and never borrow — a position is cut to the cash actually available."""
     t = trades.sort_values("date")
     if start:
         t = t[(t["date"] >= start) & (t["date"] <= end)]
     eq, peak, mdd = capital, capital, 0.0
-    open_ = []                                 # (exit_date, pnl)
+    open_ = []                                 # (exit_date, cost, pnl)
     curve = []
-    for r in t.itertuples():
+
+    def close_until(day):
+        nonlocal eq, peak, mdd
         open_.sort()
-        while open_ and open_[0][0] <= r.date:
-            ex, pnl = open_.pop(0)
+        while open_ and (day is None or open_[0][0] <= day):
+            ex, _, pnl = open_.pop(0)
             eq += pnl
             peak = max(peak, eq)
             mdd = min(mdd, eq / peak - 1)
             curve.append((ex, eq))
+
+    for r in t.itertuples():
+        close_until(r.date)
         if len(open_) >= max_open:
             continue
-        size = min(eq * risk / r.risk_pct, eq / max_open * 2)     # cap any one position at 2× an equal slot
-        open_.append((r.exit, size * r.ret))
-    for ex, pnl in sorted(open_):
-        eq += pnl
-        peak = max(peak, eq)
-        mdd = min(mdd, eq / peak - 1)
-        curve.append((ex, eq))
+        cash = eq - sum(c for _, c, _ in open_)
+        size = min(eq * risk / r.risk_pct, cash)
+        if size <= eq * 0.02:                  # too small to bother
+            continue
+        open_.append((r.exit, size, size * r.ret))
+    close_until(None)
     if not curve:
         return {"cagr": 0.0, "mdd": 0.0, "final": capital}
     years = max((pd.Timestamp(curve[-1][0]) - pd.Timestamp(t["date"].iloc[0])).days / 365.25, 0.5)
@@ -238,10 +256,11 @@ def rotation(g: Grid, top=20, mom="252s", rebalance=21, regime=True, liq=0.4, st
     eq, curve = 1.0, []
     for d in range(max(d0, 260), d1):
         if (d - d0) % rebalance == 0:
-            if regime and not g.mkt_up[d - 1]:
+            if regime and not g.mkt_up[d - 2]:
                 new = np.zeros_like(hold)
             else:
-                s = np.where(liq_ok[d - 1] & np.isfinite(score_[d - 1]), score_[d - 1], -np.inf)
+                # rank on the close two days back, trade from the next day: no same-close look-ahead
+                s = np.where(liq_ok[d - 2] & np.isfinite(score_[d - 2]), score_[d - 2], -np.inf)
                 k = min(top, int(np.isfinite(s).sum()))
                 new = np.zeros_like(hold)
                 if k:

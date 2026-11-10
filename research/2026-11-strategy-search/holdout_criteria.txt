@@ -1,0 +1,4 @@
+Declared before the holdout run (2023-01-01 to 2026-11-09), applied once, no tuning afterwards:
+- Rotation passes if its CAGR beats the equal-weight survivor baseline AND its worst drawdown is no worse than baseline -10 points.
+- Breakout passes if avg net R >= 0.3 (D-048 bar) AND portfolio CAGR > 0 AND >= 100 holdout trades.
+Tue Nov 10 08:50:53 UTC 2026
