@@ -111,6 +111,7 @@ def build(db_path: Path = DB_PATH, amount: float | None = None) -> str:
     amount = float(amount if amount is not None else cfg["portfolio"]["monthly_amount_inr"])
     plan = pf.plan_buys(ranked, holdings, amount, rules, blocked_ids=blocked)
     msg = render(month, amount, regime, note, list_note, plan, v, ranked)
+    save_plan(month, amount, regime, plan, v)
     us_cfg = yaml.safe_load(CONFIG.read_text()).get("us", {})
     return msg + "\n" + "\n".join(us_brief.section(us_cfg))
 
@@ -149,6 +150,18 @@ def render(month, amount, regime, note, list_note, plan, verdicts, ranked) -> st
 
 
 BRIEFS = ROOT / "data" / "briefs"
+
+
+def save_plan(month, amount, regime, plan, verdicts) -> None:
+    """Structured copy of the month's actions for the dashboard's to-do list (D-108)."""
+    import json
+    BRIEFS.mkdir(parents=True, exist_ok=True)
+    data = {"month": month, "amount": amount, "regime": regime,
+            "buys": [{"symbol": o.symbol, "shares": o.shares, "amount": round(o.amount), "limit": round(o.limit, 2),
+                      "rank": o.rank} for o in plan.orders],
+            "leftover": round(plan.leftover), "notes": list(plan.notes),
+            "holdings": [{"symbol": x.symbol, "action": x.action, "reason": x.reason, "shares": x.shares} for x in verdicts]}
+    (BRIEFS / f"{month}.json").write_text(json.dumps(data, indent=1))
 
 
 def save_brief(msg: str) -> None:

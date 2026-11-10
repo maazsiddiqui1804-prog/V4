@@ -39,6 +39,7 @@ investment:
 trading:                   # Trading Engine = "B2" (D-137, approved 2026-11-10 from the strategy search,
                            # research/2026-11-strategy-search). Numbers stay PLACEHOLDER until paper trading proves them.
   capital_inr: 100000              # D-098 paper notional
+  paper_start: null                # date paper trading starts (after the GMAT, Kite Connect)
   liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr) — 20-day average traded value
   trend_fast_dma: 50               # D-042: 50-day average above 200-day, price above 50-day
   trend_slow_dma: 200
