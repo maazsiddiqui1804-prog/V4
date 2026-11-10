@@ -36,7 +36,8 @@ def tidy(raw: pd.DataFrame, yahoo_to_symbol: dict) -> pd.DataFrame:
     return long[["date", "symbol", "open", "high", "low", "close", "volume"]]
 
 
-def fetch(period: str = "4y", batch: int = 50) -> str:
+def fetch(period: str = "4y", batch: int = 50, out=None, index_out=None) -> str:
+    out, index_out = out or OUT, index_out or INDEX_OUT
     import yfinance as yf
     u = universe()
     ymap = {f"{s}.NS": s for s in u["symbol"]}
@@ -49,12 +50,12 @@ def fetch(period: str = "4y", batch: int = 50) -> str:
         parts.append(got)
         missing += [ymap[t] for t in chunk if got.empty or ymap[t] not in set(got["symbol"])]
     px = pd.concat(parts, ignore_index=True)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    px.to_csv(OUT, index=False, float_format="%.4f", compression="gzip")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    px.to_csv(out, index=False, float_format="%.4f", compression="gzip")
     idx = yf.download(INDEX_TICKER, period=period, auto_adjust=True, progress=False)
     close = idx["Close"].squeeze().rename("close")
     close.index.name = "date"
-    close.to_csv(INDEX_OUT, float_format="%.2f")
+    close.to_csv(index_out, float_format="%.2f")
     return (f"India prices: {px['symbol'].nunique()} of {len(u)} Nifty 500 stocks, "
             f"{px['date'].min()}→{px['date'].max()}, index {len(close)} days. "
             f"Missing: {', '.join(missing[:20])}{'…' if len(missing) > 20 else ''}")
@@ -87,5 +88,10 @@ def load(fix: bool = True) -> tuple[pd.DataFrame, pd.Series]:
 
 
 if __name__ == "__main__":
-    print(fetch())
+    if len(sys.argv) > 1:                       # research: python -m v4.importers.india_prices 15y <dir>
+        from pathlib import Path
+        d = Path(sys.argv[2])
+        print(fetch(sys.argv[1], out=d / "india_daily.csv.gz", index_out=d / "nifty500_index.csv"))
+    else:
+        print(fetch())
     sys.exit(0)

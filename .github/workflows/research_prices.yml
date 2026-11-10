@@ -1,0 +1,37 @@
+# Research only: long price history for strategy testing. Saved as a run artifact (not committed).
+name: Research prices
+
+on:
+  workflow_dispatch:
+    inputs:
+      period:
+        description: "Yahoo period, e.g. 15y or max"
+        default: "15y"
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Download long history
+        run: python -m v4.importers.india_prices "${{ inputs.period }}" research
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-prices
+          path: research/
+          retention-days: 30
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."
