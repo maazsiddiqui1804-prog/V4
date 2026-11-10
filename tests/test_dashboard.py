@@ -49,3 +49,18 @@ def test_github_key_renewal_shows_45_days_before():
     c = L.cfg()
     assert not any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 9, 10), c=c))
     assert any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 9, 20), c=c))
+
+
+def test_strategy_page_logic():
+    from v4 import strategy_logic as S
+    c = L.cfg()
+    p = S.philosophy(c)
+    assert set(p) == set(S.BUCKETS) and "52-week" in p["India Trading"]["rules"][0]
+    srcs = S.trade_sources(c)
+    if srcs:
+        t = S.enrich(next(iter(srcs.values())))
+        b = S.breakdown(t, "How it ended")
+        assert b["Trades"].sum() == len(t)
+        assert S.rule_checks(t)[0][0] == "Average result per trade"
+    assert S.reason_label("debt-to-equity 2.10 > 1.5") == "Too much debt"
+    assert S.reason_label("interest cover missing") == "Data missing: interest cover"

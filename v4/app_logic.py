@@ -352,17 +352,26 @@ def load_done(data: Path = DATA) -> dict:
     return json.loads(p.read_text()) if p.exists() else {}
 
 
-def save_done(done: dict, token: str, repo: str = "maazsiddiqui1804-prog/V4") -> bool:
-    """Write done.json back to GitHub (contents API). Returns True on success. Never logs the token."""
+def save_json(relpath: str, obj, token: str, message: str, repo: str = "maazsiddiqui1804-prog/V4") -> bool:
+    """Write a small JSON file back to GitHub (contents API). Returns True on success. Never logs the token."""
     import base64
     import requests
     h = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
-    url = f"https://api.github.com/repos/{repo}/contents/{DONE}"
+    url = f"https://api.github.com/repos/{repo}/contents/{relpath}"
     cur = requests.get(url, headers=h, timeout=20)
     sha = cur.json().get("sha") if cur.status_code == 200 else None
-    body = {"message": "App: mark to-dos done", "content": base64.b64encode(json.dumps(done, indent=1).encode()).decode(),
+    body = {"message": message, "content": base64.b64encode(json.dumps(obj, indent=1, ensure_ascii=False).encode()).decode(),
             "committer": {"name": "V4 app", "email": "v4-app@users.noreply.github.com"}}
     if sha:
         body["sha"] = sha
     r = requests.put(url, headers=h, json=body, timeout=20)
     return r.status_code in (200, 201)
+
+
+def save_done(done: dict, token: str, repo: str = "maazsiddiqui1804-prog/V4") -> bool:
+    return save_json(DONE, done, token, "App: mark to-dos done", repo)
+
+
+def load_notes(data: Path = DATA) -> list[dict]:
+    p = data / "app" / "review_notes.json"
+    return json.loads(p.read_text()) if p.exists() else []

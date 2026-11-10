@@ -15,6 +15,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from v4 import app_logic as L  # noqa: E402
+from v4 import strategy_logic as SL  # noqa: E402
 
 APP_NAME = "Investing & Trading"
 st.set_page_config(page_title=APP_NAME, page_icon="📈", layout="centered")
@@ -411,13 +412,113 @@ def build_page():
                     "**Manage app → Settings → Secrets** and add `GITHUB_TOKEN = \"...\"`. Ask Claude to walk you through it.")
 
 
+def strategy_page():
+    st.title("Strategy & Philosophy")
+    st.caption("Why each bucket exists, the rules it follows, how it's doing against its own target — and, if it "
+               "isn't working, where it is breaking, so the review fixes the right rule.")
+    with st.expander("The V4 philosophy (all buckets)", expanded=False):
+        for x in SL.overall():
+            st.markdown("• " + x)
+    bucket = st.segmented_control("Bucket", SL.BUCKETS, default="India Investing", key="sp-bucket") or "India Investing"
+    ph = SL.philosophy(C)[bucket]
+
+    st.header("Philosophy")
+    st.write(ph["why"])
+    st.header("Strategy — the rules today")
+    for r in ph["rules"]:
+        st.markdown("• " + r)
+    st.caption("Numbers are read live from V4's settings, so this always shows the rules actually running. "
+               "Untested numbers are placeholders until evidence backs them.")
+
+    st.header("How it's doing")
+    st.info("**Target:** " + ph["target"])
+    for m, now, v in SL.scorecard(bucket, C):
+        st.markdown(f"{v} **{m}:** {now}")
+
+    st.header("Where it's working — and where it isn't")
+    if bucket == "India Trading":
+        srcs = SL.trade_sources(C)
+        if not srcs:
+            st.caption("No trades to analyse yet.")
+        else:
+            src = st.radio("Trades to analyse", list(srcs), horizontal=True, key="sp-src",
+                           help="Paper and live trades appear here automatically once they exist.")
+            t = SL.enrich(srcs[src])
+            years = sorted(t["year"].unique())
+            if len(years) > 1:
+                y0, y1 = st.select_slider("Years", years, value=(years[0], years[-1]), key="sp-years")
+                t = t[(t["year"] >= y0) & (t["year"] <= y1)]
+            if "Simulation" in src:
+                st.caption("Simulation on past prices — not real results.")
+            st.subheader("Rule check")
+            for chk, ev, v in SL.rule_checks(t):
+                with st.container(border=True):
+                    st.markdown(f"**{chk}** — {v}  \n{ev}")
+            st.subheader("Break it down")
+            dim = st.selectbox("Group trades by", list(SL.DIMENSIONS), key="sp-dim")
+            b = SL.breakdown(t, dim)
+            st.altair_chart(alt.Chart(b).mark_bar().encode(
+                x=alt.X("Total R:Q", title="Total result (R)"), y=alt.Y(f"{dim}:N", sort="x", title=None),
+                color=alt.condition("datum['Total R'] >= 0", alt.value("#57ab5a"), alt.value("#e5534b")),
+                tooltip=[dim, "Trades", "Avg R", "Win rate", "Total R"]).properties(height=max(140, 34 * len(b))),
+                use_container_width=True)
+            st.dataframe(b, hide_index=True, use_container_width=True)
+            st.caption("Red bars are where the money is lost — the first place to look at a review.")
+            with st.expander("All trades in this view"):
+                st.dataframe(t[["symbol", "sector", "entry_date", "exit_date", "days", "r", "exit_reason"]]
+                             .rename(columns={"symbol": "Stock", "sector": "Sector", "entry_date": "In", "exit_date": "Out",
+                                              "days": "Days", "r": "Result (R)", "exit_reason": "How it ended"})
+                             .round(2), hide_index=True, use_container_width=True)
+    elif bucket == "US Investing":
+        f, reasons = SL.us_funnel()
+        st.subheader("The funnel")
+        st.altair_chart(alt.Chart(f).mark_bar(color="#4c8bf5").encode(
+            x=alt.X("Companies:Q"), y=alt.Y("Step:N", sort=None, title=None), tooltip=["Step", "Companies"])
+            .properties(height=34 * len(f)), use_container_width=True)
+        if not reasons.empty:
+            st.subheader("Why companies were cut")
+            st.dataframe(reasons, hide_index=True, use_container_width=True)
+            st.caption("'Data missing' means the SEC filing didn't give the number — a data question for the review, "
+                       "not necessarily a weak company.")
+        st.caption("After the first buys: each pick vs Nasdaq-100, P/E-check skips vs buys, and sell outcomes.")
+    else:
+        st.write("From December this tracks, for every monthly list (frozen, D-063):")
+        for x in ["Each list's top 20 vs Nifty 500 after 1 and 3 years — does the ranking work at all?",
+                  "Quality, growth and momentum separately — which part of the score actually predicts returns?",
+                  "Buyable vs 'too expensive' names — is the valuation guardrail helping or costing money?",
+                  "Stocks V4 sold vs kept — are the sell rules right?",
+                  "Suggestions you took vs skipped (see Analysis) — are overrides adding value?"]:
+            st.markdown("• " + x)
+        sug = L.suggestions()
+        if not sug.empty:
+            st.dataframe(sug, hide_index=True, use_container_width=True)
+
+    st.header("Review notes")
+    st.caption("Write anything you notice between reviews. At the quarterly (fixes) and January (strategy) reviews "
+               "Claude starts from these notes plus the data above.")
+    notes = st.session_state.setdefault("notes", L.load_notes())
+    mine = [n for n in notes if n.get("bucket") == bucket]
+    for n in reversed(mine[-10:]):
+        st.markdown(f"**{n['date']}** — {n['text']}")
+    txt = st.text_area("New note", key=f"note-{bucket}", placeholder="e.g. Too many stop-outs in metals this quarter")
+    if st.button("Save note", key=f"save-{bucket}") and txt.strip():
+        notes.append({"date": TODAY.isoformat(), "bucket": bucket, "text": txt.strip()})
+        token = secret_token()
+        if token and L.save_json("data/app/review_notes.json", notes, token, f"App: review note ({bucket})"):
+            st.toast("Note saved")
+            st.rerun()
+        else:
+            st.warning("Couldn't save to GitHub — check the app's GitHub key.")
+
+
 pages = [st.Page(india_investing, title="India Investing", icon="🇮🇳", default=True, url_path="india-investing"),
          st.Page(india_trading, title="India Trading", icon="📈", url_path="india-trading"),
          st.Page(us_investing, title="US Investing", icon="🇺🇸", url_path="us-investing"),
          st.Page(analysis, title="Analysis", icon="📊", url_path="analysis"),
+         st.Page(strategy_page, title="Strategy & Philosophy", icon="🧭", url_path="strategy"),
          st.Page(build_page, title="Build", icon="🛠️", url_path="build")]
 NAV = {"🇮🇳 India Invest": pages[0], "📈 India Trade": pages[1], "🇺🇸 US Invest": pages[2],
-       "📊 Analysis": pages[3], "🛠️ Build": pages[4]}
+       "📊 Analysis": pages[3], "🧭 Strategy": pages[4], "🛠️ Build": pages[5]}
 current = st.navigation(pages, position="hidden")
 here = next(k for k, v in NAV.items() if v.url_path == current.url_path)
 st.markdown(f"<div style='font-weight:800;font-size:1.45rem;line-height:1.2;margin:-0.6rem 0 0.6rem 0'>"
