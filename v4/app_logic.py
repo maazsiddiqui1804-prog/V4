@@ -120,69 +120,6 @@ def coming_up(today: dt.date, c: dict | None = None) -> list[tuple[str, str]]:
     return out
 
 
-def status(data: Path = DATA, c: dict | None = None) -> dict[str, str]:
-    c = c or cfg()
-    out = {}
-    h = q("""SELECT COUNT(DISTINCT security_id) AS n, SUM(quantity*avg_price) AS cost FROM holdings_snapshots
-             WHERE engine='investment' AND snapshot_date=(SELECT MAX(snapshot_date) FROM holdings_snapshots)""", data=data)
-    if h.empty or not h["n"].iloc[0]:
-        out["India investing"] = "Not started — first buys in December"
-    else:
-        out["India investing"] = f"{int(h['n'].iloc[0])} stocks, ₹{h['cost'].iloc[0]:,.0f} invested"
-    short = data / "us" / "shortlist.csv"
-    if short.exists():
-        s = pd.read_csv(short)
-        ok = int((s.get("zerodha_checked", pd.Series(dtype=str)).fillna("").str.lower() == "yes").sum())
-        out["US investing"] = f"{len(s)} companies shortlisted · {ok} confirmed on Zerodha · no buys yet"
-    else:
-        out["US investing"] = "Shortlist not built yet"
-    if c["trading"].get("paper_start"):
-        out["Trading"] = f"Paper trading since {c['trading']['paper_start']}"
-    else:
-        out["Trading"] = "Paper trading not started (after the GMAT)"
-    return out
-
-
-def india_cards(data: Path = DATA, top: int = 10) -> tuple[str, list[dict]]:
-    df = q("""SELECT l.list_month, l.rank, s.symbol, s.name, s.sector, l.score_total, l.buy_below, l.passes_guardrail,
-              l.frozen_at FROM investment_lists l JOIN securities s USING(security_id)
-              WHERE l.list_month=(SELECT MAX(list_month) FROM investment_lists) ORDER BY l.rank""", data=data)
-    if df.empty:
-        return "", []
-    label = df["list_month"].iloc[0] + ("" if df["frozen_at"].notna().all() else " (preview — not final)")
-    cards = []
-    for r in df.head(top).itertuples():
-        cards.append({"title": f"#{r.rank} {r.name} ({r.symbol})", "sub": r.sector or "",
-                      "line": f"Overall score {r.score_total:.0f}/100",
-                      "action": (f"✅ Buyable now — pay no more than ₹{r.buy_below:,.2f}" if r.passes_guardrail
-                                 else "⏳ Too expensive right now — wait")})
-    return label, cards
-
-
-def us_cards(data: Path = DATA) -> list[dict]:
-    p = data / "us" / "shortlist.csv"
-    if not p.exists():
-        return []
-    s = pd.read_csv(p)
-    rank = data / "us" / "ranking.csv"
-    ranked = pd.read_csv(rank).set_index("ticker") if rank.exists() else pd.DataFrame()
-    cards = []
-    for r in s.itertuples():
-        chk = str(getattr(r, "zerodha_checked", "") or "").lower()
-        if chk == "yes" and r.ticker in ranked.index:
-            g = ranked.loc[r.ticker]
-            action = "✅ Ranked — see monthly list" if bool(g.get("passes_guardrail")) else "⏳ Too expensive vs growth — wait"
-        elif chk == "yes":
-            action = "✅ On Zerodha — prices next"
-        elif chk == "no":
-            action = "✖ Not available on Zerodha"
-        else:
-            action = "Waiting for the Kite check"
-        cards.append({"title": f"#{int(r.qg_rank)} {str(r.name).title()} ({r.ticker})", "sub": AREA.get(r.layer, r.layer),
-                      "line": f"Quality {r.score_quality:.0f}/100 · Growth {r.score_growth:.0f}/100", "action": action})
-    return cards
-
-
 def trading_summary(data: Path = DATA) -> dict:
     p = data / "backtest" / "summary.json"
     return json.loads(p.read_text()) if p.exists() else {}

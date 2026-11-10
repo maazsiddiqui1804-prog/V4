@@ -10,3 +10,6 @@ __pycache__/
 # Raw broker/Screener downloads stay local unless deliberately imported
 data/raw/*
 !data/raw/.gitkeep
+
+# Price history lives on the prices branch; jobs copy it here only while running
+data/prices/

@@ -31,8 +31,6 @@ def test_coming_up_starts_at_first_brief_month():
 def test_waiting_items_and_status():
     w = " ".join(L.waiting())
     assert "W-8BEN" in w and "Approve the US numbers" in w
-    s = L.status()
-    assert set(s) == {"India investing", "US investing", "Trading"}
 
 
 st = pytest.importorskip("streamlit")

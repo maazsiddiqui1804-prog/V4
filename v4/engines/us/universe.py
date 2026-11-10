@@ -14,7 +14,6 @@ Output: data/us_universe.csv. Price performance never decides membership.
 from __future__ import annotations
 
 import csv
-import os
 import sys
 from pathlib import Path
 
@@ -28,7 +27,6 @@ CONFIG = ROOT / "config" / "us_universe.yaml"
 OUT = ROOT / "data" / "us_universe.csv"
 FRAME = "https://data.sec.gov/api/xbrl/frames/dei/EntityPublicFloat/USD/{period}.json"
 SHARES = "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/dei/EntityCommonStockSharesOutstanding.json"
-TIINGO = "https://api.tiingo.com/tiingo/daily/{ticker}/prices"
 
 
 def load_rule(path: Path = CONFIG) -> dict:
@@ -61,25 +59,6 @@ def shares_outstanding(cik: int) -> float | None:
         return None
     latest = max(f["end"] for f in facts)
     return float(sum(f["val"] for f in facts if f["end"] == latest))
-
-
-class RateLimited(Exception):
-    pass
-
-
-def tiingo_close(ticker: str) -> float | None:
-    token = os.environ.get("TIINGO_API_KEY", "").strip()
-    if not token:
-        raise RuntimeError("TIINGO_API_KEY is not set (add it as a GitHub Secret)")
-    r = requests.get(TIINGO.format(ticker=ticker.replace(".", "-")), timeout=30,
-                     headers={"Content-Type": "application/json", "Authorization": f"Token {token}"})
-    if r.status_code == 404:
-        return None
-    if r.status_code == 429:          # free-plan hourly limit: skip, retry next run
-        raise RateLimited(ticker)
-    r.raise_for_status()
-    rows = r.json()
-    return float(rows[-1]["adjClose"] or rows[-1]["close"]) if rows else None
 
 
 def passes_industry(profile: dict, rule: dict) -> bool:

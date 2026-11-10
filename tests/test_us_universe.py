@@ -17,7 +17,6 @@ def fake(monkeypatch):
     monkeypatch.setattr(u.sec, "profile", lambda cik: dict(profiles[cik], cik=cik))
     monkeypatch.setattr(u, "public_floats", lambda periods: {1: 3e11, 2: 9e11, 3: 1e9, 5: 5e10, 6: 4e10})
     monkeypatch.setattr(u, "shares_outstanding", lambda cik: {1: 1e9, 4: 5e9, 6: 1e9}.get(cik))
-    monkeypatch.setattr(u, "tiingo_close", lambda t: {"CHIP": 300.0, "FAB": 50.0, "UTIL": 8.0}.get(t))
 
 
 def test_rule_keeps_only_ai_codes_large_and_listed(fake):
@@ -46,10 +45,11 @@ def test_save_keeps_kite_check_marks(tmp_path):
     assert "A,yes" in p.read_text()
 
 
-def test_no_tiingo_calls_in_universe_build(fake, monkeypatch):
-    def boom(t):
-        raise AssertionError("Tiingo must not be called before the Kite check (D-135)")
-    monkeypatch.setattr(u, "tiingo_close", boom)
+def test_no_tiingo_in_universe_build(fake):
+    """D-135: the universe build uses SEC only; Tiingo is called only for Kite-confirmed names."""
+    import inspect
+    src = inspect.getsource(u)
+    assert "api.tiingo.com" not in src and "TIINGO_API_KEY" not in src
     rows, _ = u.build(["CY2026Q2I"])
     assert len(rows) == 3
 
