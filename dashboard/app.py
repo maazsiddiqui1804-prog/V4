@@ -420,8 +420,8 @@ NAV = {"🇮🇳 India Invest": pages[0], "📈 India Trade": pages[1], "🇺�
        "📊 Analysis": pages[3], "🛠️ Build": pages[4]}
 current = st.navigation(pages, position="hidden")
 here = next(k for k, v in NAV.items() if v.url_path == current.url_path)
-st.markdown(f"<div style='font-weight:700;font-size:0.95rem;margin-bottom:-0.4rem'>{APP_NAME}</div>",
-            unsafe_allow_html=True)
+st.markdown(f"<div style='font-weight:800;font-size:1.45rem;line-height:1.2;margin:-0.6rem 0 0.6rem 0'>"
+            f"{APP_NAME}</div>", unsafe_allow_html=True)
 go = st.segmented_control("Section", list(NAV), default=here, label_visibility="collapsed", key=f"nav-{here}")
 if go and go != here:
     st.switch_page(NAV[go])
