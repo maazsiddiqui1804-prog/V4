@@ -47,5 +47,5 @@ def test_app_renders_default_page():
 
 def test_github_key_renewal_shows_45_days_before():
     c = L.cfg()
-    assert not any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 9, 1), c=c))
-    assert any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 10, 1), c=c))
+    assert not any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 9, 10), c=c))
+    assert any("GitHub key" in w for _, w in L.coming_up(dt.date(2027, 9, 20), c=c))
