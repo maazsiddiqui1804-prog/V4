@@ -71,4 +71,4 @@ def test_every_message_ends_with_the_app_link(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "1")
     monkeypatch.setattr(alerts.requests, "post", lambda url, data, timeout: sent.update(data) or R())
     alerts.send("hello")
-    assert sent["text"].startswith("hello") and sent["text"].endswith("https://pbun4bgte5yek2vgcy7mzn.streamlit.app/")
+    assert sent["text"].startswith("hello") and sent["text"].endswith("https://investing-trading.streamlit.app/")

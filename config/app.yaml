@@ -1,4 +1,4 @@
 # The V4 app (Streamlit, private — only Maaz's email can open it). Linked at the end of every Telegram message.
 name: "Investing & Trading"
-url: "https://pbun4bgte5yek2vgcy7mzn.streamlit.app/"
+url: "https://investing-trading.streamlit.app/"
 github_key_expires: "2027-11-01"   # the app's GitHub key (Streamlit secret), set 2026-11-10; renew before this

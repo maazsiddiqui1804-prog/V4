@@ -6,7 +6,7 @@
 1. **Waiting on Maaz (dashboard "Waiting on you"):**
    - T-059 ✅ decided 2026-11-10: Trading Engine = B2 (D-137). Engine, plan and config switched.
    - T-057 US Kite check: needs the "International" search in Kite (regular Kite didn't show it on 2026-11-10; US stocks are in beta at kite-beta.zerodha.com, accounts enabled in batches). Maaz expects it to appear soon.
-   - T-060 ✅ dashboard online: https://pbun4bgte5yek2vgcy7mzn.streamlit.app/ (keep sharing set to "Only specific people").
+   - T-060 ✅ dashboard online: https://investing-trading.streamlit.app/ (keep sharing set to "Only specific people").
    - T-054 approve US numbers · T-055 US weak-market rule · T-056 monthly vs quarterly US transfers · T-058 W-8BEN before first US buy · T-047 trading numbers.
 2. **US module (phase 3):** code complete; cloud runs done: universe 334 → financials → shortlist of 40 (VRT, NTES, TSM, KARO, WB, NVDA, NOW, ANET, MSFT, META, GOOG, INTU, TTD, …; 7 non-USD reporters). Next: Kite check of the 40 (T-057) → Tiingo prices (confirmed only) → ranking. Foreign filers: size checked with price (drops small ones like KARO); P/E converted via FX + ADR ratio — Claude adds each confirmed name's ADR ratio to config/us_universe.yaml after checking the company's filing.
 3. **Trading Engine (phase 4):** signals, costs, backtest, evening plan, watchlist, paper ledger (replays the backtest engine from the paper start date) built. Still to build after GMAT: Kite Connect data + daily login page (D-081: no stored password), daily evening job, midday checks (D-109), missed-check tripwire (D-049: needs a way for Maaz to confirm he checked).
