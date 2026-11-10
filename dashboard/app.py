@@ -209,6 +209,7 @@ def india_trading():
                "is healthy · stop-loss ≈ 2 normal daily moves below · sell the morning after a close below the "
                "50-day average · 1% risk per trade, max 6 open.")
     st.warning("WATCH-ONLY until paper trading starts after the GMAT. Nothing here is a real or paper position.")
+    st.page_link(KITE_PAGE, label="Kite login (daily, once Kite is on)", icon="🔑")
 
     st.header("1 · Today's signals")
     if not t:
@@ -377,6 +378,7 @@ def build_page():
         st.markdown(f"**{p['name']}** — {p['status']}")
         st.progress(p["pct"] / 100)
 
+    st.page_link(KITE_PAGE, label="Kite login", icon="🔑")
     st.header("Waiting on you")
     tasks = pd.DataFrame(b.get("tasks", []))
     items = L.todos(TODAY, c=C) + L.waiting(c=C)
@@ -583,6 +585,7 @@ pages = [st.Page(india_investing, title="India Investing", icon="🇮🇳", defa
          st.Page(strategy_page, title="Strategy & Philosophy", icon="🧭", url_path="strategy"),
          st.Page(build_page, title="Build", icon="🛠️", url_path="build"),
          st.Page(kite_page, title="Kite login", icon="🔑", url_path="kite")]
+KITE_PAGE = pages[-1]
 NAV = {"🇮🇳 India Invest": pages[0], "📈 India Trade": pages[1], "🇺🇸 US Invest": pages[2],
        "📊 Analysis": pages[3], "🧭 Strategy": pages[4], "🛠️ Build": pages[5]}
 current = st.navigation(pages, position="hidden")
