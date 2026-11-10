@@ -202,3 +202,159 @@ def benchmark_lines(data: Path = DATA) -> pd.DataFrame:
     df = pd.DataFrame(out)
     df.index = pd.to_datetime(df.index)
     return df.sort_index()
+
+
+# ---------------------------------------------------------------- app v2 data (2026-11-10)
+APP = DATA / "app"
+
+
+def latest_prices(data: Path = DATA) -> pd.DataFrame:
+    p = data / "app" / "latest_prices.csv"
+    return pd.read_csv(p, parse_dates=["date"]) if p.exists() else pd.DataFrame()
+
+
+def series(data: Path = DATA) -> pd.DataFrame:
+    p = data / "app" / "series.csv.gz"
+    return pd.read_csv(p, parse_dates=["date"]) if p.exists() else pd.DataFrame()
+
+
+def nifty500(data: Path = DATA) -> pd.Series:
+    p = data / "app" / "nifty500.csv"
+    return pd.read_csv(p, parse_dates=["date"]).set_index("date")["close"] if p.exists() else pd.Series(dtype=float)
+
+
+def india_plan(amount: float, data: Path = DATA, c: dict | None = None):
+    """This month's India buy plan recomputed for any amount (same engine as the monthly brief).
+    Returns (orders DataFrame, notes, list_month) or None when there is no list yet."""
+    from v4.engines.investment import portfolio as pf
+    c = c or cfg()
+    lst = q("""SELECT l.list_month, l.rank, l.security_id, s.symbol, s.name, s.sector, l.buy_below, l.passes_guardrail,
+              l.score_total FROM investment_lists l JOIN securities s USING(security_id)
+              WHERE l.list_month=(SELECT MAX(list_month) FROM investment_lists) ORDER BY l.rank""", data=data)
+    if lst.empty:
+        return None
+    px = latest_prices(data)
+    price = dict(zip(px.get("symbol", []), px.get("close", [])))
+    lst["current_price"] = lst["symbol"].map(price)
+    lst["passes_guardrail"] = lst["passes_guardrail"].astype(bool) & (lst["current_price"] <= lst["buy_below"])
+    hold = india_holdings(data)
+    hold_in = hold.rename(columns={"price": "current_price"})[["security_id", "symbol", "quantity", "current_price", "sector"]] \
+        if not hold.empty else pd.DataFrame(columns=["security_id", "symbol", "quantity", "current_price", "sector"])
+    inv = c["investment"]
+    rules = dict(inv["portfolio"], **inv["sells"], min_buy_inr=inv["min_buy_inr"])
+    plan = pf.plan_buys(lst.dropna(subset=["current_price"]), hold_in, amount, rules)
+    names = dict(zip(lst["symbol"], lst["name"]))
+    orders = pd.DataFrame([{"Stock": o.symbol, "Company": names.get(o.symbol, ""), "Shares": o.shares,
+                            "Pay at most (₹)": round(o.limit, 2), "Amount (₹)": round(o.amount), "Rank": o.rank,
+                            "Type": "New" if o.kind == "new" else "Top-up"} for o in plan.orders])
+    return orders, list(plan.notes) + ([f"Leftover ₹{plan.leftover:,.0f} → liquid fund"] if plan.leftover >= 1 else []), \
+        lst["list_month"].iloc[0]
+
+
+def india_list(data: Path = DATA) -> pd.DataFrame:
+    lst = q("""SELECT l.rank AS Rank, s.symbol AS Stock, s.name AS Company, s.sector AS Sector,
+              ROUND(l.score_total) AS Score, l.buy_below AS "Buy below (₹)", l.passes_guardrail
+              FROM investment_lists l JOIN securities s USING(security_id)
+              WHERE l.list_month=(SELECT MAX(list_month) FROM investment_lists) ORDER BY l.rank""", data=data)
+    if lst.empty:
+        return lst
+    px = latest_prices(data)
+    lst["Price now (₹)"] = lst["Stock"].map(dict(zip(px.get("symbol", []), px.get("close", []))))
+    lst["Buyable now"] = lst["passes_guardrail"].astype(bool) & (lst["Price now (₹)"] <= lst["Buy below (₹)"])
+    return lst.drop(columns=["passes_guardrail"])
+
+
+def india_holdings(data: Path = DATA, engine: str = "investment") -> pd.DataFrame:
+    h = q("""SELECT h.security_id, s.symbol, s.name, s.sector, h.quantity, h.avg_price FROM holdings_snapshots h
+             JOIN securities s USING(security_id) WHERE s.market='IN' AND h.engine=? AND
+             h.snapshot_date=(SELECT MAX(snapshot_date) FROM holdings_snapshots WHERE engine=?)""",
+          (engine, engine), data=data)
+    if h.empty:
+        return h
+    px = latest_prices(data)
+    h["price"] = h["symbol"].map(dict(zip(px.get("symbol", []), px.get("close", []))))
+    h["price"] = h["price"].fillna(h["avg_price"])
+    h["invested"] = h["quantity"] * h["avg_price"]
+    h["value"] = h["quantity"] * h["price"]
+    h["gain_pct"] = h["value"] / h["invested"] - 1
+    return h
+
+
+def trading_today(data: Path = DATA) -> dict:
+    p = data / "app" / "trading_today.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def us_shortlist(data: Path = DATA) -> pd.DataFrame:
+    p = data / "us" / "shortlist.csv"
+    if not p.exists():
+        return pd.DataFrame()
+    s = pd.read_csv(p)
+    chk = s.get("zerodha_checked", pd.Series("", index=s.index)).fillna("").astype(str).str.lower()
+    out = pd.DataFrame({"Rank": s["qg_rank"].astype(int), "Ticker": s["ticker"], "Company": s["name"].str.title(),
+                        "Area": s["layer"].map(AREA).fillna(s["layer"]),
+                        "Quality": s["score_quality"].round(), "Growth": s["score_growth"].round(),
+                        "Reports in": s.get("currency", "USD"),
+                        "On Zerodha": chk.map({"yes": "✅ Yes", "no": "✖ No"}).fillna("Not checked yet"),
+                        "ROCE (worst of 3 yrs)": (s["roce_floor_3y"] * 100).round(0),
+                        "Sales growth": (s["rev_growth"] * 100).round(0),
+                        "Profit growth": (s["profit_growth"] * 100).round(0),
+                        "Debt/equity": s["debt_equity"].round(2)})
+    return out
+
+
+def suggestions(data: Path = DATA) -> pd.DataFrame:
+    """Every buy V4 suggested (from the saved monthly plans), whether you took it (it appears in your
+    holdings afterwards) and what the price did since."""
+    rows = []
+    for f in sorted((data / "briefs").glob("*.json")) if (data / "briefs").exists() else []:
+        p = json.loads(f.read_text())
+        for b in p.get("buys", []):
+            rows.append({"Month": p["month"], "Stock": b["symbol"], "Suggested at (₹)": b["limit"],
+                         "Amount (₹)": b["amount"]})
+    if not rows:
+        return pd.DataFrame()
+    df = pd.DataFrame(rows)
+    held = q("""SELECT s.symbol, MIN(h.snapshot_date) AS first_held FROM holdings_snapshots h
+                JOIN securities s USING(security_id) WHERE h.engine='investment' GROUP BY s.symbol""", data=data)
+    first = dict(zip(held.get("symbol", []), held.get("first_held", [])))
+    df["Taken"] = [bool(first.get(s)) and first[s][:7] >= m for s, m in zip(df["Stock"], df["Month"])]
+    px = latest_prices(data)
+    df["Price now (₹)"] = df["Stock"].map(dict(zip(px.get("symbol", []), px.get("close", []))))
+    df["Since suggestion"] = df["Price now (₹)"] / df["Suggested at (₹)"] - 1
+    return df
+
+
+def build(data: Path = DATA) -> dict:
+    p = data / "app" / "build.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def jobs(data: Path = DATA) -> dict:
+    p = data / "app" / "jobs.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+# ---- "mark as done": saved to data/app/done.json in the repo when a GitHub key is set in Streamlit secrets
+DONE = "data/app/done.json"
+
+
+def load_done(data: Path = DATA) -> dict:
+    p = data / "app" / "done.json"
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def save_done(done: dict, token: str, repo: str = "maazsiddiqui1804-prog/V4") -> bool:
+    """Write done.json back to GitHub (contents API). Returns True on success. Never logs the token."""
+    import base64
+    import requests
+    h = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+    url = f"https://api.github.com/repos/{repo}/contents/{DONE}"
+    cur = requests.get(url, headers=h, timeout=20)
+    sha = cur.json().get("sha") if cur.status_code == 200 else None
+    body = {"message": "App: mark to-dos done", "content": base64.b64encode(json.dumps(done, indent=1).encode()).decode(),
+            "committer": {"name": "V4 app", "email": "v4-app@users.noreply.github.com"}}
+    if sha:
+        body["sha"] = sha
+    r = requests.put(url, headers=h, json=body, timeout=20)
+    return r.status_code in (200, 201)

@@ -1,0 +1,518 @@
+{
+ "updated": "2026-11-10",
+ "note": "Copy of the claude.ai V4 Dashboard tasks; Claude refreshes it each session.",
+ "phases": [
+  {
+   "id": "P1",
+   "name": "Data layer",
+   "status": "Done",
+   "pct": 100
+  },
+  {
+   "id": "P2",
+   "name": "India investing",
+   "status": "Done \u2014 first real list in December",
+   "pct": 100
+  },
+  {
+   "id": "P3",
+   "name": "US investing",
+   "status": "Code done; waiting for the Kite check",
+   "pct": 90
+  },
+  {
+   "id": "P4",
+   "name": "India trading",
+   "status": "Rules chosen (B2); Kite Connect + daily paper run after the GMAT",
+   "pct": 75
+  },
+  {
+   "id": "P5",
+   "name": "App, reviews, reports",
+   "status": "App rebuilt; analysis fills in as real trades arrive",
+   "pct": 85
+  }
+ ],
+ "tasks": [
+  {
+   "task_id": "T-001",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Philosophy rethink and purpose"
+  },
+  {
+   "task_id": "T-002",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Investment Engine strategy"
+  },
+  {
+   "task_id": "T-003",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Trading Engine strategy"
+  },
+  {
+   "task_id": "T-004",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Design review and flaw fixes"
+  },
+  {
+   "task_id": "T-005",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Asset mix, capital and engine split"
+  },
+  {
+   "task_id": "T-006",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Benchmarks and US data source (live checks)"
+  },
+  {
+   "task_id": "T-007",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Aggression and crash-guard amendments"
+  },
+  {
+   "task_id": "T-008",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Dashboard, alerts and midday checks design"
+  },
+  {
+   "task_id": "T-009",
+   "phase_id": "P0",
+   "phase": "Design and decisions",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Decisions log, status note and manual in the Project"
+  },
+  {
+   "task_id": "T-010",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Create GitHub account and private repo"
+  },
+  {
+   "task_id": "T-011",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Create free Kite Personal API app"
+  },
+  {
+   "task_id": "T-012",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Create Telegram bot"
+  },
+  {
+   "task_id": "T-013",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Add keys to GitHub Secrets (never in chat)"
+  },
+  {
+   "task_id": "T-014",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Export first Nifty 500 file from Screener"
+  },
+  {
+   "task_id": "T-015",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Both",
+   "status": "Done",
+   "task": "Choose database and private dashboard hosting"
+  },
+  {
+   "task_id": "T-016",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Repo skeleton: CLAUDE.md, docs/, settings"
+  },
+  {
+   "task_id": "T-017",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Screener import (prices, P/E, fundamentals)"
+  },
+  {
+   "task_id": "T-018",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Holdings sync: Console XLSX via inbox (D-119)"
+  },
+  {
+   "task_id": "T-019",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Benchmark data: AMFI index-fund NAVs, median of 21 funds (D-121/D-122)"
+  },
+  {
+   "task_id": "T-020",
+   "phase_id": "P1",
+   "phase": "Setup and data layer",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Health and failure alerts on Telegram"
+  },
+  {
+   "task_id": "T-021",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Kill filters"
+  },
+  {
+   "task_id": "T-022",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Score: quality, growth, momentum with regime switch"
+  },
+  {
+   "task_id": "T-023",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "India valuation guardrail"
+  },
+  {
+   "task_id": "T-024",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Portfolio builder: \u20b910k minimum, equal weight, trims"
+  },
+  {
+   "task_id": "T-025",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Sell rules: thesis break, top-100 buffer"
+  },
+  {
+   "task_id": "T-026",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Red-flag filings alerts, 3 times a day"
+  },
+  {
+   "task_id": "T-027",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Monthly brief to Telegram"
+  },
+  {
+   "task_id": "T-028",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Freeze each month's list for forward tracking"
+  },
+  {
+   "task_id": "T-029",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Sign off starting numbers D-123\u2013D-127 (with first brief, Dec 2026)"
+  },
+  {
+   "task_id": "T-030",
+   "phase_id": "P2",
+   "phase": "India Investment Engine",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "First real monthly buys (December 2026 brief, D-129)"
+  },
+  {
+   "task_id": "T-031",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "US universe built from SEC: 334 names (131 sized by public float, 203 genuine foreign filers sized after Kite check). Kite check of the ~40-name shortlist waits on T-057"
+  },
+  {
+   "task_id": "T-032",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "SEC fundamentals pipeline: cloud probe found 3 bugs (Microsoft revenue label rename, TSMC currency mix, Vistra debt missing) \u2014 fixed and tested; re-probe running"
+  },
+  {
+   "task_id": "T-033",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "Tiingo prices for Kite-confirmed names only (built, resumable, \u226445/run); Stooq backup not built"
+  },
+  {
+   "task_id": "T-034",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "AI value-chain universe: rule set (D-134), build from SEC"
+  },
+  {
+   "task_id": "T-035",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "US guardrail: P/E vs growth (built; threshold awaiting approval T-054)"
+  },
+  {
+   "task_id": "T-036",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Nasdaq-100 fallback after 3 blocked months"
+  },
+  {
+   "task_id": "T-037",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Combined caps: 10% stock, 25% sector, 30% AI/US (built; plus D-132 tax safeguards in the brief)"
+  },
+  {
+   "task_id": "T-038",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Both",
+   "status": "Done",
+   "task": "US tax check from Zerodha portal + official sources \u2192 one-page summary \u2192 your go-ahead (D-131)"
+  },
+  {
+   "task_id": "T-039",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Subscribe to Kite Connect (\u20b9500/month)"
+  },
+  {
+   "task_id": "T-040",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "Not started",
+   "task": "Daily login flow with reminders"
+  },
+  {
+   "task_id": "T-041",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "Backtest built and run on 4 years of Yahoo prices (Kite history later). First result: no edge \u2014 see T-059"
+  },
+  {
+   "task_id": "T-042",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Breakout scan and 6:30 PM plan built (not scheduled until after GMAT + Kite Connect)"
+  },
+  {
+   "task_id": "T-043",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Paper ledger: replays the backtest engine from the paper start date (full costs, gap fills) + D-048 gate progress"
+  },
+  {
+   "task_id": "T-044",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "Not started",
+   "task": "Midday 30-minute price checks"
+  },
+  {
+   "task_id": "T-045",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Near-breakout watchlist with trigger prices for Kite alerts (built)"
+  },
+  {
+   "task_id": "T-046",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "Drawdown brake built (backtest); missed-check tripwire to build with the paper ledger"
+  },
+  {
+   "task_id": "T-047",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Approve trading placeholder numbers"
+  },
+  {
+   "task_id": "T-048",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Action view (Streamlit, dashboard/app.py): monthly brief, ranked list, US shortlist, trading placeholder"
+  },
+  {
+   "task_id": "T-049",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "Analysis view: benchmarks, holdings, red flags, backtest (labelled simulation), US universe built; returns vs benchmarks, risk, costs to add once there are real holdings"
+  },
+  {
+   "task_id": "T-050",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "In progress",
+   "task": "Tax estimates: India STCG/LTCG estimator built (rates in config, re-verify under Income-tax Act 2025); shown on dashboard once there are sales"
+  },
+  {
+   "task_id": "T-051",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "Not started",
+   "task": "Quarterly report"
+  },
+  {
+   "task_id": "T-052",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "12-month warning and 3-year kill test: shadow-portfolio comparison vs Nifty 500 and Quality 30 index funds (after costs and tax) built; runs in the quarterly report"
+  },
+  {
+   "task_id": "T-053",
+   "phase_id": "P5",
+   "phase": "Dashboard and reviews",
+   "owner": "Claude",
+   "status": "Done",
+   "task": "Failure-alert audit: every workflow has a failure alert (enforced by tests); Monday check alerts if a scheduled job goes silent or Actions minutes pass 1,500"
+  },
+  {
+   "task_id": "T-054",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Approve US starting numbers: kill filters (proposed = India's D-123), PEG \u2264 2.0, shortlist 40, 6 US holdings"
+  },
+  {
+   "task_id": "T-055",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Decide US weak-market rule: none, or Nasdaq-100 vs its 200-day average (like D-103)"
+  },
+  {
+   "task_id": "T-056",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Decide US money timing: monthly vs quarterly transfers (\u20b945 flat fee + 0.4\u20131.4% markup per transfer)"
+  },
+  {
+   "task_id": "T-057",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Maaz",
+   "status": "Blocked",
+   "task": "US Kite check: regular Kite has no 'International' search on your account. Either (a) log into kite-beta.zerodha.com in Chrome (US stocks live there in beta), or (b) check Console \u2192 Account \u2192 US investing shows 'Enabled' (not waitlisted). Then Claude searches the ~40 shortlisted names. Shortlist not ready yet."
+  },
+  {
+   "task_id": "T-058",
+   "phase_id": "P3",
+   "phase": "US AI module",
+   "owner": "Maaz",
+   "status": "Not started",
+   "task": "Before first US buy: sign Form W-8BEN in Zerodha (25% dividend withholding instead of 30%)"
+  },
+  {
+   "task_id": "T-059",
+   "phase_id": "P4",
+   "phase": "Trading Engine (paper)",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Trading strategy chosen: B2 (D-137) \u2014 52-week-high breakout, market filter, 2\u00d7ATR stop, exit below 50-day average. Engine switched."
+  },
+  {
+   "task_id": "T-060",
+   "phase_id": "P5",
+   "phase": "Dashboard & reviews",
+   "owner": "Maaz",
+   "status": "Done",
+   "task": "Dashboard online: https://pbun4bgte5yek2vgcy7mzn.streamlit.app/ (sharing: only specific people)"
+  }
+ ]
+}
