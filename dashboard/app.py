@@ -14,8 +14,14 @@ import pandas as pd
 import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import importlib  # noqa: E402
+
 from v4 import app_logic as L  # noqa: E402
 from v4 import strategy_logic as SL  # noqa: E402
+
+# Streamlit Cloud keeps imported modules between code updates; reload so a new push is always picked up.
+L = importlib.reload(L)
+SL = importlib.reload(SL)
 
 APP_NAME = "Investing & Trading"
 st.set_page_config(page_title=APP_NAME, page_icon="📈", layout="centered")
