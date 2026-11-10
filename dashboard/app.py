@@ -125,7 +125,7 @@ def action_view():
         st.info("US shortlist not built yet.")
     st.subheader("Trading")
     st.info("Paper trading starts after the GMAT with Kite Connect (D-130). Signals will appear here: "
-            "entry, stop-loss (place as GTT, D-110), 2R target, quantity, exits.")
+            "entry, stop-loss (place as GTT, D-110), quantity, and exits (close below the 50-day average, D-137).")
 
 
 def analysis_view():
