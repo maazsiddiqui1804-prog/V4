@@ -212,3 +212,8 @@ def us_funnel() -> tuple[pd.DataFrame, pd.DataFrame]:
         rows.append(("Confirmed on Zerodha", int((s["On Zerodha"] == "✅ Yes").sum())))
     rows.append(("Bought", 0))
     return pd.DataFrame(rows, columns=["Step", "Companies"]), reasons
+
+
+def india_tracking() -> pd.DataFrame:
+    p = L.DATA / "app" / "list_tracking.csv"
+    return pd.read_csv(p) if p.exists() and p.stat().st_size > 5 else pd.DataFrame()

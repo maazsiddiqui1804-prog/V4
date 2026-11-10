@@ -5,8 +5,9 @@
 2. Small snapshot files for the app on main (data/app/): latest price + trend facts for every Nifty 500
    stock, and one year of daily closes for the stocks the app charts (holdings, this month's list,
    past suggestions, today's trading signals and watchlist).
-3. India Trading "B2" evening plan (D-137) — WATCH-ONLY until paper trading starts (D-130).
-4. Health of every scheduled job, for the app's Build page.
+3. Forward-tracking of every frozen India list vs the Nifty 500 (D-063) → data/app/list_tracking.csv.
+4. India Trading "B2" evening plan (D-137) — WATCH-ONLY until paper trading starts (D-130).
+5. Health of every scheduled job, for the app's Build page.
 
 python -m v4.jobs.daily_app <full-history-dir>
 """
@@ -23,6 +24,7 @@ import requests
 import yaml
 
 from v4.db import ROOT, connect, DB_PATH
+from v4.engines.investment import tracking
 from v4.engines.trading import daily, signals as sg
 from v4.importers import india_prices as ip
 
@@ -99,6 +101,12 @@ def run(history_dir: Path) -> str:
     series[["date", "symbol", "close"]].to_csv(APP / "series.csv.gz", index=False, float_format="%.2f", compression="gzip")
     ix = idx[idx.index >= idx.index.max() - pd.Timedelta(days=370)]
     ix.rename("close").to_csv(APP / "nifty500.csv", float_format="%.2f", index_label="date")
+    with connect(DB_PATH) as c:
+        frozen = pd.read_sql("""SELECT l.list_month, s.symbol, l.rank, l.score_quality, l.score_growth, l.score_momentum,
+                                l.score_total, l.passes_guardrail, l.frozen_at FROM investment_lists l
+                                JOIN securities s USING(security_id) WHERE l.frozen_at IS NOT NULL""", c)
+    tracking.track(frozen, clean[["date", "symbol", "close"]], idx).to_csv(APP / "list_tracking.csv", index=False,
+                                                                           float_format="%.5f")
     (APP / "trading_today.json").write_text(json.dumps(plan, indent=1, default=str))
     (APP / "jobs.json").write_text(json.dumps({"updated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="minutes"),
                                                "jobs": job_health(os.environ.get("GITHUB_REPOSITORY"),

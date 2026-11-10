@@ -488,15 +488,39 @@ def strategy_page():
                        "not necessarily a weak company.")
         st.caption("After the first buys: each pick vs Nasdaq-100, P/E-check skips vs buys, and sell outcomes.")
     else:
-        st.write("From December this tracks, for every monthly list (frozen, D-063):")
-        for x in ["Each list's top 20 vs Nifty 500 after 1 and 3 years — does the ranking work at all?",
-                  "Quality, growth and momentum separately — which part of the score actually predicts returns?",
-                  "Buyable vs 'too expensive' names — is the valuation guardrail helping or costing money?",
-                  "Stocks V4 sold vs kept — are the sell rules right?",
-                  "Suggestions you took vs skipped (see Analysis) — are overrides adding value?"]:
-            st.markdown("• " + x)
+        from v4.engines.investment import tracking as TR
+        t = SL.india_tracking()
+        if t.empty:
+            st.write("From December this tracks, for every monthly list (frozen, D-063):")
+            for x in ["Each list's top 20 vs Nifty 500 after 1 and 3 years — does the ranking work at all?",
+                      "Quality, growth and momentum separately — which part of the score actually predicts returns?",
+                      "Buyable vs 'too expensive' names — is the valuation guardrail helping or costing money?",
+                      "Suggestions you took vs skipped (see Analysis) — are overrides adding value?"]:
+                st.markdown("• " + x)
+        else:
+            st.caption("Every frozen list is followed from its freeze date — bought or not — against the Nifty 500 "
+                       "over the same days. Early months are noise; judge at 1 and 3 years.")
+            st.subheader("Does the ranking work?")
+            rc = TR.ranking_check(t)
+            st.dataframe(rc.style.format({c: "{:+.1%}" for c in rc.columns if c not in ("List", "Days since freeze")}),
+                         hide_index=True, use_container_width=True)
+            st.subheader("Which part of the score works?")
+            fc = TR.factor_check(t)
+            if fc.empty:
+                st.caption("Needs a few more stocks with returns.")
+            else:
+                st.altair_chart(alt.Chart(fc.assign(Gap=fc["Gap"] * 100)).mark_bar().encode(
+                    x=alt.X("Gap:Q", title="Top third minus bottom third (% points)"), y=alt.Y("Score part:N", title=None),
+                    color=alt.condition("datum.Gap >= 0", alt.value("#57ab5a"), alt.value("#e5534b")))
+                    .properties(height=48 * len(fc)), use_container_width=True)
+                st.caption("Green = the stocks that scored higher on that part did better. Red = that part isn't helping.")
+            st.subheader("Is the price check helping?")
+            gc = TR.guardrail_check(t)
+            st.dataframe(gc.style.format({"Ahead of index": "{:+.1%}"}), hide_index=True, use_container_width=True)
+            st.caption("If 'too expensive' names keep beating the buyable ones, the price check is costing money.")
         sug = L.suggestions()
         if not sug.empty:
+            st.subheader("Taken vs skipped")
             st.dataframe(sug, hide_index=True, use_container_width=True)
 
     st.header("Review notes")
