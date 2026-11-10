@@ -106,6 +106,14 @@ def coming_up(today: dt.date, c: dict | None = None) -> list[tuple[str, str]]:
     out.append((f"{next_quarter_start(today):%-d %b}", "Quarterly report on Telegram"))
     if not c["trading"].get("paper_start"):
         out.append(("After the GMAT", "Paper trading starts (no real money until it proves itself)"))
+    try:
+        exp = yaml.safe_load((ROOT / "config" / "app.yaml").read_text()).get("github_key_expires")
+    except Exception:
+        exp = None
+    if exp:
+        e = dt.date.fromisoformat(exp)
+        if (e - today).days <= 45:
+            out.append((f"{e:%-d %b %Y}", "App's GitHub key expires — make a new one (same steps) so to-do ticks keep saving"))
     signed = (c.get("us", {}).get("compliance") or {}).get("w8ben_signed")
     if signed:
         out.append((f"31 Dec {dt.date.fromisoformat(signed).year + 3}", "W-8BEN expires — renew in Zerodha"))
