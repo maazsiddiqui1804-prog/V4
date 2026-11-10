@@ -8,6 +8,9 @@ V4 is Maaz's personal rules-based system: India + US long-term investing (Invest
 - `docs/V4_Instructions_Manual.md` — how to work with Maaz, touchpoints, session-end protocol.
 - Read these before changing anything. The claude.ai Project holds the master copies (D-117); docs/ mirrors them.
 
+## Who owns what (D-138)
+Claude owns tech and operations (act, then report). Maaz owns strategy and philosophy (bring options; never change rules or numbers yourself).
+
 ## Touchpoints that must agree
 Project docs · this repo (code, config, docs) · the app (https://investing-trading.streamlit.app/, `dashboard/app.py`,
 Build page = `data/app/build.json`) · the V4 Dashboard on claude.ai · Telegram (every message links the app).
