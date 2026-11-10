@@ -20,6 +20,11 @@ st.markdown("""<style>
   .small {color: #9aa0a6; font-size: 0.85rem;}
 </style>""", unsafe_allow_html=True)
 
+@st.cache_data(ttl=3600)
+def benchmark_lines():
+    return L.benchmark_lines()
+
+
 TODAY = dt.datetime.now(ZoneInfo("Asia/Kolkata")).date()
 C = L.cfg()
 
@@ -104,7 +109,7 @@ def more():
     st.title("More")
     st.subheader("Benchmarks")
     st.write("V4 must beat simply buying these index funds (lines start at 100).")
-    bl = L.benchmark_lines()
+    bl = benchmark_lines()
     if bl.empty:
         st.caption("Benchmark chart unavailable.")
     else:
