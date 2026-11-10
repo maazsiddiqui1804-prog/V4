@@ -4,7 +4,7 @@
 
 ## Next session
 1. **Waiting on Maaz (dashboard "Waiting on you"):**
-   - T-059 **Trading backtest has no edge with starting numbers** — choose a path (options below).
+   - T-059 ✅ decided 2026-11-10: Trading Engine = B2 (D-137). Engine, plan and config switched.
    - T-057 US Kite check: needs the "International" search in Kite (regular Kite didn't show it on 2026-11-10; US stocks are in beta at kite-beta.zerodha.com, accounts enabled in batches). Maaz expects it to appear soon.
    - T-060 put the dashboard online on Streamlit (5 min, D-112).
    - T-054 approve US numbers · T-055 US weak-market rule · T-056 monthly vs quarterly US transfers · T-058 W-8BEN before first US buy · T-047 trading numbers.
@@ -24,7 +24,7 @@ Protocol fixed in advance: 15 years of today's Nifty 500 (Yahoo, split fixes), f
 | C0 current V4 rules | 6%, 0.06R | 2%, 0.08R | **−3%, −0.03R (fail)** | |
 | Survivor baseline (equal-weight all) / real Nifty 500 | 15% / 13% | 27% / 16% | 21% / 11% | |
 Reading: every long strategy is flattered ~10 pts/yr by survivorship; breakout B-family holds a stable ~+0.25–0.37R edge over random entries in all three periods. What makes it work: let winners run (50-day-average trail, up to a year) — the 20-day time stop + 2R target in the current rules cut winners short. Holding ~1–2 months average, not 1–4 weeks.
-Options: A (recommended) adopt B2 as the Trading Engine rules for paper trading after the GMAT (rule change, needs Maaz's yes; D-048 gate still applies) · B adopt B1 (higher return 2012–22, weaker 2023–26) · C put the trading 10% into momentum rotation R4 (or a Momentum 30 index fund) instead of breakout trading · D keep current rules (fails every period).
+**Decision: B2 adopted (D-137).** Realistic engine run of B2 (6 positions, ₹1L, highest strength first, ₹20 cr floor): 2012–19 13%/yr DD −31% 0.58R · 2020–22 30%/yr DD −27% 0.96R · 2023–26 13%/yr DD −15% 0.29R (just under the 0.3R bar). The research table above is per-trade and unconstrained, so it reads higher; the engine run is the one to expect. Roughly index-like returns with a per-trade edge; paper trading decides.
 
 ## Where we are
 - Repo (private): github.com/maazsiddiqui1804-prog/v4. Claude GitHub App on this repo only. 169 automated checks pass.
