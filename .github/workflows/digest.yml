@@ -1,0 +1,43 @@
+# Telegram digests (D-004, D-138): weekly to-do list every Monday; Screener-drop reminder on the 1st.
+name: Telegram digest
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "weekly or monthly"
+        default: "weekly"
+  schedule:
+    - cron: "23 3 * * 1"   # Mondays 08:53 IST — weekly digest
+    - cron: "53 3 1 * *"   # 1st of the month 09:23 IST — Screener reminder (only when due)
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install pandas pyyaml requests
+      - name: Send
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MODE="${{ inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            if [ "${{ github.event.schedule }}" = "53 3 1 * *" ]; then MODE=monthly; else MODE=weekly; fi
+          fi
+          python -m v4.jobs.digest "$MODE"
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

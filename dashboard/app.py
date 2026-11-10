@@ -381,10 +381,12 @@ def build_page():
     st.page_link(KITE_PAGE, label="Kite login", icon="🔑")
     st.header("Waiting on you")
     tasks = pd.DataFrame(b.get("tasks", []))
-    items = L.todos(TODAY, c=C) + L.waiting(c=C)
+    items = L.todos(TODAY, c=C)
     if not tasks.empty:
         mine = tasks[(tasks["owner"] == "Maaz") & (tasks["status"] != "Done")]
         items += [f"{r.task_id}: {r.task}" for r in mine.itertuples()]
+    else:
+        items += L.waiting(c=C)
     items = list(dict.fromkeys(items))
     if items:
         todo_box(items, "build")

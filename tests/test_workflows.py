@@ -35,7 +35,7 @@ def test_stale_job_detection(monkeypatch):
     from v4.jobs import actions_minutes as am
     now = dt.datetime(2026, 11, 16, 3, 17, tzinfo=dt.timezone.utc)
     runs = {"benchmark_navs.yml": "2026-11-13T17:20:00Z", "red_flags.yml": "2026-11-05T09:55:00Z",
-            "daily_app.yml": "2026-11-13T12:50:00Z"}
+            "daily_app.yml": "2026-11-13T12:50:00Z", "digest.yml": "2026-11-09T03:30:00Z"}
     monkeypatch.setattr(am, "_get", lambda url, params=None: {"workflow_runs": [
         {"updated_at": runs[url.split("/workflows/")[1].split("/")[0]]}]})
     out = am.stale_jobs("o/r", now)

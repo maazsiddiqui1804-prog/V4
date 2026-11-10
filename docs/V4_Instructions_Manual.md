@@ -50,7 +50,7 @@ An earlier attempt stalled from (1) re-explaining context each session, (2) code
 | GitHub repo `maazsiddiqui1804-prog/V4` | Code, config (live numbers), docs/ copy of log + status, CLAUDE.md, README | Claude; cloud jobs commit data |
 | App — https://investing-trading.streamlit.app/ | Maaz's daily view; Build page reads `data/app/build.json` (copy of dashboard tasks); rules shown live from config | Claude refreshes build.json each session; daily job refreshes data |
 | V4 Dashboard — https://claude.ai/artifact/NP2ZkpE47Hp3F6FY7SAs1S | Build plan: tasks, rules (ref/rules), decisions (ref/decisions), milestones, open items | Claude, end of every session |
-| Telegram | Monthly brief, red flags, US runs, reports, failures; every message ends with the app link | Code (`v4/alerts.py`) |
+| Telegram | **Primary channel — Maaz opens the app ~weekly.** Every action item must reach Telegram: monthly brief, red flags, Monday weekly digest (all to-dos + waiting items + dates), 1st-of-month Screener reminder, Kite login reminders with the login link, nightly paper plan, midday stop/trigger alerts, quarterly report, failures. Every message ends with the app link | Code (`v4/alerts.py`, `v4/jobs/digest.py`) |
 
 ## Build rules
 - Inspect the repo and docs before changing anything; prefer small, reviewable changes.

@@ -21,6 +21,7 @@
 - **Repo:** github.com/maazsiddiqui1804-prog/v4 (private) · 200 automated checks pass · branches: `main`, `prices` (daily price history), `research-data` (15-year research prices).
 - **App:** https://investing-trading.streamlit.app/ (private) — India Investing, India Trading (watch-only), US Investing, Analysis, Strategy & Philosophy, Build. Every Telegram message links it.
 - **V4 Dashboard (claude.ai):** build tasks, rules, decisions, milestones; the app's Build page is a copy (tools/sync_build.py).
+- **Telegram is the main channel (app ~weekly):** Monday 08:53 weekly digest (to-dos, waiting items, dates, trading status), 1st-of-month Screener reminder, plus every alert below.
 - **Scheduled jobs (all alert on failure; Monday check catches silent ones and Actions minutes):** benchmark NAVs weekdays 22:47 · red flags weekdays 10:47/13:17/15:23 · app refresh (prices, signals, job health) weekdays 18:13 · monthly import on inbox drop → monthly brief (none before Dec) · quarterly report 1 Jan/Apr/Jul/Oct · health check Mondays. Manual: US data stages, trading backtest, research prices.
 - **India investing (D-113–D-129):** 419 investable of Nifty 500; filters → score → guardrail → buy plan → sells → red flags → brief. First real list December.
 - **US investing (D-131–D-136):** universe 334 → 84 pass filters → shortlist 40 (7 non-USD reporters). Safeguards built (D-132). No US buys until approvals.
