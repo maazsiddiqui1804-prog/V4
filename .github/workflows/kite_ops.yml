@@ -1,0 +1,62 @@
+# Kite-day operations: login reminders (D-081) and midday price checks (D-109). Idle until kite_enabled.
+name: Kite day
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "remind or midday"
+        default: "remind"
+  # Schedules switch on with Kite (after the GMAT) — kept off now so idle runs don't use Actions minutes:
+  # schedule:
+  #   - cron: "17 3 * * 1-5"      # 08:47 IST login reminder
+  #   - cron: "33 10 * * 1-5"     # 16:03 IST nudge if still not logged in
+  #   - cron: "13,43 4-9 * * 1-5" # ~every 30 min, 09:43–15:13 IST: midday checks
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: kite-day
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install requests pyyaml cryptography
+      - name: Run
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          KITE_API_KEY: ${{ secrets.KITE_API_KEY }}
+          KITE_API_SECRET: ${{ secrets.KITE_API_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MODE="${{ inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            case "${{ github.event.schedule }}" in
+              "17 3 * * 1-5"|"33 10 * * 1-5") MODE=remind ;;
+              *) MODE=midday ;;
+            esac
+          fi
+          python -m v4.jobs.kite_ops "$MODE"
+      - name: Save midday alert memory
+        run: |
+          git config user.name "V4 bot"
+          git config user.email "v4-bot@users.noreply.github.com"
+          git add data/app/midday_state.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -qm "Midday state" && git pull --rebase -q && git push -q || true
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

@@ -1,0 +1,41 @@
+# Daily Kite login (D-081). Triggered by the app after Maaz logs in on Kite's own page.
+# Receives only the one-time request token; the day's access token is encrypted and kept as a 1-day artifact.
+name: Kite login
+
+on:
+  repository_dispatch:
+    types: [kite-login]
+
+permissions:
+  contents: read
+
+jobs:
+  exchange:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install requests pyyaml cryptography
+      - name: Exchange the request token
+        env:
+          REQUEST_TOKEN: ${{ github.event.client_payload.request_token }}
+          KITE_API_KEY: ${{ secrets.KITE_API_KEY }}
+          KITE_API_SECRET: ${{ secrets.KITE_API_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m v4.broker.kite
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kite-session
+          path: kite_session/session.bin
+          retention-days: 1
+      - name: Alert on any failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m v4.alerts "❌ V4 job FAILED: ${{ github.workflow }} (run ${{ github.run_number }}). Open GitHub → Actions for details."

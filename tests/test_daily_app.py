@@ -22,3 +22,15 @@ def test_snapshot_facts():
     assert s.close == pytest.approx(199) and s.high_52w == pytest.approx(199)
     assert s.chg_1y == pytest.approx(199 / px.close.iloc[-253] - 1)
     assert s.dma50 == pytest.approx(px.close.iloc[-50:].mean())
+
+
+def test_missed_login_streak_counts_weekdays_only():
+    import datetime as dt
+    today = dt.date(2026, 12, 14)                      # Monday
+    assert da.missed_streak(["2026-12-11"], today) == 0     # logged in Friday
+    assert da.missed_streak(["2026-12-09"], today) == 2     # missed Thu + Fri (weekend not counted)
+    assert da.missed_streak([], today) >= 3
+
+
+def test_kite_off_by_default():
+    assert da.kite_today() == (None, "off")

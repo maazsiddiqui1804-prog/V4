@@ -312,3 +312,22 @@ def save_done(done: dict, token: str, repo: str = "maazsiddiqui1804-prog/V4") ->
 def load_notes(data: Path = DATA) -> list[dict]:
     p = data / "app" / "review_notes.json"
     return json.loads(p.read_text()) if p.exists() else []
+
+
+def app_cfg() -> dict:
+    return yaml.safe_load((ROOT / "config" / "app.yaml").read_text())
+
+
+def last_kite_login(data: Path = DATA) -> str | None:
+    p = data / "app" / "checks.json"
+    c = json.loads(p.read_text()) if p.exists() else []
+    return c[-1] if c else None
+
+
+def dispatch(event: str, payload: dict, token: str, repo: str = "maazsiddiqui1804-prog/V4") -> bool:
+    """Start a GitHub job (repository_dispatch). The payload must never hold a secret."""
+    import requests
+    r = requests.post(f"https://api.github.com/repos/{repo}/dispatches", timeout=20,
+                      headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+                      json={"event_type": event, "client_payload": payload})
+    return r.status_code == 204

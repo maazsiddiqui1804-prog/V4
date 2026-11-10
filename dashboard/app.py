@@ -541,16 +541,52 @@ def strategy_page():
             st.warning("Couldn't save to GitHub — check the app's GitHub key.")
 
 
+def kite_page():
+    st.title("Kite login")
+    app = L.app_cfg()
+    if not app.get("kite_enabled"):
+        st.info("Kite Connect starts after the GMAT. Until then V4 uses free end-of-day prices and nothing needs a login.")
+        st.markdown("**Switch-on steps (about 10 minutes, Claude walks you through):**\n"
+                    "1. Subscribe to Kite Connect (₹500/month) at developers.kite.trade (T-039).\n"
+                    f"2. In the Kite app settings, set the redirect URL to `{app.get('kite_redirect')}`.\n"
+                    "3. Put the Kite API key in this app's Streamlit secrets as `KITE_API_KEY` "
+                    "(the secret stays only in GitHub Secrets).\n"
+                    "4. Tell Claude — he switches Kite on and starts the paper-trading clock.")
+        return
+    token = st.query_params.get("request_token")
+    if token:
+        gh = secret_token()
+        if gh and L.dispatch("kite-login", {"request_token": token}, gh):
+            st.success("Logged in. V4 is connecting to Kite — Telegram confirms within a minute. Valid until 6 AM tomorrow.")
+        else:
+            st.error("Couldn't hand the login to V4 — check the app's GitHub key, then try again.")
+        st.query_params.clear()
+        return
+    try:
+        key = st.secrets.get("KITE_API_KEY")
+    except Exception:
+        key = None
+    if not key:
+        st.warning("Add KITE_API_KEY to this app's Streamlit secrets to enable the login button.")
+        return
+    st.write("One tap a day after 6 AM (D-081). You log in on Kite's own page — V4 never sees your password.")
+    st.link_button("🔑 Log in to Kite", f"https://kite.zerodha.com/connect/login?v=3&api_key={key}",
+                   type="primary", use_container_width=True)
+    last = L.last_kite_login()
+    st.caption(f"Last login V4 recorded: {last}" if last else "No login recorded yet.")
+
+
 pages = [st.Page(india_investing, title="India Investing", icon="🇮🇳", default=True, url_path="india-investing"),
          st.Page(india_trading, title="India Trading", icon="📈", url_path="india-trading"),
          st.Page(us_investing, title="US Investing", icon="🇺🇸", url_path="us-investing"),
          st.Page(analysis, title="Analysis", icon="📊", url_path="analysis"),
          st.Page(strategy_page, title="Strategy & Philosophy", icon="🧭", url_path="strategy"),
-         st.Page(build_page, title="Build", icon="🛠️", url_path="build")]
+         st.Page(build_page, title="Build", icon="🛠️", url_path="build"),
+         st.Page(kite_page, title="Kite login", icon="🔑", url_path="kite")]
 NAV = {"🇮🇳 India Invest": pages[0], "📈 India Trade": pages[1], "🇺🇸 US Invest": pages[2],
        "📊 Analysis": pages[3], "🧭 Strategy": pages[4], "🛠️ Build": pages[5]}
 current = st.navigation(pages, position="hidden")
-here = next(k for k, v in NAV.items() if v.url_path == current.url_path)
+here = next((k for k, v in NAV.items() if v.url_path == current.url_path), None)
 st.markdown(f"<div style='font-weight:800;font-size:1.45rem;line-height:1.2;margin:-0.6rem 0 0.6rem 0'>"
             f"{APP_NAME}</div>", unsafe_allow_html=True)
 go = st.segmented_control("Section", list(NAV), default=here, label_visibility="collapsed", key=f"nav-{here}")

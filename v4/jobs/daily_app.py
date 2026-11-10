@@ -71,12 +71,47 @@ def job_health(repo: str | None, token: str | None) -> list[dict]:
     return out
 
 
+def kite_today():
+    """Kite client if Kite is switched on and Maaz logged in today; else (None, reason)."""
+    app = yaml.safe_load((ROOT / "config" / "app.yaml").read_text())
+    if not app.get("kite_enabled"):
+        return None, "off"
+    from v4.broker import kite
+    k = kite.from_env()
+    return (k, "ok") if k else (None, "no login today")
+
+
+def missed_streak(checks: list[str], today: dt.date) -> int:
+    """Consecutive weekdays (before today) with no Kite login — the D-049 tripwire counter."""
+    done = set(checks)
+    n, d = 0, today - dt.timedelta(days=1)
+    while n < 10:
+        if d.weekday() < 5:
+            if d.isoformat() in done:
+                break
+            n += 1
+        d -= dt.timedelta(days=1)
+    return n
+
+
 def run(history_dir: Path) -> str:
+    from v4 import alerts
+    from v4.engines.trading import paper
     cfg = yaml.safe_load((ROOT / "config" / "placeholders.yaml").read_text())["trading"]
+    k, kstate = kite_today()
+    today = dt.date.today()
+    checks_p = APP / "checks.json"
+    checks = json.loads(checks_p.read_text()) if checks_p.exists() else []
+    if k:
+        checks = sorted(set(checks) | {today.isoformat()})[-60:]
     hist, hidx = history_dir / "india_daily.csv.gz", history_dir / "nifty500_index.csv"
     if hist.exists():
         old = pd.read_csv(hist, parse_dates=["date"])
-        new, close, missing = ip.fetch_frame("1mo")
+        if k:                                   # Kite is the price source once it's on (D-080/D-106)
+            from v4.broker import kite_prices
+            new, close, missing = kite_prices.recent(k, sorted(old["symbol"].unique()))
+        else:
+            new, close, missing = ip.fetch_frame("1mo")
         px = ip.merge(old, new)
         oi = pd.read_csv(hidx, parse_dates=["date"]).set_index("date")["close"]
         idx = pd.concat([oi, close]).groupby(level=0).last().sort_index()
@@ -89,8 +124,28 @@ def run(history_dir: Path) -> str:
     clean, fixes = ip.fix_unadjusted(px)
     sectors = dict(ip.universe().itertuples(index=False, name=None))
     recent = clean[clean["date"] >= clean["date"].max() - pd.Timedelta(days=600)]
-    plan = daily.evening_plan(recent, idx, sectors, [], float(cfg["capital_inr"]), cfg)
-    plan["mode"] = "WATCH-ONLY (paper trading starts after the GMAT)"
+    paper_start = cfg.get("paper_start")
+    if paper_start:
+        warm = pd.Timestamp(paper_start) - pd.Timedelta(days=500)     # enough history for the 52-week/200-day rules
+        pr = paper.replay(clean[clean["date"] >= warm], idx, sectors, cfg, start=str(paper_start))
+        positions, equity = pr["positions"], pr["equity"]
+        pr["trades"].to_csv(APP / "paper_trades.csv", index=False)
+    else:
+        positions, equity = [], float(cfg["capital_inr"])
+    plan = daily.evening_plan(recent, idx, sectors, positions, equity, cfg)
+    streak = missed_streak(checks, today)
+    if paper_start and streak >= 3:          # D-049: 3+ missed daily checks → no new trades until resumed
+        plan["skipped"] = [(n["symbol"], "tripwire: 3+ missed daily logins") for n in plan["new"]] + plan["skipped"]
+        plan["new"] = []
+    plan["stops"] = {p.symbol: round(p.stop, 2) for p in positions}
+    plan["mode"] = ("PAPER" if paper_start else "WATCH-ONLY (paper trading starts after the GMAT)")
+    if paper_start:
+        plan["gate"] = paper.gate_line(pr["gate"])
+        if k:
+            alerts.send(daily.render(plan, "PAPER — simulated, not real money") + "\n" + plan["gate"])
+        elif kstate == "no login today":
+            alerts.send("⚠️ No Kite login today, so tonight's paper-trading prices came from the backup source. "
+                        f"Missed days in a row: {streak + 1}. At 3, new trades pause (D-049). Log in: open the app → Kite.")
 
     APP.mkdir(parents=True, exist_ok=True)
     snap = snapshot(clean[clean["date"] >= clean["date"].max() - pd.Timedelta(days=400)], cfg)
@@ -108,6 +163,7 @@ def run(history_dir: Path) -> str:
     tracking.track(frozen, clean[["date", "symbol", "close"]], idx).to_csv(APP / "list_tracking.csv", index=False,
                                                                            float_format="%.5f")
     (APP / "trading_today.json").write_text(json.dumps(plan, indent=1, default=str))
+    checks_p.write_text(json.dumps(checks))
     (APP / "jobs.json").write_text(json.dumps({"updated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="minutes"),
                                                "jobs": job_health(os.environ.get("GITHUB_REPOSITORY"),
                                                                   os.environ.get("GITHUB_TOKEN"))}, indent=1))
