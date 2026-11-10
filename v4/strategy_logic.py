@@ -200,8 +200,9 @@ def us_funnel() -> tuple[pd.DataFrame, pd.DataFrame]:
         why = m.apply(lambda r: us.kill({k: (None if pd.isna(v) else v) for k, v in r.items()}, rules), axis=1)
         rows.append(("Financials read from SEC", len(m)))
         rows.append(("Pass the kill filters", int((why.map(len) == 0).sum())))
-        reasons = pd.Series([reason_label(w) for ws in why for w in ws]).value_counts() \
-            .rename_axis("Reason cut").reset_index(name="Companies")
+        # one main reason per company (the first rule it fails: losses are checked first), so counts add up
+        reasons = pd.Series([reason_label(ws[0]) for ws in why if ws]).value_counts() \
+            .rename_axis("Main reason cut").reset_index(name="Companies")
     s = L.us_shortlist()
     if not s.empty:
         rows.append(("Shortlisted (top on quality + growth)", len(s)))
