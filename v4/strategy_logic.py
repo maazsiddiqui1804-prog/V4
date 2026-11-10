@@ -16,7 +16,9 @@ def overall() -> list[str]:
         "**Purpose:** beat simply buying index funds while spending little time — or switch V4 off (D-010).",
         "**Target:** beat the benchmark by at least 2% a year after costs and tax over rolling 5 years, "
         "with no deeper falls than the benchmark (D-011, D-093).",
-        "**Split:** 90% investing (of which US at most 30%), 10% trading — trading earns more only by proving itself (D-088, D-089, D-100).",
+        "**Split:** starts at 90% investing / 10% trading and can move to **70/30** as trading proves itself live: "
+        "20% after 50 live trades averaging ≥ 0.3R, up to 30% after 100; it steps back down if results fade. "
+        "US is at most 30% of the investing part (D-088, D-089, D-100).",
         "**Who does what:** V4 screens, scores and signals; you decide and place every order. It never trades (D-003, D-015).",
         "**Discipline:** follow the signals; any override needs a reason and is scored later (D-016). "
         "Rules change only at reviews — quarterly for fixes, January for strategy, never mid-slump (D-066).",
@@ -62,7 +64,8 @@ def philosophy(c: dict) -> dict[str, dict]:
                 f"Size: risk {tr['risk_per_trade']:.0%} of trading money per trade; max {tr['max_open']} open, "
                 f"{tr['max_per_sector']} per sector; pause after a {tr['drawdown_brake_pct']}% fall until the next quarter (D-044, D-046, D-104).",
             ],
-            "target": "Go-live bar: paper trading ≥ 3 months, ≥ 30 trades, average ≥ +0.3R after costs (D-048). Then it earns capital in stages (D-100).",
+            "target": "Go-live bar: paper trading ≥ 3 months, ≥ 30 trades, average ≥ +0.3R after costs (D-048). Live, it starts with 10% of V4 "
+                      "and earns up to 30%: 20% after 50 live trades at ≥ 0.3R, 30% after 100 (D-100).",
         },
         "US Investing": {
             "why": "Get AI exposure India can't offer yet: the chips, software, hardware and power companies building "
