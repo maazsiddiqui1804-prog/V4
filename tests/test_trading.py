@@ -7,7 +7,11 @@ import yaml
 from v4.db import ROOT
 from v4.engines.trading import backtest as bt, costs, signals as sg
 
-CFG = yaml.safe_load((ROOT / "config" / "placeholders.yaml").read_text())["trading"]
+B2 = yaml.safe_load((ROOT / "config" / "placeholders.yaml").read_text())["trading"]
+# The old rules (pre D-137) — kept to test the engine's partial-profit / time-stop / half-size mechanics.
+CFG = dict(B2, rs_lookback_days=126, rs_skip_days=0, breakout_days=19, max_stretch_above_20dma=0.10,
+           stop_method="lowest_low", max_initial_risk=0.10, partial_at_r=2.0, trail_dma=20,
+           trail_after_partial=True, time_stop_days=20, weak_market_action="half_size")
 DAYS = pd.bdate_range("2024-01-01", periods=320)
 
 
@@ -157,3 +161,29 @@ def test_paper_open_position_carries_into_evening_plan():
     idx = pd.Series(np.linspace(100, 200, 267), index=DAYS[:267])
     r = paper.replay(px, idx, {"LEAD": "Tech"}, CFG, start=str(DAYS[200].date()))
     assert [p.symbol for p in r["positions"]] == ["LEAD"] and r["positions"][0].held == 6
+
+
+# ---------- B2 rules (D-137) ----------
+def test_b2_52_week_breakout_atr_stop_and_trail_exit():
+    after = np.r_[np.linspace(124, 160, 30), np.linspace(158, 120, 29)]     # rally, then roll over
+    c, v = leader(after=after)
+    idx = pd.Series(np.linspace(100, 200, 320), index=DAYS)
+    s = sg.signals(sg.indicators(universe(c, v), B2), B2)
+    lead = s[s.symbol == "LEAD"]
+    assert list(lead.date) == [DAYS[260]]
+    atr = 123 * 0.02                                                        # high−low ≈ 2% of price here
+    assert lead.stop.iloc[0] == pytest.approx(123 - 2 * atr, rel=0.05)
+    t = bt.run(universe(c, v), idx, {"LEAD": "Tech"}, B2)["trades"].iloc[0]
+    assert t.exit_reason == "trail: close below 50-day avg" and t.r > 1    # rode the rally, left on the roll-over
+    assert t.days > 20                                                       # no 20-day time stop any more
+
+
+def test_b2_no_new_trades_in_weak_market():
+    c, v = leader(after=np.linspace(124, 170, 59))
+    weak = pd.Series(np.linspace(200, 100, 320), index=DAYS)              # index below its 200-day average
+    assert bt.run(universe(c, v), weak, {}, B2)["trades"].empty
+    from v4.engines.trading import daily
+    px = universe(c, v)
+    plan = daily.evening_plan(px[px.date <= DAYS[260]], weak[:261], {}, [], 100_000, B2)
+    assert plan["new"] == [] and ("LEAD", "weak market: no new trades") in plan["skipped"]
+    assert "no new trades" in daily.render(plan)

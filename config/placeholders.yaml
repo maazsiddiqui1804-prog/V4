@@ -36,26 +36,31 @@ investment:
     trim_above_x_target: 2.0           # D-028
     trim_to_x_target: 2.0              # D-127: trim only the excess above 2× target
 
-trading:                   # Trading Engine (D-040–D-049, D-060, D-098, D-104). Numbers marked PLACEHOLDER are
-                           # starting values for the backtest; Maaz approves them before paper trading (dashboard).
+trading:                   # Trading Engine = "B2" (D-137, approved 2026-11-10 from the strategy search,
+                           # research/2026-11-strategy-search). Numbers stay PLACEHOLDER until paper trading proves them.
   capital_inr: 100000              # D-098 paper notional
   liquidity_floor_cr_per_day: 20   # D-040 (~₹20 cr) — 20-day average traded value
   trend_fast_dma: 50               # D-042: 50-day average above 200-day, price above 50-day
   trend_slow_dma: 200
-  rs_top_fraction: 0.20            # D-042 top 20% relative strength
-  rs_lookback_days: 126            # PLACEHOLDER: relative strength = 6-month return rank
-  breakout_days: 20                # D-042 close at a new 20-day closing high
+  rs_top_fraction: 0.20            # top 20% relative strength
+  rs_lookback_days: 252            # D-137: 12-month return…
+  rs_skip_days: 21                 # …skipping the latest month
+  breakout_days: 250               # D-137: close above the highest close of the previous 250 days (52-week high)
   volume_multiple: 1.5             # D-042 ≥1.5× 20-day average volume
-  max_stretch_above_20dma: 0.10    # D-042 PLACEHOLDER: skip if close >10% above its 20-day average
-  stop_lookback_days: 10           # D-045 PLACEHOLDER: stop just below the lowest low of the last 10 days
-  stop_buffer: 0.005               # PLACEHOLDER: 0.5% below that low
-  max_initial_risk: 0.10           # PLACEHOLDER: skip if the stop is >10% below entry (too wide)
-  partial_at_r: 2.0                # D-045 half off at 2R
+  max_stretch_above_20dma: null    # D-137: no stretch limit
+  stop_method: atr                 # D-137: stop = signal close − 2 × 14-day average true range
+  stop_atr_multiple: 2.0
+  stop_lookback_days: 10           # only used if stop_method: lowest_low
+  stop_buffer: 0.005               # only used if stop_method: lowest_low
+  max_initial_risk: 0.15           # skip if the stop is >15% below entry
+  partial_at_r: null               # D-137: no profit target — let winners run
   partial_fraction: 0.5
-  trail_method: "close below 20-day average"   # D-045 PLACEHOLDER
-  time_stop_days: 20               # D-045 ~20 trading days
+  trail_dma: 50                    # D-137: exit next morning after a close below the 50-day average
+  trail_after_partial: false       # trail is active from day one
+  time_stop_days: 250              # D-137: at most ~1 year
+  weak_market_action: no_new_entries   # D-137: Nifty 500 below its 200-day average → no new trades (open ones keep their exits)
   risk_per_trade: 0.01             # D-044 1% of trading capital
-  weak_market_risk: 0.005          # D-041/D-044 half size when Nifty 500 < its 200-day average
+  weak_market_risk: 0.005          # only used if weak_market_action: half_size
   max_open: 6                      # D-046
   max_per_sector: 3                # D-046
   results_blackout_days: 5         # D-046 (needs results calendar; not applied in backtest)

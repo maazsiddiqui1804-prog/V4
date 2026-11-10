@@ -114,6 +114,8 @@ def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict, trad
             if bar["low"] <= p.stop:
                 sell(p, p.left, p.stop * (1 - slip), day, "stop")
                 continue
+            if not cfg.get("partial_at_r"):
+                continue
             target = p.entry + cfg["partial_at_r"] * (p.entry - p.stop)
             if not p.partial and bar["high"] >= target:
                 q = math.floor(p.qty * cfg["partial_fraction"])
@@ -126,8 +128,9 @@ def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict, trad
                 continue
             p.held += 1
             bar = b.loc[p.symbol]
-            if p.partial and bar["close"] < bar["dma20"]:
-                p.exit_next = "trail: close below 20-day avg"
+            trailing = p.partial or not cfg.get("trail_after_partial", True)
+            if trailing and bar["close"] < bar["dma_trail"]:
+                p.exit_next = f"trail: close below {cfg.get('trail_dma', 20)}-day avg"
             elif p.held >= cfg["time_stop_days"]:
                 p.exit_next = "time stop"
         for p in [p for p in open_pos if not p.left]:
@@ -144,6 +147,8 @@ def run(px: pd.DataFrame, index_close: pd.Series, sectors: dict, cfg: dict, trad
         if paused_q is not None and _quarter_start(day) != paused_q:
             paused_q, peak = None, equity          # resume at the next quarter (D-104)
         if paused_q is not None or day not in sig_by_day or (trade_from is not None and day < pd.Timestamp(trade_from)):
+            continue
+        if cfg.get("weak_market_action") == "no_new_entries" and bool(weak.get(day, False)):
             continue
         held = {p.symbol for p in open_pos}
         per_sector: dict = {}
