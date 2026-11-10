@@ -71,5 +71,6 @@
    "trigger": 2029.4
   }
  ],
+ "stops": {},
  "mode": "WATCH-ONLY (paper trading starts after the GMAT)"
 }
