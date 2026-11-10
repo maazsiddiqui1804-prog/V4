@@ -30,7 +30,7 @@
    "id": "P4",
    "name": "Trading Engine (paper)",
    "status": "In progress — Rules B2 (D-137) · Kite Connect + paper after the GMAT",
-   "pct": 50
+   "pct": 80
   },
   {
    "id": "P5",
@@ -357,8 +357,8 @@
    "phase_id": "P4",
    "phase": "Trading Engine (paper)",
    "owner": "Claude",
-   "status": "Not started",
-   "task": "Daily login flow with reminders"
+   "status": "Done",
+   "task": "Daily Kite login: one tap in the app, token encrypted and never stored in the repo; reminders 08:47/16:03 — built, switches on with Kite"
   },
   {
    "task_id": "T-041",
@@ -389,8 +389,8 @@
    "phase_id": "P4",
    "phase": "Trading Engine (paper)",
    "owner": "Claude",
-   "status": "Not started",
-   "task": "Midday 30-minute price checks"
+   "status": "Done",
+   "task": "Midday ~30-minute checks (paper stop hit, watchlist trigger crossed), once per stock per day — built, switches on with Kite"
   },
   {
    "task_id": "T-045",
@@ -405,8 +405,8 @@
    "phase_id": "P4",
    "phase": "Trading Engine (paper)",
    "owner": "Claude",
-   "status": "In progress",
-   "task": "Drawdown brake built (backtest); missed-check tripwire to build with the paper ledger"
+   "status": "Done",
+   "task": "Drawdown brake + missed-check tripwire (3 missed weekday Kite logins → no new trades, D-049) built"
   },
   {
    "task_id": "T-047",
@@ -430,7 +430,7 @@
    "phase": "Dashboard and reviews",
    "owner": "Claude",
    "status": "In progress",
-   "task": "App Analysis + Strategy pages built (taken vs skipped, portfolio, trading diagnostics); fills in as real trades arrive; frozen-list tracking to add before December"
+   "task": "App Analysis + Strategy pages built, incl. frozen-list tracking vs Nifty 500 (D-063); fills in as real lists and trades arrive"
   },
   {
    "task_id": "T-050",
