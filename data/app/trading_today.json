@@ -1,49 +1,36 @@
 {
- "date": "2026-11-09",
+ "date": "2026-11-11",
  "weak_market": false,
  "new": [
   {
-   "symbol": "LAURUSLABS",
-   "sector": "Healthcare",
-   "ref_close": 2454.0,
-   "stop": 2275.34,
-   "target_2r": null,
-   "qty": 5,
-   "risk_inr": 893
-  },
-  {
    "symbol": "SAILIFE",
    "sector": "Healthcare",
-   "ref_close": 1836.8,
-   "stop": 1688.19,
+   "ref_close": 1918.6,
+   "stop": 1760.49,
    "target_2r": null,
    "qty": 6,
-   "risk_inr": 892
+   "risk_inr": 949
   },
   {
-   "symbol": "GLAND",
-   "sector": "Healthcare",
-   "ref_close": 3302.4,
-   "stop": 3065.6,
+   "symbol": "NAVINFLUOR",
+   "sector": "Chemicals",
+   "ref_close": 9659.0,
+   "stop": 8958.04,
    "target_2r": null,
-   "qty": 4,
-   "risk_inr": 947
+   "qty": 1,
+   "risk_inr": 701
+  },
+  {
+   "symbol": "RKFORGE",
+   "sector": "Automobile and Auto Components",
+   "ref_close": 764.7,
+   "stop": 691.04,
+   "target_2r": null,
+   "qty": 13,
+   "risk_inr": 958
   }
  ],
- "skipped": [
-  [
-   "AUROPHARMA",
-   "3 already in Healthcare"
-  ],
-  [
-   "DIVISLAB",
-   "3 already in Healthcare"
-  ],
-  [
-   "ANTHEM",
-   "3 already in Healthcare"
-  ]
- ],
+ "skipped": [],
  "actions": [],
  "watchlist": [
   {
@@ -51,24 +38,56 @@
    "trigger": 4662.4
   },
   {
-   "symbol": "IPCALAB",
-   "trigger": 2009.6
+   "symbol": "LAURUSLABS",
+   "trigger": 2454.0
+  },
+  {
+   "symbol": "ACUTAAS",
+   "trigger": 4003.6
+  },
+  {
+   "symbol": "HONASA",
+   "trigger": 499.69
+  },
+  {
+   "symbol": "GLAND",
+   "trigger": 3302.4
+  },
+  {
+   "symbol": "ENGINERSIN",
+   "trigger": 314.08
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "trigger": 1848.3
+  },
+  {
+   "symbol": "MOTHERSON",
+   "trigger": 170.68
+  },
+  {
+   "symbol": "FEDERALBNK",
+   "trigger": 370.43
   },
   {
    "symbol": "EMCURE",
    "trigger": 2245.0
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2373.5
+   "symbol": "DIVISLAB",
+   "trigger": 11565.5
   },
   {
-   "symbol": "KARURVYSYA",
-   "trigger": 370.05
+   "symbol": "NYKAA",
+   "trigger": 359.7
   },
   {
-   "symbol": "LALPATHLAB",
-   "trigger": 2029.4
+   "symbol": "ANTHEM",
+   "trigger": 958.15
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "trigger": 1942.7
   }
  ],
  "stops": {},
