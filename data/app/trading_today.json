@@ -1,42 +1,56 @@
 {
- "date": "2026-11-11",
+ "date": "2026-11-12",
  "weak_market": false,
  "new": [
   {
-   "symbol": "SAILIFE",
-   "sector": "Healthcare",
-   "ref_close": 1918.6,
-   "stop": 1760.49,
+   "symbol": "CUPID",
+   "sector": "Fast Moving Consumer Goods",
+   "ref_close": 384.8,
+   "stop": 355.29,
    "target_2r": null,
-   "qty": 6,
-   "risk_inr": 949
+   "qty": 33,
+   "risk_inr": 974
   },
   {
    "symbol": "NAVINFLUOR",
    "sector": "Chemicals",
-   "ref_close": 9659.0,
-   "stop": 8958.04,
+   "ref_close": 9969.0,
+   "stop": 9238.3,
    "target_2r": null,
    "qty": 1,
-   "risk_inr": 701
+   "risk_inr": 731
+  },
+  {
+   "symbol": "EMCURE",
+   "sector": "Healthcare",
+   "ref_close": 2314.4,
+   "stop": 2139.67,
+   "target_2r": null,
+   "qty": 5,
+   "risk_inr": 874
+  },
+  {
+   "symbol": "PAYTM",
+   "sector": "Financial Services",
+   "ref_close": 1925.0,
+   "stop": 1788.09,
+   "target_2r": null,
+   "qty": 7,
+   "risk_inr": 958
   },
   {
    "symbol": "RKFORGE",
    "sector": "Automobile and Auto Components",
-   "ref_close": 764.7,
-   "stop": 691.04,
+   "ref_close": 785.6,
+   "stop": 711.38,
    "target_2r": null,
    "qty": 13,
-   "risk_inr": 958
+   "risk_inr": 965
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
-  {
-   "symbol": "SANSERA",
-   "trigger": 4662.4
-  },
   {
    "symbol": "LAURUSLABS",
    "trigger": 2454.0
@@ -50,44 +64,60 @@
    "trigger": 499.69
   },
   {
-   "symbol": "GLAND",
-   "trigger": 3302.4
+   "symbol": "SAILIFE",
+   "trigger": 1918.6
   },
   {
    "symbol": "ENGINERSIN",
    "trigger": 314.08
   },
   {
-   "symbol": "AUROPHARMA",
-   "trigger": 1848.3
-  },
-  {
    "symbol": "MOTHERSON",
    "trigger": 170.68
   },
   {
-   "symbol": "FEDERALBNK",
-   "trigger": 370.43
+   "symbol": "AUROPHARMA",
+   "trigger": 1848.3
   },
   {
-   "symbol": "EMCURE",
-   "trigger": 2245.0
+   "symbol": "MAHABANK",
+   "trigger": 93.85
+  },
+  {
+   "symbol": "RADICO",
+   "trigger": 4732.9
   },
   {
    "symbol": "DIVISLAB",
    "trigger": 11565.5
   },
   {
-   "symbol": "NYKAA",
-   "trigger": 359.7
+   "symbol": "FEDERALBNK",
+   "trigger": 370.43
+  },
+  {
+   "symbol": "KARURVYSYA",
+   "trigger": 384.4
   },
   {
    "symbol": "ANTHEM",
    "trigger": 958.15
   },
   {
-   "symbol": "ADANIPORTS",
-   "trigger": 1942.7
+   "symbol": "LALPATHLAB",
+   "trigger": 2028.7
+  },
+  {
+   "symbol": "FLUOROCHEM",
+   "trigger": 4824.4
+  },
+  {
+   "symbol": "GLENMARK",
+   "trigger": 2677.2
+  },
+  {
+   "symbol": "SHYAMMETL",
+   "trigger": 1332.3
   }
  ],
  "stops": {},
