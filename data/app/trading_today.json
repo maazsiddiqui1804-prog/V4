@@ -1,123 +1,87 @@
 {
- "date": "2026-11-12",
+ "date": "2026-11-13",
  "weak_market": false,
  "new": [
   {
-   "symbol": "CUPID",
+   "symbol": "HONASA",
    "sector": "Fast Moving Consumer Goods",
-   "ref_close": 384.8,
-   "stop": 355.29,
+   "ref_close": 501.95,
+   "stop": 464.88,
    "target_2r": null,
-   "qty": 33,
-   "risk_inr": 974
-  },
-  {
-   "symbol": "NAVINFLUOR",
-   "sector": "Chemicals",
-   "ref_close": 9969.0,
-   "stop": 9238.3,
-   "target_2r": null,
-   "qty": 1,
-   "risk_inr": 731
-  },
-  {
-   "symbol": "EMCURE",
-   "sector": "Healthcare",
-   "ref_close": 2314.4,
-   "stop": 2139.67,
-   "target_2r": null,
-   "qty": 5,
-   "risk_inr": 874
-  },
-  {
-   "symbol": "PAYTM",
-   "sector": "Financial Services",
-   "ref_close": 1925.0,
-   "stop": 1788.09,
-   "target_2r": null,
-   "qty": 7,
-   "risk_inr": 958
-  },
-  {
-   "symbol": "RKFORGE",
-   "sector": "Automobile and Auto Components",
-   "ref_close": 785.6,
-   "stop": 711.38,
-   "target_2r": null,
-   "qty": 13,
-   "risk_inr": 965
+   "qty": 26,
+   "risk_inr": 964
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
   {
+   "symbol": "CUPID",
+   "trigger": 384.8
+  },
+  {
    "symbol": "LAURUSLABS",
    "trigger": 2454.0
   },
   {
-   "symbol": "ACUTAAS",
-   "trigger": 4003.6
-  },
-  {
-   "symbol": "HONASA",
-   "trigger": 499.69
-  },
-  {
-   "symbol": "SAILIFE",
-   "trigger": 1918.6
+   "symbol": "SONACOMS",
+   "trigger": 926.0
   },
   {
    "symbol": "ENGINERSIN",
    "trigger": 314.08
   },
   {
-   "symbol": "MOTHERSON",
-   "trigger": 170.68
+   "symbol": "MAHABANK",
+   "trigger": 93.85
   },
   {
    "symbol": "AUROPHARMA",
    "trigger": 1848.3
   },
   {
-   "symbol": "MAHABANK",
-   "trigger": 93.85
+   "symbol": "KARURVYSYA",
+   "trigger": 384.4
   },
   {
    "symbol": "RADICO",
    "trigger": 4732.9
   },
   {
-   "symbol": "DIVISLAB",
-   "trigger": 11565.5
-  },
-  {
    "symbol": "FEDERALBNK",
    "trigger": 370.43
   },
   {
-   "symbol": "KARURVYSYA",
-   "trigger": 384.4
+   "symbol": "ANANDRATHI",
+   "trigger": 2385.0
   },
   {
-   "symbol": "ANTHEM",
-   "trigger": 958.15
+   "symbol": "DIVISLAB",
+   "trigger": 11565.5
   },
   {
-   "symbol": "LALPATHLAB",
-   "trigger": 2028.7
+   "symbol": "SHYAMMETL",
+   "trigger": 1332.3
   },
   {
-   "symbol": "FLUOROCHEM",
-   "trigger": 4824.4
+   "symbol": "RKFORGE",
+   "trigger": 785.6
+  },
+  {
+   "symbol": "ANGELONE",
+   "trigger": 352.02
   },
   {
    "symbol": "GLENMARK",
    "trigger": 2677.2
   },
   {
-   "symbol": "SHYAMMETL",
-   "trigger": 1332.3
+   "symbol": "ANTHEM",
+   "trigger": 958.15
+  },
+  {
+   "symbol": "FLUOROCHEM",
+   "trigger": 4824.4
   }
  ],
  "stops": {},
