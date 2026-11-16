@@ -1,31 +1,21 @@
 {
- "date": "2026-11-13",
+ "date": "2026-11-16",
  "weak_market": false,
- "new": [
-  {
-   "symbol": "HONASA",
-   "sector": "Fast Moving Consumer Goods",
-   "ref_close": 501.95,
-   "stop": 464.88,
-   "target_2r": null,
-   "qty": 26,
-   "risk_inr": 964
-  }
- ],
+ "new": [],
  "skipped": [],
  "actions": [],
  "watchlist": [
   {
-   "symbol": "CUPID",
-   "trigger": 384.8
+   "symbol": "ATHERENERG",
+   "trigger": 1945.0
   },
   {
-   "symbol": "LAURUSLABS",
-   "trigger": 2454.0
+   "symbol": "ACUTAAS",
+   "trigger": 4039.1
   },
   {
-   "symbol": "SONACOMS",
-   "trigger": 926.0
+   "symbol": "HONASA",
+   "trigger": 501.95
   },
   {
    "symbol": "ENGINERSIN",
@@ -36,14 +26,6 @@
    "trigger": 93.85
   },
   {
-   "symbol": "AUROPHARMA",
-   "trigger": 1848.3
-  },
-  {
-   "symbol": "KARURVYSYA",
-   "trigger": 384.4
-  },
-  {
    "symbol": "RADICO",
    "trigger": 4732.9
   },
@@ -52,36 +34,36 @@
    "trigger": 370.43
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2385.0
+   "symbol": "NAVINFLUOR",
+   "trigger": 10002.0
   },
   {
-   "symbol": "DIVISLAB",
-   "trigger": 11565.5
+   "symbol": "EMCURE",
+   "trigger": 2361.7
+  },
+  {
+   "symbol": "NYKAA",
+   "trigger": 365.2
   },
   {
    "symbol": "SHYAMMETL",
    "trigger": 1332.3
   },
   {
-   "symbol": "RKFORGE",
-   "trigger": 785.6
+   "symbol": "FLUOROCHEM",
+   "trigger": 4824.4
   },
   {
-   "symbol": "ANGELONE",
-   "trigger": 352.02
+   "symbol": "PAYTM",
+   "trigger": 1939.9
+  },
+  {
+   "symbol": "LALPATHLAB",
+   "trigger": 2028.7
   },
   {
    "symbol": "GLENMARK",
    "trigger": 2677.2
-  },
-  {
-   "symbol": "ANTHEM",
-   "trigger": 958.15
-  },
-  {
-   "symbol": "FLUOROCHEM",
-   "trigger": 4824.4
   }
  ],
  "stops": {},
