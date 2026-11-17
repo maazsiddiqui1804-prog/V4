@@ -1,7 +1,26 @@
 {
- "date": "2026-11-16",
+ "date": "2026-11-17",
  "weak_market": false,
- "new": [],
+ "new": [
+  {
+   "symbol": "HONASA",
+   "sector": "Fast Moving Consumer Goods",
+   "ref_close": 517.8,
+   "stop": 481.31,
+   "target_2r": null,
+   "qty": 27,
+   "risk_inr": 985
+  },
+  {
+   "symbol": "MAHABANK",
+   "sector": "Financial Services",
+   "ref_close": 95.99,
+   "stop": 90.76,
+   "target_2r": null,
+   "qty": 191,
+   "risk_inr": 999
+  }
+ ],
  "skipped": [],
  "actions": [],
  "watchlist": [
@@ -14,20 +33,16 @@
    "trigger": 4039.1
   },
   {
-   "symbol": "HONASA",
-   "trigger": 501.95
+   "symbol": "MCX",
+   "trigger": 3729.6
+  },
+  {
+   "symbol": "SONACOMS",
+   "trigger": 926.0
   },
   {
    "symbol": "ENGINERSIN",
    "trigger": 314.08
-  },
-  {
-   "symbol": "MAHABANK",
-   "trigger": 93.85
-  },
-  {
-   "symbol": "RADICO",
-   "trigger": 4732.9
   },
   {
    "symbol": "FEDERALBNK",
@@ -38,32 +53,44 @@
    "trigger": 10002.0
   },
   {
-   "symbol": "EMCURE",
-   "trigger": 2361.7
-  },
-  {
-   "symbol": "NYKAA",
-   "trigger": 365.2
+   "symbol": "ANANDRATHI",
+   "trigger": 2387.3
   },
   {
    "symbol": "SHYAMMETL",
    "trigger": 1332.3
   },
   {
-   "symbol": "FLUOROCHEM",
-   "trigger": 4824.4
+   "symbol": "RADICO",
+   "trigger": 4732.9
+  },
+  {
+   "symbol": "NYKAA",
+   "trigger": 365.2
+  },
+  {
+   "symbol": "EMCURE",
+   "trigger": 2361.7
   },
   {
    "symbol": "PAYTM",
    "trigger": 1939.9
   },
   {
-   "symbol": "LALPATHLAB",
-   "trigger": 2028.7
+   "symbol": "RKFORGE",
+   "trigger": 791.85
+  },
+  {
+   "symbol": "FLUOROCHEM",
+   "trigger": 4824.4
   },
   {
    "symbol": "GLENMARK",
    "trigger": 2677.2
+  },
+  {
+   "symbol": "LALPATHLAB",
+   "trigger": 2028.7
   }
  ],
  "stops": {},
