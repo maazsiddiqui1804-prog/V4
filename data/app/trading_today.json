@@ -1,24 +1,33 @@
 {
- "date": "2026-11-17",
+ "date": "2026-11-18",
  "weak_market": false,
  "new": [
   {
    "symbol": "HONASA",
    "sector": "Fast Moving Consumer Goods",
-   "ref_close": 517.8,
-   "stop": 481.31,
+   "ref_close": 524.5,
+   "stop": 486.59,
    "target_2r": null,
-   "qty": 27,
-   "risk_inr": 985
+   "qty": 26,
+   "risk_inr": 986
   },
   {
    "symbol": "MAHABANK",
    "sector": "Financial Services",
-   "ref_close": 95.99,
-   "stop": 90.76,
+   "ref_close": 96.0,
+   "stop": 90.8,
    "target_2r": null,
-   "qty": 191,
+   "qty": 192,
    "risk_inr": 999
+  },
+  {
+   "symbol": "NAVINFLUOR",
+   "sector": "Chemicals",
+   "ref_close": 10278.0,
+   "stop": 9580.59,
+   "target_2r": null,
+   "qty": 1,
+   "risk_inr": 697
   }
  ],
  "skipped": [],
@@ -33,40 +42,36 @@
    "trigger": 4039.1
   },
   {
-   "symbol": "MCX",
-   "trigger": 3729.6
+   "symbol": "LENSKART",
+   "trigger": 739.05
   },
   {
-   "symbol": "SONACOMS",
-   "trigger": 926.0
+   "symbol": "KARURVYSYA",
+   "trigger": 393.5
   },
   {
-   "symbol": "ENGINERSIN",
-   "trigger": 314.08
+   "symbol": "AUROPHARMA",
+   "trigger": 1848.3
   },
   {
    "symbol": "FEDERALBNK",
    "trigger": 370.43
   },
   {
-   "symbol": "NAVINFLUOR",
-   "trigger": 10002.0
+   "symbol": "SHYAMMETL",
+   "trigger": 1332.3
   },
   {
    "symbol": "ANANDRATHI",
    "trigger": 2387.3
   },
   {
-   "symbol": "SHYAMMETL",
-   "trigger": 1332.3
-  },
-  {
    "symbol": "RADICO",
    "trigger": 4732.9
   },
   {
-   "symbol": "NYKAA",
-   "trigger": 365.2
+   "symbol": "VIJAYA",
+   "trigger": 1570.7
   },
   {
    "symbol": "EMCURE",
@@ -77,20 +82,12 @@
    "trigger": 1939.9
   },
   {
-   "symbol": "RKFORGE",
-   "trigger": 791.85
-  },
-  {
    "symbol": "FLUOROCHEM",
    "trigger": 4824.4
   },
   {
    "symbol": "GLENMARK",
    "trigger": 2677.2
-  },
-  {
-   "symbol": "LALPATHLAB",
-   "trigger": 2028.7
   }
  ],
  "stops": {},
