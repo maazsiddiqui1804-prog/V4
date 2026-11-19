@@ -1,38 +1,33 @@
 {
- "date": "2026-11-18",
+ "date": "2026-11-19",
  "weak_market": false,
  "new": [
   {
-   "symbol": "HONASA",
-   "sector": "Fast Moving Consumer Goods",
-   "ref_close": 524.5,
-   "stop": 486.59,
-   "target_2r": null,
-   "qty": 26,
-   "risk_inr": 986
-  },
-  {
-   "symbol": "MAHABANK",
-   "sector": "Financial Services",
-   "ref_close": 96.0,
-   "stop": 90.8,
-   "target_2r": null,
-   "qty": 192,
-   "risk_inr": 999
-  },
-  {
-   "symbol": "NAVINFLUOR",
-   "sector": "Chemicals",
-   "ref_close": 10278.0,
-   "stop": 9580.59,
+   "symbol": "CRAFTSMAN",
+   "sector": "Automobile and Auto Components",
+   "ref_close": 11930.0,
+   "stop": 11030.43,
    "target_2r": null,
    "qty": 1,
-   "risk_inr": 697
+   "risk_inr": 900
+  },
+  {
+   "symbol": "FLUOROCHEM",
+   "sector": "Chemicals",
+   "ref_close": 4978.6,
+   "stop": 4600.81,
+   "target_2r": null,
+   "qty": 2,
+   "risk_inr": 756
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
+  {
+   "symbol": "SANSERA",
+   "trigger": 4763.6
+  },
   {
    "symbol": "ATHERENERG",
    "trigger": 1945.0
@@ -42,16 +37,20 @@
    "trigger": 4039.1
   },
   {
-   "symbol": "LENSKART",
-   "trigger": 739.05
+   "symbol": "MCX",
+   "trigger": 3729.6
+  },
+  {
+   "symbol": "GLAND",
+   "trigger": 3385.9
+  },
+  {
+   "symbol": "SONACOMS",
+   "trigger": 926.0
   },
   {
    "symbol": "KARURVYSYA",
    "trigger": 393.5
-  },
-  {
-   "symbol": "AUROPHARMA",
-   "trigger": 1848.3
   },
   {
    "symbol": "FEDERALBNK",
@@ -62,32 +61,40 @@
    "trigger": 1332.3
   },
   {
+   "symbol": "ENGINERSIN",
+   "trigger": 314.08
+  },
+  {
    "symbol": "ANANDRATHI",
    "trigger": 2387.3
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "trigger": 1848.3
   },
   {
    "symbol": "RADICO",
    "trigger": 4732.9
   },
   {
-   "symbol": "VIJAYA",
-   "trigger": 1570.7
+   "symbol": "NAVINFLUOR",
+   "trigger": 10278.0
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
-   "symbol": "PAYTM",
-   "trigger": 1939.9
+   "symbol": "NYKAA",
+   "trigger": 365.2
   },
   {
-   "symbol": "FLUOROCHEM",
-   "trigger": 4824.4
+   "symbol": "PVRINOX",
+   "trigger": 1714.4
   },
   {
-   "symbol": "GLENMARK",
-   "trigger": 2677.2
+   "symbol": "CUB",
+   "trigger": 238.48
   }
  ],
  "stops": {},
