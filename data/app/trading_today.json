@@ -1,72 +1,82 @@
 {
- "date": "2026-11-19",
+ "date": "2026-11-20",
  "weak_market": false,
  "new": [
   {
-   "symbol": "CRAFTSMAN",
-   "sector": "Automobile and Auto Components",
-   "ref_close": 11930.0,
-   "stop": 11030.43,
+   "symbol": "WELSPUNLIV",
+   "sector": "Textiles",
+   "ref_close": 268.78,
+   "stop": 238.36,
    "target_2r": null,
-   "qty": 1,
-   "risk_inr": 900
+   "qty": 32,
+   "risk_inr": 974
   },
   {
-   "symbol": "FLUOROCHEM",
-   "sector": "Chemicals",
-   "ref_close": 4978.6,
-   "stop": 4600.81,
+   "symbol": "VIJAYA",
+   "sector": "Healthcare",
+   "ref_close": 1572.3,
+   "stop": 1443.23,
    "target_2r": null,
-   "qty": 2,
-   "risk_inr": 756
+   "qty": 7,
+   "risk_inr": 904
+  },
+  {
+   "symbol": "UNIONBANK",
+   "sector": "Financial Services",
+   "ref_close": 218.85,
+   "stop": 208.55,
+   "target_2r": null,
+   "qty": 97,
+   "risk_inr": 999
+  },
+  {
+   "symbol": "CUB",
+   "sector": "Financial Services",
+   "ref_close": 248.8,
+   "stop": 232.0,
+   "target_2r": null,
+   "qty": 59,
+   "risk_inr": 991
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
   {
-   "symbol": "SANSERA",
-   "trigger": 4763.6
-  },
-  {
    "symbol": "ATHERENERG",
    "trigger": 1945.0
-  },
-  {
-   "symbol": "ACUTAAS",
-   "trigger": 4039.1
-  },
-  {
-   "symbol": "MCX",
-   "trigger": 3729.6
   },
   {
    "symbol": "GLAND",
    "trigger": 3385.9
   },
   {
-   "symbol": "SONACOMS",
-   "trigger": 926.0
+   "symbol": "HONASA",
+   "trigger": 529.65
   },
   {
-   "symbol": "KARURVYSYA",
-   "trigger": 393.5
+   "symbol": "CRAFTSMAN",
+   "trigger": 11930.0
   },
   {
-   "symbol": "FEDERALBNK",
-   "trigger": 370.43
+   "symbol": "MOTHERSON",
+   "trigger": 170.68
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "trigger": 2387.3
   },
   {
    "symbol": "SHYAMMETL",
    "trigger": 1332.3
   },
   {
-   "symbol": "ENGINERSIN",
-   "trigger": 314.08
+   "symbol": "GROWW",
+   "trigger": 227.53
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2387.3
+   "symbol": "NAVINFLUOR",
+   "trigger": 10278.0
   },
   {
    "symbol": "AUROPHARMA",
@@ -77,24 +87,20 @@
    "trigger": 4732.9
   },
   {
-   "symbol": "NAVINFLUOR",
-   "trigger": 10278.0
+   "symbol": "NYKAA",
+   "trigger": 365.2
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
-   "symbol": "NYKAA",
-   "trigger": 365.2
+   "symbol": "PNBHOUSING",
+   "trigger": 1224.8
   },
   {
-   "symbol": "PVRINOX",
-   "trigger": 1714.4
-  },
-  {
-   "symbol": "CUB",
-   "trigger": 238.48
+   "symbol": "FLUOROCHEM",
+   "trigger": 4978.6
   }
  ],
  "stops": {},
