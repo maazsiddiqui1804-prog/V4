@@ -1,24 +1,24 @@
 {
- "updated": "2026-11-20T13:53+00:00",
+ "updated": "2026-11-23T14:00+00:00",
  "jobs": [
   {
    "job": "Benchmark NAVs",
-   "last_run": "2026-11-19 18:02",
+   "last_run": "2026-11-20 18:09",
    "result": "success"
   },
   {
    "job": "Daily app refresh",
-   "last_run": "2026-11-20 13:53",
+   "last_run": "2026-11-23 13:59",
    "result": "in_progress"
   },
   {
    "job": "Telegram digest",
-   "last_run": "2026-11-16 04:54",
+   "last_run": "2026-11-23 04:32",
    "result": "success"
   },
   {
    "job": "Health check",
-   "last_run": "2026-11-16 04:19",
+   "last_run": "2026-11-23 04:12",
    "result": "success"
   },
   {
@@ -48,7 +48,7 @@
   },
   {
    "job": "Red flags",
-   "last_run": "2026-11-20 10:43",
+   "last_run": "2026-11-23 10:46",
    "result": "success"
   },
   {

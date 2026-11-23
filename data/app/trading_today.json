@@ -1,82 +1,61 @@
 {
- "date": "2026-11-20",
+ "date": "2026-11-23",
  "weak_market": false,
  "new": [
   {
-   "symbol": "WELSPUNLIV",
-   "sector": "Textiles",
-   "ref_close": 268.78,
-   "stop": 238.36,
+   "symbol": "HONASA",
+   "sector": "Fast Moving Consumer Goods",
+   "ref_close": 539.75,
+   "stop": 501.13,
    "target_2r": null,
-   "qty": 32,
-   "risk_inr": 974
+   "qty": 25,
+   "risk_inr": 966
   },
   {
    "symbol": "VIJAYA",
    "sector": "Healthcare",
-   "ref_close": 1572.3,
-   "stop": 1443.23,
+   "ref_close": 1572.6,
+   "stop": 1437.19,
    "target_2r": null,
    "qty": 7,
-   "risk_inr": 904
+   "risk_inr": 948
   },
   {
-   "symbol": "UNIONBANK",
-   "sector": "Financial Services",
-   "ref_close": 218.85,
-   "stop": 208.55,
+   "symbol": "LALPATHLAB",
+   "sector": "Healthcare",
+   "ref_close": 2040.5,
+   "stop": 1897.82,
    "target_2r": null,
-   "qty": 97,
+   "qty": 7,
    "risk_inr": 999
-  },
-  {
-   "symbol": "CUB",
-   "sector": "Financial Services",
-   "ref_close": 248.8,
-   "stop": 232.0,
-   "target_2r": null,
-   "qty": 59,
-   "risk_inr": 991
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
   {
-   "symbol": "ATHERENERG",
-   "trigger": 1945.0
+   "symbol": "CRAFTSMAN",
+   "trigger": 11930.0
   },
   {
    "symbol": "GLAND",
    "trigger": 3385.9
   },
   {
-   "symbol": "HONASA",
-   "trigger": 529.65
+   "symbol": "ANANDRATHI",
+   "trigger": 2387.3
   },
   {
-   "symbol": "CRAFTSMAN",
-   "trigger": 11930.0
+   "symbol": "KARURVYSYA",
+   "trigger": 393.5
   },
   {
    "symbol": "MOTHERSON",
    "trigger": 170.68
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2387.3
-  },
-  {
-   "symbol": "SHYAMMETL",
-   "trigger": 1332.3
-  },
-  {
-   "symbol": "GROWW",
-   "trigger": 227.53
-  },
-  {
-   "symbol": "NAVINFLUOR",
-   "trigger": 10278.0
+   "symbol": "MAHABANK",
+   "trigger": 99.45
   },
   {
    "symbol": "AUROPHARMA",
@@ -87,20 +66,32 @@
    "trigger": 4732.9
   },
   {
-   "symbol": "NYKAA",
-   "trigger": 365.2
+   "symbol": "NAVINFLUOR",
+   "trigger": 10278.0
+  },
+  {
+   "symbol": "PVRINOX",
+   "trigger": 1714.4
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
-   "symbol": "PNBHOUSING",
-   "trigger": 1224.8
+   "symbol": "NYKAA",
+   "trigger": 365.2
   },
   {
    "symbol": "FLUOROCHEM",
    "trigger": 4978.6
+  },
+  {
+   "symbol": "ANTHEM",
+   "trigger": 958.15
+  },
+  {
+   "symbol": "TVSMOTOR",
+   "trigger": 4601.4
   }
  ],
  "stops": {},
