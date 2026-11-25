@@ -1,38 +1,28 @@
 {
- "date": "2026-11-23",
+ "date": "2026-11-25",
  "weak_market": false,
  "new": [
   {
-   "symbol": "HONASA",
-   "sector": "Fast Moving Consumer Goods",
-   "ref_close": 539.75,
-   "stop": 501.13,
-   "target_2r": null,
-   "qty": 25,
-   "risk_inr": 966
-  },
-  {
    "symbol": "VIJAYA",
    "sector": "Healthcare",
-   "ref_close": 1572.6,
-   "stop": 1437.19,
+   "ref_close": 1627.7,
+   "stop": 1481.1,
    "target_2r": null,
-   "qty": 7,
-   "risk_inr": 948
-  },
-  {
-   "symbol": "LALPATHLAB",
-   "sector": "Healthcare",
-   "ref_close": 2040.5,
-   "stop": 1897.82,
-   "target_2r": null,
-   "qty": 7,
-   "risk_inr": 999
+   "qty": 6,
+   "risk_inr": 880
   }
  ],
  "skipped": [],
  "actions": [],
  "watchlist": [
+  {
+   "symbol": "SANSERA",
+   "trigger": 4798.4
+  },
+  {
+   "symbol": "ACUTAAS",
+   "trigger": 4039.1
+  },
   {
    "symbol": "CRAFTSMAN",
    "trigger": 11930.0
@@ -42,12 +32,12 @@
    "trigger": 3385.9
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2387.3
+   "symbol": "HONASA",
+   "trigger": 539.75
   },
   {
-   "symbol": "KARURVYSYA",
-   "trigger": 393.5
+   "symbol": "ANANDRATHI",
+   "trigger": 2387.3
   },
   {
    "symbol": "MOTHERSON",
@@ -66,32 +56,32 @@
    "trigger": 4732.9
   },
   {
-   "symbol": "NAVINFLUOR",
-   "trigger": 10278.0
-  },
-  {
-   "symbol": "PVRINOX",
-   "trigger": 1714.4
+   "symbol": "TECHM",
+   "trigger": 1831.0
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
+   "symbol": "PVRINOX",
+   "trigger": 1714.4
+  },
+  {
+   "symbol": "ZYDUSLIFE",
+   "trigger": 1245.5
+  },
+  {
+   "symbol": "UNIONBANK",
+   "trigger": 218.85
+  },
+  {
    "symbol": "NYKAA",
    "trigger": 365.2
   },
   {
-   "symbol": "FLUOROCHEM",
-   "trigger": 4978.6
-  },
-  {
-   "symbol": "ANTHEM",
-   "trigger": 958.15
-  },
-  {
-   "symbol": "TVSMOTOR",
-   "trigger": 4601.4
+   "symbol": "LALPATHLAB",
+   "trigger": 2040.5
   }
  ],
  "stops": {},
