@@ -1,15 +1,24 @@
 {
- "date": "2026-11-25",
+ "date": "2026-11-26",
  "weak_market": false,
  "new": [
   {
-   "symbol": "VIJAYA",
-   "sector": "Healthcare",
-   "ref_close": 1627.7,
-   "stop": 1481.1,
+   "symbol": "MCX",
+   "sector": "Financial Services",
+   "ref_close": 3835.0,
+   "stop": 3547.91,
    "target_2r": null,
-   "qty": 6,
-   "risk_inr": 880
+   "qty": 3,
+   "risk_inr": 861
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "sector": "Financial Services",
+   "ref_close": 2410.0,
+   "stop": 2339.8,
+   "target_2r": null,
+   "qty": 14,
+   "risk_inr": 983
   }
  ],
  "skipped": [],
@@ -20,8 +29,8 @@
    "trigger": 4798.4
   },
   {
-   "symbol": "ACUTAAS",
-   "trigger": 4039.1
+   "symbol": "RUBICON",
+   "trigger": 1860.6
   },
   {
    "symbol": "CRAFTSMAN",
@@ -36,52 +45,32 @@
    "trigger": 539.75
   },
   {
-   "symbol": "ANANDRATHI",
-   "trigger": 2387.3
+   "symbol": "DIVISLAB",
+   "trigger": 11716.5
   },
   {
-   "symbol": "MOTHERSON",
-   "trigger": 170.68
-  },
-  {
-   "symbol": "MAHABANK",
-   "trigger": 99.45
-  },
-  {
-   "symbol": "AUROPHARMA",
-   "trigger": 1848.3
-  },
-  {
-   "symbol": "RADICO",
-   "trigger": 4732.9
-  },
-  {
-   "symbol": "TECHM",
-   "trigger": 1831.0
+   "symbol": "VIJAYA",
+   "trigger": 1627.7
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
-   "symbol": "PVRINOX",
-   "trigger": 1714.4
+   "symbol": "RADICO",
+   "trigger": 4732.9
   },
   {
-   "symbol": "ZYDUSLIFE",
-   "trigger": 1245.5
+   "symbol": "AUROPHARMA",
+   "trigger": 1848.3
   },
   {
-   "symbol": "UNIONBANK",
-   "trigger": 218.85
+   "symbol": "NAVINFLUOR",
+   "trigger": 10278.0
   },
   {
-   "symbol": "NYKAA",
-   "trigger": 365.2
-  },
-  {
-   "symbol": "LALPATHLAB",
-   "trigger": 2040.5
+   "symbol": "TORNTPHARM",
+   "trigger": 5122.8
   }
  ],
  "stops": {},

@@ -1,14 +1,14 @@
 {
- "updated": "2026-11-25T13:57+00:00",
+ "updated": "2026-11-26T13:56+00:00",
  "jobs": [
   {
    "job": "Benchmark NAVs",
-   "last_run": "2026-11-24 18:03",
+   "last_run": "2026-11-25 17:57",
    "result": "success"
   },
   {
    "job": "Daily app refresh",
-   "last_run": "2026-11-25 13:56",
+   "last_run": "2026-11-26 13:55",
    "result": "in_progress"
   },
   {
@@ -48,7 +48,7 @@
   },
   {
    "job": "Red flags",
-   "last_run": "2026-11-25 10:42",
+   "last_run": "2026-11-26 10:40",
    "result": "success"
   },
   {
