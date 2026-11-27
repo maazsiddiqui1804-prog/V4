@@ -1,24 +1,15 @@
 {
- "date": "2026-11-26",
+ "date": "2026-11-27",
  "weak_market": false,
  "new": [
   {
-   "symbol": "MCX",
-   "sector": "Financial Services",
-   "ref_close": 3835.0,
-   "stop": 3547.91,
+   "symbol": "CUPID",
+   "sector": "Fast Moving Consumer Goods",
+   "ref_close": 389.5,
+   "stop": 358.09,
    "target_2r": null,
-   "qty": 3,
-   "risk_inr": 861
-  },
-  {
-   "symbol": "ANANDRATHI",
-   "sector": "Financial Services",
-   "ref_close": 2410.0,
-   "stop": 2339.8,
-   "target_2r": null,
-   "qty": 14,
-   "risk_inr": 983
+   "qty": 31,
+   "risk_inr": 974
   }
  ],
  "skipped": [],
@@ -29,44 +20,48 @@
    "trigger": 4798.4
   },
   {
-   "symbol": "RUBICON",
-   "trigger": 1860.6
+   "symbol": "ACUTAAS",
+   "trigger": 4079.9
   },
   {
-   "symbol": "CRAFTSMAN",
-   "trigger": 11930.0
+   "symbol": "LAURUSLABS",
+   "trigger": 2505.0
+  },
+  {
+   "symbol": "AETHER",
+   "trigger": 1799.8
   },
   {
    "symbol": "GLAND",
    "trigger": 3385.9
   },
   {
-   "symbol": "HONASA",
-   "trigger": 539.75
-  },
-  {
    "symbol": "DIVISLAB",
    "trigger": 11716.5
   },
   {
-   "symbol": "VIJAYA",
-   "trigger": 1627.7
+   "symbol": "PTCIL",
+   "trigger": 25715.0
+  },
+  {
+   "symbol": "SHYAMMETL",
+   "trigger": 1332.3
   },
   {
    "symbol": "EMCURE",
    "trigger": 2361.7
   },
   {
+   "symbol": "PVRINOX",
+   "trigger": 1714.4
+  },
+  {
+   "symbol": "TECHM",
+   "trigger": 1854.7
+  },
+  {
    "symbol": "RADICO",
    "trigger": 4732.9
-  },
-  {
-   "symbol": "AUROPHARMA",
-   "trigger": 1848.3
-  },
-  {
-   "symbol": "NAVINFLUOR",
-   "trigger": 10278.0
   },
   {
    "symbol": "TORNTPHARM",
